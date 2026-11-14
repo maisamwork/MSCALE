@@ -72,6 +72,12 @@ def header(title, desc, depth=""):
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>{esc(title)}</title>
 <meta name="description" content="{esc(desc)}"/>
+<link rel="icon" href="{depth}assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="{esc(title)}"/>
+<meta property="og:description" content="{esc(desc)}"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
 <link rel="stylesheet" href="{depth}assets/style.css"/>
 <script src="{depth}assets/live-tools.js" defer></script>
 <script src="{depth}assets/app.js" defer></script>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://maisamwork.github.io/MSCALE/sitemap.xml
