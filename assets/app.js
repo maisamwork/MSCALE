@@ -34,7 +34,7 @@ function renderList(items) {
   list.innerHTML = items
     .map(
       (t) => `<a class="card ${t.live ? "" : "soon"}" href="${t.url}">
-        <h3>${t.name}</h3>
+        <div class="card-head">${(window.ICONS && window.ICONS[t.catSlug]) || ""}<h3>${t.name}</h3></div>
         <p>${t.desc || ""}</p>
         <span class="tag">${t.live ? "LIVE" : (t.cat || "") + (t.live ? "" : " — coming soon")}</span>
       </a>`

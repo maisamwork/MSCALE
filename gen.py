@@ -5,6 +5,42 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA_XLSX = "/workspace/tools-catalog.xlsx"
 
 BRAND = 'MSCALE<span>Tools</span>'
+
+ICONS = {
+    "wrench": '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+    "calculators": '<rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/>',
+    "text-tools": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
+    "developer-tools": '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+    "converters": '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+    "security": '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    "color-tools": '<path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/>',
+    "random-generators": '<path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/>',
+    "pdf-tools": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>',
+    "image-tools": '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>',
+    "seo-web-tools": '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+    "date-time-tools": '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+    "finance-tools": '<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
+}
+
+INTROS = {
+    "calculators": "Free online calculators for everyday math: percentages, loans, discounts, tips and more. Every calculator runs instantly in your browser \u2014 nothing is sent to a server.",
+    "text-tools": "Clean up, transform and analyze text: count words, convert case, remove duplicates, sort lines and more. Paste, click, copy \u2014 your text never leaves your device.",
+    "developer-tools": "Format, encode, decode and inspect data like JSON, JWT and CSV. Built for developers who want fast results without uploads or accounts.",
+    "converters": "Convert between units, number systems and time formats instantly \u2014 length, weight, data size, temperature, timestamps and more.",
+    "security": "Generate strong passwords and compute hashes safely. Everything is generated locally with cryptographically secure randomness.",
+    "color-tools": "Pick, convert and explore colors \u2014 HEX, RGB and HSL conversion plus palette generation for designers and developers.",
+    "random-generators": "Random numbers, dice and coin flips powered by your browser\u2019s random engine \u2014 perfect for games, draws and decisions.",
+    "pdf-tools": "Merge, split and convert PDF files right in your browser. Tools coming soon.",
+    "image-tools": "Resize, convert and optimize images without uploading them anywhere \u2014 processing happens on your own device.",
+    "seo-web-tools": "Analyze and improve your website: meta tags, keywords and more. Tools coming soon.",
+    "date-time-tools": "Work with dates and time \u2014 differences, timestamps and converters.",
+    "finance-tools": "Practical finance calculators for loans, interest and taxes \u2014 clear results, no spreadsheets.",
+}
+
+def svg_icon(cat, cls=""):
+    return ('<svg class="' + cls + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+            + ICONS.get(cat, ICONS["wrench"]) + "</svg>")
 LIVE = [
     ("percentage-calculator", "Percentage Calculator", "Calculators", "Percent of a number, percentage change and more"),
     ("bmi-calculator", "BMI Calculator", "Calculators", "Body Mass Index with weight category"),
@@ -75,6 +111,9 @@ CATALOG_CATS = {
     "Finance & Business": "finance-tools",
 }
 
+CAT_SLUG_BY_NAME = {v[0] if isinstance(v, tuple) else v: k for k, v in CAT_PAGES.items()}
+
+
 def esc(s):
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
@@ -103,15 +142,38 @@ def header(title, desc, depth=""):
 </head>
 <body>
 <header class="site"><div class="container">
-  <a class="brand" href="{depth}index.html">{BRAND}</a>
+  <a class="brand" href="{depth}index.html">{svg_icon("wrench", "brand-icon")}MSCALE<span>Tools</span></a>
   <nav class="main">{nav}<a href="{depth}index.html#all">All tools</a></nav>
 </div></header>
 <main class="container">"""
 
-FOOTER = """</main>
+def footer(depth):
+    cats = "".join(
+        f'<a href="{depth}category/{slug}.html">{name}</a>'
+        for slug, (name, _, _, _) in CAT_PAGES.items()
+    )
+    popular = ["percentage-calculator", "word-counter", "json-formatter", "password-generator",
+               "bmi-calculator", "unit-converter", "image-resizer", "compound-interest-calculator"]
+    names_by_slug = {s: n for s, n, _, _ in LIVE}
+    pop = "".join(f'<a href="{depth}tools/{s}.html">{names_by_slug[s]}</a>' for s in popular)
+    return f"""</main>
 <footer class="site"><div class="container">
-  <span>MSCALE Tools — free, fast, private. Everything runs in your browser.</span>
-  <span><a href="https://github.com/maisamwork/MSCALE">GitHub</a></span>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="{depth}index.html">{svg_icon("wrench", "brand-icon")}MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads.</p>
+      <p><a href="https://github.com/maisamwork/MSCALE">GitHub</a></p>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      {cats}
+    </div>
+    <div>
+      <h4>Popular tools</h4>
+      {pop}
+    </div>
+  </div>
+  <p class="copyright">© 2026 MSCALE Tools. All processing happens client-side in your browser.</p>
 </div></footer>
 </body>
 </html>"""
@@ -536,26 +598,43 @@ TOOL_DESC = {
 }
 
 def tool_page(slug, name, cat, desc):
+    cat_slug = CAT_SLUG_BY_NAME.get(cat, "calculators")
     body = TOOL_BODIES[slug]
-    related = [
-        (s, n) for s, n, c, _ in LIVE if c == cat and s != slug
-    ][:4]
+    related = [(s, n) for s, n, c, _ in LIVE if c == cat and s != slug][:4]
     rel_html = ""
     if related:
         rel_html = "<h2 class='section'>Related tools</h2><div class='grid'>" + "".join(
-            f"<a class='card' href='{s}.html'><h3>{n}</h3></a>" for s, n in related
+            f"<a class='card' href='{s}.html'><div class='card-head'>{svg_icon(cat_slug, 'card-ic')}<h3>{n}</h3></div></a>"
+            for s, n in related
         ) + "</div>"
+    crumb = f"""<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="index.html">{svg_icon("wrench", "crumb-ic")}Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="category/{cat_slug}.html">{cat}</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>{name}</span>
+</nav>"""
+    jsonld = json.dumps({
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": name,
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web",
+        "description": desc,
+        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+    })
     return (
         header(f"{name} — Free Online Tool | MSCALE Tools", desc)
         + f"""<div class="tool-wrap">
-<div class="tool-head"><h1>{name}</h1><p>{desc}</p></div>
+{crumb}
+<script type="application/ld+json">{jsonld}</script>
+<div class="tool-head"><div class="tool-title">{svg_icon(cat_slug, "tool-ic")}<h1>{name}</h1></div><p>{desc}</p></div>
 {body}
 {rel_html}
 </div>"""
-        + FOOTER
+        + footer("")
     )
 
-CATALOG = []
 
 def build_catalog():
     global CATALOG
@@ -585,21 +664,21 @@ def index_page(catalog):
     cat_counts = {}
     for item in catalog:
         cat_counts[item["c"]] = cat_counts.get(item["c"], 0) + 1
+    extra_cats = [("pdf-tools", "PDF Tools"), ("image-tools", "Image Tools"), ("seo-web-tools", "SEO & Web Tools"),
+                  ("date-time-tools", "Date & Time Tools"), ("finance-tools", "Finance & Business")]
     cat_cards = ""
-    icons = {"calculators": "🧮", "text-tools": "📝", "developer-tools": "💻", "converters": "🔄",
-             "security": "🔒", "color-tools": "🎨", "random-generators": "🎲", "pdf-tools": "📄",
-             "image-tools": "🖼️", "seo-web-tools": "📈", "date-time-tools": "🕐", "finance-tools": "💰"}
-    names = {slug: name for slug, (name, _, _, _) in CAT_PAGES.items()}
-    for slug, (name, icon, _, _) in CAT_PAGES.items():
-        cat_cards += (f"<a class='cat-card' href='{slug}.html'><span class='icon'>{icon}</span>"
-                      f"<h3>{name}</h3><p>{cat_counts.get(slug, 0)+ (4 if slug=='calculators' else 0)}+ tools in catalog</p></a>")
-    for slug in ["pdf-tools", "image-tools", "seo-web-tools", "date-time-tools", "finance-tools"]:
-        name = {"pdf-tools": "PDF Tools", "image-tools": "Image Tools", "seo-web-tools": "SEO & Web Tools",
-                "date-time-tools": "Date & Time", "finance-tools": "Finance & Business"}[slug]
-        cat_cards += (f"<a class='cat-card soon' href='{slug}.html'><span class='icon'>{icons[slug]}</span>"
-                      f"<h3>{name}</h3><p>{cat_counts.get(slug, 0)}+ tools in catalog</p></a>")
+    for slug, (name, _, _, _) in CAT_PAGES.items():
+        n = cat_counts.get(slug, 0) + len([1 for s, _, c, _ in LIVE if CAT_SLUG_BY_NAME.get(c) == slug])
+        cat_cards += (f"<a class='cat-card' href='{slug}.html'><span class='icon-box'>{svg_icon(slug)}</span>"
+                      f"<h3>{name}</h3><p>{n} tools</p></a>")
+    for slug, name in extra_cats:
+        if slug not in CAT_PAGES:
+            continue
+        n = cat_counts.get(slug, 0) + len([1 for s, _, c, _ in LIVE if CAT_SLUG_BY_NAME.get(c) == slug])
+        cat_cards += (f"<a class='cat-card' href='{slug}.html'><span class='icon-box'>{svg_icon(slug)}</span>"
+                      f"<h3>{name}</h3><p>{n} tools</p></a>")
     live_cards = "".join(
-        f"<a class='card' href='tools/{s}.html'><h3>{n}</h3><p>{d}</p><span class='tag'>LIVE — {c}</span></a>"
+        f"<a class='card' href='tools/{s}.html'><div class='card-head'>{svg_icon(CAT_SLUG_BY_NAME.get(c, 'wrench'), 'card-ic')}<h3>{n}</h3></div><p>{d}</p><span class='tag'>LIVE</span></a>"
         for s, n, c, d in LIVE
     )
     total = len(catalog) + len(LIVE)
@@ -607,37 +686,56 @@ def index_page(catalog):
 <div class="hero">
   <h1>Every tool you need, <em>in one place</em></h1>
   <p>{total}+ tools indexed — {len(LIVE)} live right now, more shipping weekly. Everything runs in your browser: fast and private.</p>
-  <div class="search-wrap"><input id="search" placeholder="Search {total}+ tools… (e.g. percentage, json, password)" /></div>
+  <div class="search-wrap">{svg_icon("wrench", "search-ic")}<input id="search" placeholder="Search {total}+ tools… (e.g. percentage, json, password)" /></div>
   <p id="count-note" style="font-size:13px"></p>
 </div>
 <h2 class="section" id="all">Live tools</h2>
 <div class="grid" id="tool-list">{live_cards}</div>
 <h2 class="section">Browse by category</h2>
 <div class="cat-grid">{cat_cards}</div>
-""" + FOOTER
+""" + footer("")
+
 
 def category_page(slug, name, icon, live_slugs, catalog_cat):
+    live_names_by_slug = {s: (n, d) for s, n, _, d in LIVE}
     live_cards = "".join(
-        f"<a class='card' href='../tools/{s}.html'><h3>{dict((x[0], x[1]) for x in LIVE)[s]}</h3>"
-        f"<p>{dict((x[0], x[3]) for x in LIVE)[s]}</p><span class='tag'>LIVE</span></a>"
+        f"<a class='card' href='../tools/{s}.html'><div class='card-head'>{svg_icon(slug, 'card-ic')}<h3>{live_names_by_slug[s][0]}</h3></div>"
+        f"<p>{live_names_by_slug[s][1]}</p><span class='tag'>LIVE</span></a>"
         for s in live_slugs
     )
     coming = [i["n"] for i in CATALOG if i["c"] == slug]
-    live_names = {dict((x[0], x[1].lower()) for x in LIVE)[s] for s in live_slugs}
+    live_names = {live_names_by_slug[s][0].lower() for s in live_slugs}
     coming = [n for n in coming if n.lower() not in live_names][:80]
     coming_cards = "".join(
-        f"<div class='card soon'><h3>{esc(n)}</h3><span class='tag'>coming soon</span></div>"
+        f"<div class='card soon'><div class='card-head'>{svg_icon(slug, 'card-ic')}<h3>{esc(n)}</h3></div><span class='tag'>coming soon</span></div>"
         for n in coming
     )
+    intro = INTROS.get(slug, "")
+    crumb = f"""<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html">{svg_icon("wrench", "crumb-ic")}Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>{name}</span>
+</nav>"""
+    jsonld = json.dumps({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://maisamwork.github.io/MSCALE/"},
+            {"@type": "ListItem", "position": 2, "name": name, "item": f"https://maisamwork.github.io/MSCALE/category/{slug}.html"},
+        ],
+    })
     return (
         header(f"{name} — Free Online | MSCALE Tools", f"Free online {name.lower()} — fast, private, no sign-up.")
-        + f"""<div class="tool-head"><h1>{icon} {name}</h1><p>{len(live_slugs)} live tools + {len(coming)} more coming from our catalog of {len(CATALOG)+len(LIVE)} tools.</p></div>
+        + f"""{crumb}
+<script type="application/ld+json">{jsonld}</script>
+<div class="tool-head"><div class="tool-title">{svg_icon(slug, "tool-ic big")}<h1>{name}</h1></div><p>{intro}</p></div>
 <h2 class="section">Live now</h2>
 <div class="grid">{live_cards}</div>
 <h2 class="section">Coming soon</h2>
 <div class="grid">{coming_cards}</div>"""
-        + FOOTER
+        + footer("../")
     )
+
 
 def main():
     catalog = build_catalog()
@@ -654,12 +752,13 @@ def main():
         with open(f"{ROOT}/tools/{slug}.html", "w") as f:
             f.write(tool_page(slug, name, cat, TOOL_DESC[slug]))
     live_tools_js = json.dumps(
-        [{"name": n, "desc": d, "cat": c, "url": ("category/" if False else "tools/") + s + ".html"} for s, n, c, d in LIVE]
+        [{"name": n, "desc": d, "cat": c, "catSlug": CAT_SLUG_BY_NAME.get(c, "wrench"), "url": "tools/" + s + ".html"} for s, n, c, d in LIVE]
     )
+    icons_js = json.dumps({k: svg_icon(k) for k in ICONS})
     appjs = open(f"{ROOT}/assets/app.js").read()
     appjs = appjs.replace("let CATALOG = [];", f"let CATALOG = [];")
     with open(f"{ROOT}/assets/live-tools.js", "w") as f:
-        f.write(f"window.LIVE_TOOLS = {live_tools_js};")
+        f.write(f"window.LIVE_TOOLS = {live_tools_js};\nwindow.ICONS = {icons_js};")
     print(f"catalog: {len(catalog)} entries; pages written")
 
 main()

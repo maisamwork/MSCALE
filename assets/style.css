@@ -125,3 +125,28 @@ footer.site .container { padding: 26px 20px; color: var(--muted); font-size: 13p
 .wf-bar { height: 10px; background: var(--accent); border-radius: 5px; min-width: 2px; }
 mark { background: var(--accent); color: #fff; border-radius: 3px; padding: 0 2px; }
 #img-preview { max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-top: 12px; display: none; }
+.breadcrumb { display: flex; align-items: center; gap: 8px; padding: 22px 0 0; font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+.breadcrumb a { color: var(--muted); display: inline-flex; align-items: center; gap: 5px; }
+.breadcrumb a:hover { color: var(--accent2); }
+.breadcrumb .chev { width: 13px; height: 13px; opacity: .6; }
+.breadcrumb .crumb-ic { width: 14px; height: 14px; }
+.breadcrumb span { color: var(--text); }
+.brand-icon { width: 22px; height: 22px; color: var(--accent); }
+.card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.card-head h3 { margin: 0; }
+.card-ic { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; }
+.tool-title { display: flex; align-items: center; gap: 12px; }
+.tool-ic { width: 30px; height: 30px; color: var(--accent); flex-shrink: 0; }
+.tool-ic.big { width: 38px; height: 38px; }
+.icon-box { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border-radius: 10px; background: rgba(255, 112, 0, .12); color: var(--accent); }
+.icon-box svg { width: 22px; height: 22px; }
+.search-wrap { position: relative; }
+.search-ic { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--muted); pointer-events: none; }
+#search { padding-left: 42px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 30px; }
+.footer-brand p { color: var(--muted); font-size: 13px; margin: 10px 0 0; max-width: 300px; }
+.footer-grid h4 { margin: 0 0 10px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--text); }
+.footer-grid h4 + a, .footer-grid div > a { display: block; color: var(--muted); font-size: 13px; padding: 3px 0; }
+.footer-grid div > a:hover { color: var(--accent2); text-decoration: none; }
+.copyright { border-top: 1px solid var(--border); margin-top: 26px; padding-top: 16px; color: var(--muted); font-size: 12px; }
+@media (max-width: 720px) { .footer-grid { grid-template-columns: 1fr; gap: 20px; } }
