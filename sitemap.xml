@@ -5,14 +5,14 @@
   <url><loc>https://maisamwork.github.io/MSCALE/category/text-tools.html</loc><priority>0.9</priority></url>
   <url><loc>https://maisamwork.github.io/MSCALE/category/developer-tools.html</loc><priority>0.9</priority></url>
   <url><loc>https://maisamwork.github.io/MSCALE/category/converters.html</loc><priority>0.9</priority></url>
-  <url><loc>https://maisamwork.github.io/MSCALE/category/security.html</loc><priority>0.8</priority></url>
-  <url><loc>https://maisamwork.github.io/MSCALE/category/color-tools.html</loc><priority>0.8</priority></url>
-  <url><loc>https://maisamwork.github.io/MSCALE/category/random-generators.html</loc><priority>0.8</priority></url>
-  <url><loc>https://maisamwork.github.io/MSCALE/category/pdf-tools.html</loc><priority>0.7</priority></url>
-  <url><loc>https://maisamwork.github.io/MSCALE/category/image-tools.html</loc><priority>0.7</priority></url>
-  <url><loc>https://maisamwork.github.io/MSCALE/category/seo-web-tools.html</loc><priority>0.7</priority></url>
-  <url><loc>https://maisamwork.github.io/MSCALE/category/date-time-tools.html</loc><priority>0.7</priority></url>
-  <url><loc>https://maisamwork.github.io/MSCALE/category/finance-tools.html</loc><priority>0.7</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/category/security.html</loc><priority>0.9</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/category/color-tools.html</loc><priority>0.9</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/category/random-generators.html</loc><priority>0.9</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/category/pdf-tools.html</loc><priority>0.9</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/category/image-tools.html</loc><priority>0.9</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/category/seo-web-tools.html</loc><priority>0.9</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/category/date-time-tools.html</loc><priority>0.9</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/category/finance-tools.html</loc><priority>0.9</priority></url>
   <url><loc>https://maisamwork.github.io/MSCALE/tools/percentage-calculator.html</loc><priority>0.8</priority></url>
   <url><loc>https://maisamwork.github.io/MSCALE/tools/bmi-calculator.html</loc><priority>0.8</priority></url>
   <url><loc>https://maisamwork.github.io/MSCALE/tools/age-calculator.html</loc><priority>0.8</priority></url>
@@ -32,4 +32,22 @@
   <url><loc>https://maisamwork.github.io/MSCALE/tools/random-number-generator.html</loc><priority>0.8</priority></url>
   <url><loc>https://maisamwork.github.io/MSCALE/tools/dice-roller.html</loc><priority>0.8</priority></url>
   <url><loc>https://maisamwork.github.io/MSCALE/tools/coin-flipper.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/discount-calculator.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/tip-calculator.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/compound-interest-calculator.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/gst-vat-calculator.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/date-difference-calculator.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/find-and-replace.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/text-sorter.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/lorem-ipsum-generator.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/word-frequency-counter.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/hash-generator.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/jwt-decoder.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/regex-tester.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/csv-to-json-converter.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/html-encoder-decoder.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/number-base-converter.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/roman-numeral-converter.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/image-resizer.html</loc><priority>0.8</priority></url>
+  <url><loc>https://maisamwork.github.io/MSCALE/tools/palette-generator.html</loc><priority>0.8</priority></url>
 </urlset>
