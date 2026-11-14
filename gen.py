@@ -25,21 +25,39 @@ LIVE = [
     ("random-number-generator", "Random Number Generator", "Random", "Random numbers in any range, unique option"),
     ("dice-roller", "Dice Roller", "Random", "Roll up to 20 dice with any number of sides"),
     ("coin-flipper", "Coin Flipper", "Random", "Flip one coin or a thousand, with counts"),
+    ("discount-calculator", "Discount Calculator", "Calculators", "Sale price, savings and final price with tax"),
+    ("tip-calculator", "Tip Calculator", "Calculators", "Tip amount, total and per-person split"),
+    ("compound-interest-calculator", "Compound Interest Calculator", "Finance", "Future value with contributions and compounding"),
+    ("gst-vat-calculator", "GST / VAT Calculator", "Finance", "Add or remove sales tax from any amount"),
+    ("date-difference-calculator", "Date Difference Calculator", "Date & Time", "Days, weeks, months and years between dates"),
+    ("find-and-replace", "Find and Replace", "Text", "Replace text with case and regex options"),
+    ("text-sorter", "Line Sorter", "Text", "Sort lines A-Z, Z-A, by length or shuffle"),
+    ("lorem-ipsum-generator", "Lorem Ipsum Generator", "Text", "Placeholder text by paragraphs and sentences"),
+    ("word-frequency-counter", "Word Frequency Counter", "Text", "Top words with visual frequency bars"),
+    ("hash-generator", "Hash Generator", "Developer", "SHA-1, SHA-256 and SHA-512 hashes instantly"),
+    ("jwt-decoder", "JWT Decoder", "Developer", "Decode JWT header and payload, check expiry"),
+    ("regex-tester", "Regex Tester", "Developer", "Test regular expressions with live highlighting"),
+    ("csv-to-json-converter", "CSV to JSON Converter", "Developer", "Convert CSV or TSV to JSON, quote-aware"),
+    ("html-encoder-decoder", "HTML Encoder / Decoder", "Developer", "Escape or unescape HTML entities"),
+    ("number-base-converter", "Number Base Converter", "Converters", "Binary, octal, decimal and hexadecimal"),
+    ("roman-numeral-converter", "Roman Numeral Converter", "Converters", "Roman numerals to numbers and back"),
+    ("image-resizer", "Image Resizer", "Image", "Resize and convert images in your browser"),
+    ("palette-generator", "Color Palette Generator", "Color", "Shades and tints from any color, click to copy"),
 ]
 
 CAT_PAGES = {
-    "calculators": ("Calculators", "\U0001F9EE", ["percentage-calculator", "bmi-calculator", "age-calculator", "loan-emi-calculator"], "Calculators"),
-    "text-tools": ("Text Tools", "\U0001F4DD", ["word-counter", "case-converter", "remove-duplicate-lines", "reverse-text"], "Text Tools"),
-    "developer-tools": ("Developer Tools", "\U0001F4BB", ["json-formatter", "base64-encoder-decoder", "url-encoder-decoder", "uuid-generator"], "Developer Tools"),
-    "converters": ("Converters", "\U0001F504", ["unit-converter", "timestamp-converter"], "Converters (Units & Numbers)"),
+    "calculators": ("Calculators", "\U0001F9EE", ["percentage-calculator", "bmi-calculator", "age-calculator", "loan-emi-calculator", "discount-calculator", "tip-calculator"], "Calculators"),
+    "text-tools": ("Text Tools", "\U0001F4DD", ["word-counter", "case-converter", "remove-duplicate-lines", "reverse-text", "find-and-replace", "text-sorter", "lorem-ipsum-generator", "word-frequency-counter"], "Text Tools"),
+    "developer-tools": ("Developer Tools", "\U0001F4BB", ["json-formatter", "base64-encoder-decoder", "url-encoder-decoder", "uuid-generator", "hash-generator", "jwt-decoder", "regex-tester", "csv-to-json-converter", "html-encoder-decoder"], "Developer Tools"),
+    "converters": ("Converters", "\U0001F504", ["unit-converter", "timestamp-converter", "number-base-converter", "roman-numeral-converter"], "Converters (Units & Numbers)"),
     "security": ("Security Tools", "\U0001F512", ["password-generator"], "Security & Encoding"),
-    "color-tools": ("Color Tools", "\U0001F3A8", ["color-converter"], "Color & Design Tools"),
+    "color-tools": ("Color Tools", "\U0001F3A8", ["color-converter", "palette-generator"], "Color & Design Tools"),
     "random-generators": ("Random Generators", "\U0001F3B2", ["random-number-generator", "dice-roller", "coin-flipper"], "Random & Fun Generators"),
     "pdf-tools": ("PDF Tools", "\U0001F4C4", [], "PDF Tools"),
-    "image-tools": ("Image Tools", "\U0001F5BC\uFE0F", [], "Image Tools"),
+    "image-tools": ("Image Tools", "\U0001F5BC\uFE0F", ["image-resizer"], "Image Tools"),
     "seo-web-tools": ("SEO & Web Tools", "\U0001F4C8", [], "SEO & Web Tools"),
-    "date-time-tools": ("Date & Time Tools", "\U0001F550", [], "Date & Time Tools"),
-    "finance-tools": ("Finance & Business", "\U0001F4B0", [], "Finance & Business"),
+    "date-time-tools": ("Date & Time Tools", "\U0001F550", ["date-difference-calculator"], "Date & Time Tools"),
+    "finance-tools": ("Finance & Business", "\U0001F4B0", ["compound-interest-calculator", "gst-vat-calculator"], "Finance & Business"),
 }
 
 CATALOG_CATS = {
@@ -289,7 +307,193 @@ TOOL_BODIES = {
   <button class="btn" onclick="flipCoin()">Flip 🪙</button>
   <div id="coin-out" class="result"></div>
 </div>""",
+
+"discount-calculator": """
+<div class="panel">
+  <div class="row">
+    <div><label>Original price</label><input type="number" id="disc-p" placeholder="99.99" /></div>
+    <div><label>Discount (%)</label><input type="number" id="disc-off" placeholder="25" /></div>
+    <div><label>Tax (%) — optional</label><input type="number" id="disc-tax" placeholder="0" /></div>
+  </div>
+  <button class="btn" onclick="discountCalc()">Calculate</button>
+  <div id="disc-out" class="result">Enter price and discount.</div>
+</div>""",
+"tip-calculator": """
+<div class="panel">
+  <div class="row">
+    <div><label>Bill amount</label><input type="number" id="tip-bill" placeholder="64.50" /></div>
+    <div><label>Tip (%)</label><input type="number" id="tip-pct" value="15" /></div>
+    <div><label>Split between</label><input type="number" id="tip-people" value="1" min="1" /></div>
+  </div>
+  <button class="btn" onclick="tipCalc()">Calculate tip</button>
+  <div id="tip-out" class="result">Enter the bill amount.</div>
+</div>""",
+"compound-interest-calculator": """
+<div class="panel">
+  <div class="row">
+    <div><label>Initial amount</label><input type="number" id="ci-p" placeholder="1000" /></div>
+    <div><label>Annual rate (%)</label><input type="number" id="ci-r" placeholder="7" step="0.1" /></div>
+    <div><label>Years</label><input type="number" id="ci-t" placeholder="10" /></div>
+  </div>
+  <div class="row">
+    <div><label>Compounds per year</label><select id="ci-n"><option value="1">Yearly</option><option value="4">Quarterly</option><option value="12" selected>Monthly</option><option value="365">Daily</option></select></div>
+    <div><label>Monthly contribution — optional</label><input type="number" id="ci-monthly" placeholder="0" /></div>
+  </div>
+  <button class="btn" onclick="compoundCalc()">Calculate</button>
+  <div id="ci-out" class="result">Enter your investment details.</div>
+</div>""",
+"gst-vat-calculator": """
+<div class="panel">
+  <div class="row">
+    <div><label>Amount</label><input type="number" id="tax-amt" placeholder="100" /></div>
+    <div><label>Tax rate (%)</label><input type="number" id="tax-rate" value="18" step="0.1" /></div>
+  </div>
+  <button class="btn" onclick="taxCalc('add')">Add tax →</button>
+  <button class="btn ghost" onclick="taxCalc('remove')">← Remove tax</button>
+  <div id="tax-out" class="result">Enter amount and rate.</div>
+</div>""",
+"date-difference-calculator": """
+<div class="panel">
+  <div class="row">
+    <div><label>Start date</label><input type="date" id="dd2-a" /></div>
+    <div><label>End date</label><input type="date" id="dd2-b" /></div>
+  </div>
+  <button class="btn" onclick="dateDiff()">Calculate difference</button>
+  <div id="dd2-out" class="result">Pick two dates.</div>
+</div>""",
+"find-and-replace": """
+<div class="panel">
+  <label>Text</label>
+  <textarea id="fr-in" placeholder="Paste your text…"></textarea>
+  <div class="row">
+    <div><label>Find</label><input type="text" id="fr-find" placeholder="old" /></div>
+    <div><label>Replace with</label><input type="text" id="fr-repl" placeholder="new" /></div>
+  </div>
+  <label><input type="checkbox" id="fr-case" style="width:auto" /> Case sensitive</label>
+  <label><input type="checkbox" id="fr-regex" style="width:auto" /> Regular expression</label>
+  <button class="btn" onclick="findReplace()">Replace all</button>
+  <span id="fr-count" style="color:var(--muted);font-size:13px"></span>
+  <div id="fr-out" class="result mono"></div>
+</div>""",
+"text-sorter": """
+<div class="panel">
+  <label>Lines to sort</label>
+  <textarea id="sort-in" placeholder="banana&#10;apple&#10;cherry"></textarea>
+  <div>
+    <button class="btn" onclick="sortLines('az')">A → Z</button>
+    <button class="btn ghost" onclick="sortLines('za')">Z → A</button>
+    <button class="btn ghost" onclick="sortLines('len')">Short → Long</button>
+    <button class="btn ghost" onclick="sortLines('len2')">Long → Short</button>
+    <button class="btn ghost" onclick="sortLines('shuffle')">Shuffle</button>
+  </div>
+</div>""",
+"lorem-ipsum-generator": """
+<div class="panel">
+  <div class="row">
+    <div><label>Paragraphs</label><input type="number" id="lorem-n" value="3" min="1" max="20" /></div>
+    <div><label>Sentences per paragraph</label><input type="number" id="lorem-s" value="4" min="1" max="20" /></div>
+  </div>
+  <button class="btn" onclick="genLorem()">Generate</button>
+  <div id="lorem-out" class="result mono"></div>
+</div>""",
+"word-frequency-counter": """
+<div class="panel">
+  <label>Text to analyze</label>
+  <textarea id="wf-in" oninput="wordFreq()" placeholder="Paste an article, essay or any text…"></textarea>
+  <p id="wf-total" style="color:var(--muted);font-size:13px"></p>
+  <div id="wf-out" class="result"></div>
+</div>""",
+"hash-generator": """
+<div class="panel">
+  <label>Text to hash</label>
+  <textarea id="hash-in" placeholder="Enter text…"></textarea>
+  <button class="btn" onclick="hashGen()">Generate hashes</button>
+  <div id="hash-out" class="result mono"></div>
+</div>""",
+"jwt-decoder": """
+<div class="panel">
+  <label>JWT token</label>
+  <textarea id="jwt-in" placeholder="eyJhbGciOi…"></textarea>
+  <button class="btn" onclick="jwtDecode()">Decode</button>
+  <div id="jwt-out" class="result mono"></div>
+</div>""",
+"regex-tester": """
+<div class="panel">
+  <div class="row">
+    <div style="flex:2"><label>Pattern</label><input type="text" id="re-pattern" placeholder="\\b\\w+@\\w+\\.\\w+\\b" /></div>
+    <div><label>Flags</label><input type="text" id="re-flags" value="g" /></div>
+  </div>
+  <label>Test text</label>
+  <textarea id="re-text" placeholder="Paste text to test against…"></textarea>
+  <button class="btn" onclick="regexTest()">Test</button>
+  <span id="re-count" style="color:var(--muted);font-size:13px"></span>
+  <div id="re-out" class="result"></div>
+  <div id="re-groups" class="result mono"></div>
+</div>""",
+"csv-to-json-converter": """
+<div class="panel">
+  <div class="row">
+    <div><label>Delimiter</label><select id="csv-delim"><option value=",">Comma</option><option value=";">Semicolon</option><option value="tab">Tab</option><option value="|">Pipe</option></select></div>
+  </div>
+  <label>CSV input (first row = headers)</label>
+  <textarea id="csv-in" placeholder="name,age&#10;Alice,30&#10;Bob,25"></textarea>
+  <button class="btn" onclick="csvToJson()">Convert →</button>
+  <span id="csv-count" style="color:var(--muted);font-size:13px"></span>
+  <div id="csv-out" class="result mono"></div>
+</div>""",
+"html-encoder-decoder": """
+<div class="panel">
+  <label>Text or HTML</label>
+  <textarea id="henc-in" placeholder='<div class="hello">…'></textarea>
+  <div>
+    <button class="btn" onclick="htmlEnc('enc')">Encode →</button>
+    <button class="btn ghost" onclick="htmlEnc('dec')">← Decode</button>
+  </div>
+  <div id="henc-out" class="result mono"></div>
+</div>""",
+"number-base-converter": """
+<div class="panel">
+  <div class="row">
+    <div style="flex:2"><label>Number</label><input type="text" id="nb-in" value="255" oninput="baseConvert()" /></div>
+    <div><label>Input base</label><select id="nb-from" onchange="baseConvert()"><option value="2">Binary (2)</option><option value="8">Octal (8)</option><option value="10" selected>Decimal (10)</option><option value="16">Hex (16)</option></select></div>
+  </div>
+  <div id="nb-out" class="result"></div>
+</div>""",
+"roman-numeral-converter": """
+<div class="panel">
+  <label>Number (1–3999) or Roman numeral</label>
+  <input type="text" id="roman-in" placeholder="2024 or MMXXIV" />
+  <div>
+    <button class="btn" onclick="romanConvert('to')">Number → Roman</button>
+    <button class="btn ghost" onclick="romanConvert('from')">Roman → Number</button>
+  </div>
+  <div id="roman-out" class="result big"></div>
+</div>""",
+"image-resizer": """
+<div class="panel">
+  <label>Choose image (stays on your device)</label>
+  <input type="file" id="img-file" accept="image/*" onchange="imgLoaded()" />
+  <div class="row">
+    <div><label>Width (px)</label><input type="number" id="img-w" /></div>
+    <div><label>Height (px)</label><input type="number" id="img-h" /></div>
+    <div><label>Format</label><select id="img-fmt"><option value="jpeg">JPG</option><option value="png">PNG</option><option value="webp">WebP</option></select></div>
+    <div><label>Quality (%)</label><input type="number" id="img-q" value="90" min="10" max="100" /></div>
+  </div>
+  <label><input type="checkbox" id="img-lock" checked style="width:auto" /> Lock aspect ratio</label>
+  <button class="btn" onclick="resizeImage()">Resize & convert</button>
+  <p id="img-info" style="color:var(--muted);font-size:13px"></p>
+  <img id="img-preview" alt="preview" />
+  <a id="img-download" class="btn" style="display:none">↓ Download</a>
+</div>""",
+"palette-generator": """
+<div class="panel">
+  <label>Base color (hex)</label>
+  <input type="text" id="pal-in" value="#ff7000" oninput="genPalette()" placeholder="#ff7000" />
+  <div id="pal-err" class="error"></div>
+  <div id="pal-out" class="pal-row"></div>
+</div>""",
 }
+
 
 TOOL_DESC = {
     "percentage-calculator": "Free online percentage calculator: find X% of Y, what percent X is of Y, and percentage increase or decrease.",
@@ -311,6 +515,24 @@ TOOL_DESC = {
     "random-number-generator": "Generate random numbers in any range, with optional unique values.",
     "dice-roller": "Roll up to 20 dice with 4 to 100 sides. Great for board games and D&D.",
     "coin-flipper": "Flip a coin online. One flip or hundreds, with heads/tails counts.",
+    "discount-calculator": "Calculate sale price, savings and final price with optional sales tax.",
+    "tip-calculator": "Calculate tip amount, total bill and per-person split for any tip percentage.",
+    "compound-interest-calculator": "Calculate compound interest with contributions, yearly to daily compounding.",
+    "gst-vat-calculator": "Add or remove GST, VAT or sales tax from any amount instantly.",
+    "date-difference-calculator": "Find the exact duration between two dates in days, weeks, months and years.",
+    "find-and-replace": "Find and replace text online with case sensitivity and regular expression support.",
+    "text-sorter": "Sort text lines alphabetically, by length, or shuffle them randomly.",
+    "lorem-ipsum-generator": "Generate Lorem Ipsum placeholder text by paragraphs and sentences.",
+    "word-frequency-counter": "Analyze word frequency in any text with a visual bar chart of the top words.",
+    "hash-generator": "Generate SHA-1, SHA-256 and SHA-512 hashes of any text instantly in your browser.",
+    "jwt-decoder": "Decode JWT tokens to inspect the header and payload, with expiry checking.",
+    "regex-tester": "Test regular expressions online with live match highlighting and capture groups.",
+    "csv-to-json-converter": "Convert CSV or TSV data to JSON. Quote-aware parsing, runs entirely in your browser.",
+    "html-encoder-decoder": "Escape text to HTML entities or decode HTML back to plain text.",
+    "number-base-converter": "Convert numbers between binary, octal, decimal and hexadecimal.",
+    "roman-numeral-converter": "Convert Roman numerals to numbers and numbers to Roman numerals.",
+    "image-resizer": "Resize and convert images in your browser — nothing is uploaded to any server.",
+    "palette-generator": "Generate tints and shades from any hex color. Click a swatch to copy.",
 }
 
 def tool_page(slug, name, cat, desc):

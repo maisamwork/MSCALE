@@ -117,3 +117,11 @@ footer.site .container { padding: 26px 20px; color: var(--muted); font-size: 13p
   .hero h1 { font-size: 28px; }
   nav.main { display: none; }
 }
+.pal-row { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+.pal-swatch { flex: 1; min-width: 72px; height: 84px; border-radius: 8px; display: flex; align-items: flex-end; justify-content: center; cursor: pointer; border: 1px solid var(--border); }
+.pal-swatch span { font-size: 11px; padding: 4px; color: rgba(255,255,255,.9); text-shadow: 0 1px 3px rgba(0,0,0,.5); }
+.wf-row { display: flex; align-items: center; gap: 10px; margin: 5px 0; }
+.wf-word { width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.wf-bar { height: 10px; background: var(--accent); border-radius: 5px; min-width: 2px; }
+mark { background: var(--accent); color: #fff; border-radius: 3px; padding: 0 2px; }
+#img-preview { max-width: 100%; border-radius: 8px; border: 1px solid var(--border); margin-top: 12px; display: none; }

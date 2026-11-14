@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Compound Interest Calculator — Free Online Tool | MSCALE Tools</title>
+<meta name="description" content="Calculate compound interest with contributions, yearly to daily compounding."/>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="Compound Interest Calculator — Free Online Tool | MSCALE Tools"/>
+<meta property="og:description" content="Calculate compound interest with contributions, yearly to daily compounding."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
+<link rel="stylesheet" href="assets/style.css"/>
+<script src="assets/live-tools.js" defer></script>
+<script src="assets/app.js" defer></script>
+<script src="assets/tools.js" defer></script>
+</head>
+<body>
+<header class="site"><div class="container">
+  <a class="brand" href="index.html">MSCALE<span>Tools</span></a>
+  <nav class="main"><a href="calculators.html">Calculators</a><a href="text-tools.html">Text Tools</a><a href="developer-tools.html">Developer Tools</a><a href="converters.html">Converters</a><a href="security.html">Security Tools</a><a href="color-tools.html">Color Tools</a><a href="random-generators.html">Random Generators</a><a href="pdf-tools.html">PDF Tools</a><a href="image-tools.html">Image Tools</a><a href="seo-web-tools.html">SEO & Web Tools</a><a href="date-time-tools.html">Date & Time Tools</a><a href="finance-tools.html">Finance & Business</a><a href="index.html#all">All tools</a></nav>
+</div></header>
+<main class="container"><div class="tool-wrap">
+<div class="tool-head"><h1>Compound Interest Calculator</h1><p>Calculate compound interest with contributions, yearly to daily compounding.</p></div>
+
+<div class="panel">
+  <div class="row">
+    <div><label>Initial amount</label><input type="number" id="ci-p" placeholder="1000" /></div>
+    <div><label>Annual rate (%)</label><input type="number" id="ci-r" placeholder="7" step="0.1" /></div>
+    <div><label>Years</label><input type="number" id="ci-t" placeholder="10" /></div>
+  </div>
+  <div class="row">
+    <div><label>Compounds per year</label><select id="ci-n"><option value="1">Yearly</option><option value="4">Quarterly</option><option value="12" selected>Monthly</option><option value="365">Daily</option></select></div>
+    <div><label>Monthly contribution — optional</label><input type="number" id="ci-monthly" placeholder="0" /></div>
+  </div>
+  <button class="btn" onclick="compoundCalc()">Calculate</button>
+  <div id="ci-out" class="result">Enter your investment details.</div>
+</div>
+<h2 class='section'>Related tools</h2><div class='grid'><a class='card' href='gst-vat-calculator.html'><h3>GST / VAT Calculator</h3></a></div>
+</div></main>
+<footer class="site"><div class="container">
+  <span>MSCALE Tools — free, fast, private. Everything runs in your browser.</span>
+  <span><a href="https://github.com/maisamwork/MSCALE">GitHub</a></span>
+</div></footer>
+</body>
+</html>
