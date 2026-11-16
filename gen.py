@@ -30,6 +30,8 @@ ICONS = {
     "book-open": '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
     "shield-check": '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',    "menu": '<line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>',
     "arrow-right": '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+    "sun": '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+    "moon": '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
 }
 
 INTROS = {
@@ -160,6 +162,7 @@ def header(title, desc, depth=""):
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="MSCALE Tools"/>
 <meta name="twitter:card" content="summary"/>
+<script>document.documentElement.setAttribute("data-theme", (function(){{try{{return localStorage.getItem("mscale-theme")||"dark"}}catch(e){{return "dark"}}}})());</script>
 <link rel="stylesheet" href="{depth}assets/style.css"/>
 <script src="{depth}assets/live-tools.js" defer></script>
 <script src="{depth}assets/app.js" defer></script>
@@ -168,8 +171,11 @@ def header(title, desc, depth=""):
 <body>
 <header class="site"><div class="container">
   <a class="brand" href="{depth}index.html"><span class="brand-tile">{svg_icon("wrench")}</span>MSCALE<span>Tools</span></a>
-  <nav class="main" id="main-nav">{nav}<a href="{depth}blog/">Blog</a><a class="nav-cta" href="{depth}index.html#all">All tools</a></nav>
-  <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">{svg_icon("menu")}</button>
+  <nav class="main" id="main-nav">{nav}<a href="{depth}blog/">Blog</a><a class="nav-cta" href="{depth}tools/">All tools</a></nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme">{svg_icon("sun", "ic-sun")}{svg_icon("moon", "ic-moon")}</button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">{svg_icon("menu")}</button>
+  </div>
 </div></header>
 <main class="container">"""
 
@@ -204,7 +210,7 @@ def footer(depth):
       {pop}
       <h4 class="gap-top">Resources</h4>
       <a href="{depth}blog/">Blog</a>
-      <a href="{depth}index.html#all">All live tools</a>
+      <a href="{depth}tools/">All tools</a>
     </div>
   </div>
   <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser \u2014 your data never leaves your device.</p>
@@ -732,6 +738,62 @@ def blog_post_html(post):
     )
 
 
+def tools_index_html(catalog):
+    live_names = {s: (n, d) for s, n, _, d in LIVE}
+    cat_name = {slug: v[0] for slug, v in CAT_PAGES.items()}
+    live_per, cat_per = {}, {}
+    for s, n, c, d in LIVE:
+        cs = CAT_SLUG_BY_NAME.get(c, "calculators")
+        live_per[cs] = live_per.get(cs, 0) + 1
+    for item in catalog:
+        cat_per[item["c"]] = cat_per.get(item["c"], 0) + 1
+    total_live = len(LIVE)
+    total_catalog = len(catalog)
+    side = f"""<button class="side-item active" data-cat="all"><span>Complete catalog</span><em>{total_live + total_catalog}</em></button>"""
+    for slug in CAT_PAGES:
+        n = live_per.get(slug, 0) + cat_per.get(slug, 0)
+        side += (f"<button class='side-item' data-cat='{slug}'><span class='side-dot' style='background:{hue_of(slug)}'></span>"
+                 f"<span>{cat_name[slug]}</span><em>{n}</em></button>")
+    side += """<div class="side-note">Live tools work right now. Catalog tools are coming soon \u2014 new ones ship weekly.</div>"""
+    return (
+        header(f"Explore {total_live + total_catalog}+ Free Online Tools | MSCALE Tools",
+               f"Search and filter the full MSCALE toolbox: {total_live} live tools and {total_catalog} more coming soon. 100% private, no sign-up, everything runs in your browser.", "../")
+        + f"""<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html">{svg_icon("wrench", "crumb-ic")}Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>All tools</span>
+</nav>
+<div class="tools-head">
+  <h1>Explore {total_live + total_catalog}+ free tools</h1>
+  <p>Search and filter the most complete browser-based toolbox. 100% private, no sign-up, instant results.</p>
+</div>
+<div class="tools-stats">
+  <span class="stat-chip"><b>{total_live}</b> tools live</span>
+  <span class="stat-chip"><b>{len(CAT_PAGES)}</b> categories</span>
+  <span class="stat-chip"><b>100%</b> free</span>
+  <span class="stat-chip">No sign-up</span>
+  <span class="stat-chip">Runs in your browser</span>
+</div>
+<div class="tools-layout">
+  <aside class="tools-side" id="tools-side">{side}</aside>
+  <div class="tools-main">
+    <div class="tools-controls">
+      <div class="search-wrap">{svg_icon("search", "search-ic")}<input id="tools-search" placeholder="Search tools (e.g. 'word count', 'password')" /></div>
+      <select id="tools-sort" aria-label="Sort tools">
+        <option value="pop">Popular</option>
+        <option value="az">A to Z</option>
+        <option value="za">Z to A</option>
+      </select>
+    </div>
+    <p id="tools-count" class="tools-count"></p>
+    <div class="grid" id="tools-grid"></div>
+    <div style="text-align:center;margin-top:22px"><button id="tools-more" class="btn ghost" style="display:none">Load more tools</button></div>
+  </div>
+</div>"""
+        + footer("../")
+    )
+
+
 def blog_index_html():
     cards = "".join(
         f"""<a class="card blog-card" href="{p['slug']}.html">
@@ -954,6 +1016,8 @@ def main():
 </body>
 </html>""")
     os.makedirs(f"{ROOT}/blog", exist_ok=True)
+    with open(f"{ROOT}/tools/index.html", "w") as f:
+        f.write(tools_index_html(catalog))
     with open(f"{ROOT}/blog/index.html", "w") as f:
         f.write(blog_index_html())
     for post in BLOG_POSTS:
