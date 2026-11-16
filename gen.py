@@ -123,20 +123,28 @@ LIVE = [
     ("base64-image-encoder", "Base64 Image Encoder", "Developer Tools", "Convert images to data URIs with HTML and CSS snippets"),
     ("stopwatch-online", "Online Stopwatch", "Date & Time Tools", "Precise stopwatch with laps, splits and pause/resume"),
     ("countdown-timer", "Countdown Timer", "Date & Time Tools", "Live countdown to any date with progress bar"),
+    ("password-strength-checker", "Password Strength Checker", "Security Tools", "Entropy, crack-time estimate and a fix-it checklist for any password"),
+    ("cron-expression-explainer", "Cron Expression Explainer", "Developer Tools", "Translate cron schedules to plain English and see the next run times"),
+    ("css-gradient-generator", "CSS Gradient Generator", "Color Tools", "Design linear gradients live with angle and colour control, copy-ready CSS"),
+    ("box-shadow-generator", "Box Shadow Generator", "Color Tools", "Tune offset, blur, spread and colour with a live preview and copy-ready CSS"),
+    ("text-to-speech", "Text to Speech", "Text Tools", "Read any text aloud with your device's voices, speed and pitch control"),
+    ("typing-speed-test", "Typing Speed Test", "Text Tools", "Measure your words per minute and accuracy with a fresh word stream"),
+    ("pomodoro-timer", "Pomodoro Timer", "Date & Time Tools", "Automatic 25/5 focus cycles with long breaks and a session counter"),
+    ("url-parser", "URL Parser", "Developer Tools", "Break any URL into scheme, host, path, params and fragment"),
 ]
 
 CAT_PAGES = {
     "calculators": ("Calculators", "\U0001F9EE", ["percentage-calculator", "bmi-calculator", "age-calculator", "loan-emi-calculator", "discount-calculator", "tip-calculator"], "Calculators"),
-    "text-tools": ("Text Tools", "\U0001F4DD", ["word-counter", "case-converter", "remove-duplicate-lines", "reverse-text", "find-and-replace", "text-sorter", "lorem-ipsum-generator", "word-frequency-counter", "text-diff-checker"], "Text Tools"),
-    "developer-tools": ("Developer Tools", "\U0001F4BB", ["json-formatter", "base64-encoder-decoder", "url-encoder-decoder", "uuid-generator", "hash-generator", "jwt-decoder", "regex-tester", "csv-to-json-converter", "html-encoder-decoder", "json-to-csv-converter", "qr-code-generator", "markdown-previewer", "base64-image-encoder"], "Developer Tools"),
+    "text-tools": ("Text Tools", "\U0001F4DD", ["word-counter", "case-converter", "remove-duplicate-lines", "reverse-text", "find-and-replace", "text-sorter", "lorem-ipsum-generator", "word-frequency-counter", "text-diff-checker", "text-to-speech", "typing-speed-test"], "Text Tools"),
+    "developer-tools": ("Developer Tools", "\U0001F4BB", ["json-formatter", "base64-encoder-decoder", "url-encoder-decoder", "uuid-generator", "hash-generator", "jwt-decoder", "regex-tester", "csv-to-json-converter", "html-encoder-decoder", "json-to-csv-converter", "qr-code-generator", "markdown-previewer", "base64-image-encoder", "cron-expression-explainer", "url-parser"], "Developer Tools"),
     "converters": ("Converters", "\U0001F504", ["unit-converter", "timestamp-converter", "number-base-converter", "roman-numeral-converter"], "Converters (Units & Numbers)"),
-    "security": ("Security Tools", "\U0001F512", ["password-generator"], "Security & Encoding"),
-    "color-tools": ("Color Tools", "\U0001F3A8", ["color-converter", "palette-generator"], "Color & Design Tools"),
+    "security": ("Security Tools", "\U0001F512", ["password-generator", "password-strength-checker"], "Security & Encoding"),
+    "color-tools": ("Color Tools", "\U0001F3A8", ["color-converter", "palette-generator", "css-gradient-generator", "box-shadow-generator"], "Color & Design Tools"),
     "random-generators": ("Random Generators", "\U0001F3B2", ["random-number-generator", "dice-roller", "coin-flipper"], "Random & Fun Generators"),
     "pdf-tools": ("PDF Tools", "\U0001F4C4", ["pdf-merge", "pdf-split"], "PDF Tools"),
     "image-tools": ("Image Tools", "\U0001F5BC\uFE0F", ["image-resizer", "image-compressor", "image-cropper", "image-watermarker", "favicon-generator"], "Image Tools"),
     "seo-web-tools": ("SEO & Web Tools", "\U0001F4C8", ["meta-tag-generator", "keyword-density-checker", "xml-sitemap-generator", "slug-generator"], "SEO & Web Tools"),
-    "date-time-tools": ("Date & Time Tools", "\U0001F550", ["date-difference-calculator", "stopwatch-online", "countdown-timer"], "Date & Time Tools"),
+    "date-time-tools": ("Date & Time Tools", "\U0001F550", ["date-difference-calculator", "stopwatch-online", "countdown-timer", "pomodoro-timer"], "Date & Time Tools"),
     "finance-tools": ("Finance & Business", "\U0001F4B0", ["compound-interest-calculator", "gst-vat-calculator", "invoice-generator"], "Finance & Business"),
 }
 
@@ -239,6 +247,93 @@ def footer(depth):
 
 TOOL_BODIES = {
 
+"password-strength-checker": """
+<div class="panel">
+  <label>Password to analyse</label>
+  <input type="text" id="pw-in" oninput="pwCheck()" placeholder="Type a test password \u2014 nothing is sent anywhere" autocomplete="off">
+  <div class="pw-meter"><div id="pw-fill"></div></div>
+  <div id="pw-stats" class="stat-row"></div>
+  <div id="pw-out" class="result"></div>
+</div>""",
+"cron-expression-explainer": """
+<div class="panel">
+  <label>Cron expression (5 fields)</label>
+  <input id="cr-in" oninput="cronExplain()" placeholder="*/15 9-17 * * 1-5" autocomplete="off">
+  <div id="cr-out" class="result"></div>
+  <label>Next 5 runs (your local time)</label>
+  <div id="cr-next" class="result"></div>
+</div>""",
+"css-gradient-generator": """
+<div class="panel">
+  <div class="row">
+    <div><label>Start colour</label><input type="color" id="gr-c1" value="#ff7000" oninput="grDraw()"></div>
+    <div><label>End colour</label><input type="color" id="gr-c2" value="#7c3aed" oninput="grDraw()"></div>
+    <div><label>Angle: <span id="gr-angv">135</span>\u00b0</label><input type="range" id="gr-ang" min="0" max="360" value="135" oninput="grDraw()"></div>
+  </div>
+  <div id="gr-prev" class="gr-prev"></div>
+  <label>CSS</label>
+  <textarea id="gr-out" readonly style="min-height:80px"></textarea>
+  <button class="btn ghost" onclick="copyText('gr-out')">Copy CSS</button>
+</div>""",
+"box-shadow-generator": """
+<div class="panel">
+  <div class="row">
+    <div><label>X: <span id="bs-xv">0</span>px</label><input type="range" id="bs-x" min="-40" max="40" value="0" oninput="bsDraw()"></div>
+    <div><label>Y: <span id="bs-yv">10</span>px</label><input type="range" id="bs-y" min="-40" max="40" value="10" oninput="bsDraw()"></div>
+  </div>
+  <div class="row">
+    <div><label>Blur: <span id="bs-blv">30</span>px</label><input type="range" id="bs-bl" min="0" max="100" value="30" oninput="bsDraw()"></div>
+    <div><label>Spread: <span id="bs-spv">-8</span>px</label><input type="range" id="bs-sp" min="-30" max="40" value="-8" oninput="bsDraw()"></div>
+  </div>
+  <div class="row">
+    <div><label>Colour</label><input type="color" id="bs-color" value="#000000" oninput="bsDraw()"></div>
+    <div><label>Opacity: <span id="bs-opv">18</span>%</label><input type="range" id="bs-op" min="0" max="100" value="18" oninput="bsDraw()"></div>
+    <div><label>Inset</label><input type="checkbox" id="bs-inset" onchange="bsDraw()"></div>
+  </div>
+  <div class="bs-prev"><div id="bs-box"></div></div>
+  <textarea id="bs-out" readonly style="min-height:80px"></textarea>
+  <button class="btn ghost" onclick="copyText('bs-out')">Copy CSS</button>
+</div>""",
+"text-to-speech": """
+<div class="panel">
+  <label>Text to read aloud</label>
+  <textarea id="tts-in" placeholder="Type or paste anything\u2026"></textarea>
+  <div class="row">
+    <div><label>Voice</label><select id="tts-voice"></select></div>
+    <div><label>Speed: <span id="tts-ratev">1</span>\u00d7</label><input type="range" id="tts-rate" min="0.5" max="2" step="0.1" value="1" oninput="document.getElementById('tts-ratev').textContent=this.value"></div>
+    <div><label>Pitch</label><input type="range" id="tts-pitch" min="0.5" max="2" step="0.1" value="1"></div>
+  </div>
+  <div class="row">
+    <button class="btn" onclick="ttsPlay()">Speak</button>
+    <button class="btn ghost" onclick="ttsStop()">Stop</button>
+  </div>
+  <div id="tts-msg" class="result"></div>
+</div>""",
+"typing-speed-test": """
+<div class="panel">
+  <div id="ty-words" class="ty-words"></div>
+  <input id="ty-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Click here and start typing\u2026" oninput="tyInput()">
+  <div id="ty-stats" class="stat-row"></div>
+  <button class="btn ghost" onclick="tyNew()">Restart</button>
+</div>""",
+"pomodoro-timer": """
+<div class="panel">
+  <div id="po-mode" class="tool-note" style="text-align:center">Focus session</div>
+  <div id="po-display" class="big-time">25:00</div>
+  <div class="row">
+    <button class="btn" id="po-start" onclick="poToggle()">Start</button>
+    <button class="btn ghost" onclick="poSkip()">Skip</button>
+    <button class="btn ghost" onclick="poReset()">Reset</button>
+  </div>
+  <div id="po-count" class="result">Completed focus sessions: 0</div>
+</div>""",
+"url-parser": """
+<div class="panel">
+  <label>URL to parse</label>
+  <input id="up-in" oninput="urlParse()" placeholder="https://user:pass@sub.example.com:8080/path/page?q=hello&lang=en#section" autocomplete="off">
+  <div id="up-out" class="result" style="overflow:auto"></div>
+</div>""",
+
 "qr-code-generator": """
 <div class="panel">
   <label>Text or URL to encode</label>
@@ -339,8 +434,8 @@ TOOL_BODIES = {
   <label>Event name (optional)</label>
   <input id="cd-name" placeholder="Product launch">
   <div class="row">
-    <div><label>Date</label><input type="date" id="cd-date"></div>
-    <div><label>Time</label><input type="time" id="cd-time" value="09:00"></div>
+    <div><label>Date</label><input type="text" id="cd-date" readonly placeholder="Pick a date"></div>
+    <div><label>Time</label><input type="text" id="cd-time" readonly placeholder="Pick a time"><input type="hidden" id="cd-time-val" value="09:00"></div>
   </div>
   <button class="btn" onclick="cdStart()">Start countdown</button>
   <div id="cd-units" class="cd-units"></div>
@@ -478,8 +573,8 @@ TOOL_BODIES = {
   </div>
   <div class="row">
     <div><label>Invoice number</label><input type="text" id="inv-num" value="2025-001" oninput="invoiceRender()" /></div>
-    <div><label>Issue date</label><input type="date" id="inv-date" oninput="invoiceRender()" /></div>
-    <div><label>Due date</label><input type="date" id="inv-due" oninput="invoiceRender()" /></div>
+    <div><label>Issue date</label><input type="text" id="inv-date" readonly placeholder="Pick a date" oninput="invoiceRender()" /></div>
+    <div><label>Due date</label><input type="text" id="inv-due" readonly placeholder="Pick a date" oninput="invoiceRender()" /></div>
     <div><label>Tax %</label><input type="number" id="inv-tax" value="0" min="0" oninput="invoiceRender()" /></div>
   </div>
   <label>Line items</label>
@@ -510,7 +605,7 @@ TOOL_BODIES = {
 "age-calculator": """
 <div class="panel">
   <label>Date of birth</label>
-  <input type="date" id="age-dob" />
+  <input type="text" id="age-dob" readonly placeholder="Pick your date of birth">
   <button class="btn" onclick="ageCalc()">Calculate age</button>
   <div id="age-out" class="result">Pick your date of birth.</div>
 </div>""",
@@ -729,8 +824,8 @@ TOOL_BODIES = {
 "date-difference-calculator": """
 <div class="panel">
   <div class="row">
-    <div><label>Start date</label><input type="date" id="dd2-a" /></div>
-    <div><label>End date</label><input type="date" id="dd2-b" /></div>
+    <div><label>Start date</label><input type="text" id="dd2-a" readonly placeholder="Pick start date"></div>
+    <div><label>End date</label><input type="text" id="dd2-b" readonly placeholder="Pick end date"></div>
   </div>
   <button class="btn" onclick="dateDiff()">Calculate difference</button>
   <div id="dd2-out" class="result">Pick two dates.</div>
@@ -870,6 +965,14 @@ TOOL_BODIES = {
 
 
 TOOL_DESC = {
+    "password-strength-checker": "Check any password's real strength: entropy in bits, offline crack-time estimate and a fix-it checklist. Runs privately in your browser.",
+    "cron-expression-explainer": "Translate any 5-field cron expression into plain English and see its next five run times before it surprises you in production.",
+    "css-gradient-generator": "Design linear gradients with two colour pickers and an angle slider, live preview and copy-ready CSS output.",
+    "box-shadow-generator": "Design CSS box shadows with sliders for offset, blur, spread, colour and opacity, live preview and copy-ready code.",
+    "text-to-speech": "Read any text aloud with the voices installed on your device, with speed and pitch control. Private, free and unlimited.",
+    "typing-speed-test": "Measure your typing speed and accuracy with a fresh random word stream, character-level feedback and instant WPM scoring.",
+    "pomodoro-timer": "Run automatic 25/5 Pomodoro focus cycles with long breaks every fourth session and a completed-session counter.",
+    "url-parser": "Break any URL into scheme, host, port, path, decoded query parameters and fragment using the browser's own URL engine.",
     "qr-code-generator": "Generate QR codes for URLs, text and Wi-Fi credentials with size and error-correction control. Download as PNG, free and private.",
     "text-diff-checker": "Compare two texts line by line and see every addition and removal highlighted. Private diff checking in your browser.",
     "markdown-previewer": "Render Markdown live as you type with a clean preview and copy-ready HTML output. Free, no signup.",

@@ -607,6 +607,61 @@ html[data-theme="light"] .hero-new::before, html[data-theme="light"] .tools-head
 .lap-table { width: 100%; border-collapse: collapse; font-size: .85rem; margin-top: .8rem; }
 .lap-table th, .lap-table td { border-bottom: 1px solid var(--border); padding: .4rem .6rem; text-align: left; font-variant-numeric: tabular-nums; }
 .tool-note { font-size: .85rem; color: var(--muted); margin-top: .7rem; }
+
+/* ---------- Custom date & time pickers ---------- */
+.dt-input { cursor: pointer; }
+.dp-wrap { position: relative; }
+.dp-panel {
+  position: absolute; top: calc(100% + 6px); left: 0; z-index: 60;
+  background: var(--card); border: 1px solid var(--border2); border-radius: var(--r-md);
+  box-shadow: var(--sh-lg); padding: .7rem; width: 268px; max-width: 90vw;
+}
+.dp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; }
+.dp-title { font-weight: 700; font-size: .9rem; }
+.dp-nav {
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  border-radius: var(--r-sm); width: 28px; height: 28px; cursor: pointer; font-size: 1rem; line-height: 1;
+}
+.dp-nav:hover { border-color: var(--accent); }
+.dp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.dp-dow { font-size: .68rem; color: var(--muted); text-align: center; padding: .2rem 0; text-transform: uppercase; }
+.dp-day {
+  background: transparent; border: none; color: var(--text); border-radius: var(--r-sm);
+  height: 32px; cursor: pointer; font-size: .82rem;
+}
+.dp-day:hover { background: var(--card2); }
+.dp-today { border: 1px solid var(--border2); }
+.dp-sel { background: var(--grad); color: #fff; font-weight: 700; }
+.dp-foot { margin-top: .5rem; text-align: right; }
+.dp-clear { background: transparent; border: none; color: var(--muted); cursor: pointer; font-size: .8rem; }
+.dp-clear:hover { color: var(--err); }
+.tp-row { display: flex; gap: .5rem; }
+.tp-col { display: flex; flex-direction: column; gap: 2px; max-height: 208px; overflow-y: auto; padding-right: 2px; }
+.tp-col button {
+  background: transparent; border: none; color: var(--text); border-radius: var(--r-sm);
+  padding: .3rem .8rem; cursor: pointer; font-size: .85rem; font-variant-numeric: tabular-nums;
+}
+.tp-col button:hover { background: var(--card2); }
+.tp-col button.tp-on { background: var(--grad); color: #fff; font-weight: 700; }
+.tp-ap button { font-weight: 600; }
+
+/* ---------- Batch 12 components ---------- */
+.pw-meter { height: 10px; border-radius: var(--r-pill); background: var(--soft); overflow: hidden; margin: .8rem 0; }
+.pw-meter div { height: 100%; width: 0; transition: width .25s var(--ease), background .25s var(--ease); }
+.gr-prev { height: 130px; border-radius: var(--r-md); border: 1px solid var(--border); margin: .8rem 0; }
+.bs-prev {
+  height: 150px; border-radius: var(--r-md); border: 1px solid var(--border);
+  margin: .8rem 0; display: flex; align-items: center; justify-content: center;
+}
+.bs-box { width: 140px; height: 84px; border-radius: var(--r-md); background: var(--card2); border: 1px solid var(--border2); }
+.ty-words {
+  font-size: 1.25rem; line-height: 2; letter-spacing: .01em; margin-bottom: .8rem;
+  max-height: 7rem; overflow: hidden;
+}
+.ty-w { margin-right: .55rem; color: var(--muted); }
+.ty-act { color: var(--text); background: var(--card2); border-radius: 4px; padding: 0 .15rem; }
+.ty-done { color: var(--ok); }
+.up-param { padding: .3rem 0; border-bottom: 1px dashed var(--border); font-size: .9rem; word-break: break-all; }
 </style>
 </head>
 <body>

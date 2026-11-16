@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>URL Parser — Free Online Tool | MSCALE Tools</title>
+<meta name="description" content="Break any URL into scheme, host, port, path, decoded query parameters and fragment using the browser's own URL engine."/>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="URL Parser — Free Online Tool | MSCALE Tools"/>
+<meta property="og:description" content="Break any URL into scheme, host, port, path, decoded query parameters and fragment using the browser's own URL engine."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
+<script>document.documentElement.setAttribute("data-theme", (function(){try{return localStorage.getItem("mscale-theme")||"dark"}catch(e){return "dark"}})());</script>
+<link rel="stylesheet" href="../assets/style.css"/>
+<script src="../assets/live-tools.js" defer></script>
+<script src="../assets/app.js" defer></script>
+<script src="../assets/tools.js" defer></script>
+</head>
+<body>
+<header class="site"><div class="container">
+  <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+  <nav class="main" id="main-nav"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text</a><a href="../developer-tools/">Developer</a><a href="../converters/">Converters</a><a href="../pdf-tools/">PDF</a><a href="../image-tools/">Image</a><a href="../blog/">Blog</a><a class="nav-cta" href="../tools/">All tools</a></nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme"><svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  </div>
+</div></header>
+<main class="container"><div class="tool-wrap">
+<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html"><svg class="crumb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="../developer-tools/">Developer Tools</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>URL Parser</span>
+</nav>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "URL Parser", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Break any URL into scheme, host, port, path, decoded query parameters and fragment using the browser's own URL engine.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>URL Parser</h1></div><p>Break any URL into scheme, host, port, path, decoded query parameters and fragment using the browser's own URL engine.</p></div>
+
+<div class="panel">
+  <label>URL to parse</label>
+  <input id="up-in" oninput="urlParse()" placeholder="https://user:pass@sub.example.com:8080/path/page?q=hello&lang=en#section" autocomplete="off">
+  <div id="up-out" class="result" style="overflow:auto"></div>
+</div>
+<div class="article">
+<h2 class="section">What Is the URL Parser?</h2>
+<p>Every URL is a small structured document, and most people read it as an opaque string. A full URL can carry a scheme, credentials, a host, a port, a path, any number of query parameters and a fragment, and debugging anything that touches the web, a broken link, a misrouted API call, a tracking parameter you want gone, starts with seeing those parts separately. This parser takes any URL and lays out every component with its proper name.</p>
+<p>The tool uses the browser's own URL implementation, the same code your browser uses to navigate, which means the breakdown is authoritative rather than an approximation. Query strings are decoded and presented as individual parameters, so you can see exactly what a link is carrying: which parameters a site uses for tracking, which value a form appended, which character got mangled by an encoding bug somewhere upstream.</p>
+<p>Parsing is also the fastest way to understand URLs you are about to trust. Phishing links hide unexpected hosts behind plausible paths, redirect parameters smuggle destinations inside query values, and credentials occasionally sit in plain sight in the userinfo section. A structured view makes all of that visible in a second, which is why a parser belongs next to every developer's browser.</p>
+<h2 class="section">How to Use the URL Parser</h2>
+<p>Paste any URL into the input and the component table appears instantly, updating as you edit. Absolute URLs with a scheme give a complete breakdown; partial inputs are flagged so you know what the browser would and would not resolve. Each query parameter is listed separately with its decoded name and value, and the fragment is shown exactly as it appears after the hash.</p>
+<ol><li>Open the URL Parser page.</li><li>Copy the URL you want to inspect.</li><li>Paste it into the input box.</li><li>Read the component table: scheme, host, port, path and more.</li><li>Review the decoded query parameters one by one.</li><li>Check the fragment for in-page or app-routing targets.</li><li>Spot anything unexpected, unusual hosts, redirect parameters, embedded credentials.</li><li>Copy the exact component you need back into your work.</li></ol>
+<h2 class="section">How the URL Parser Works</h2>
+<p>The parser delegates to the browser's built-in URL constructor, which implements the living URL standard. The input is decomposed into protocol, username, password, hostname, port, pathname, search and hash, each exposed as its own property and displayed with a label. The origin, the scheme plus host plus port that browsers treat as a security boundary, is shown explicitly, because origin, not the full URL, is what scripts and APIs compare.</p>
+<p>Query parameters are parsed from the search string into pairs, URL-decoded so percent escapes and plus-signed spaces resolve to their real characters, and listed in order. That decoded view is what reveals tracking parameters, duplicated names, and values that were double-encoded somewhere upstream, none of which are obvious in the raw string.</p>
+<p>Ports resolve with their defaults made visible: a URL without an explicit port reports the scheme's default, eighty for HTTP and four hundred forty-three for HTTPS, so nothing is hidden. Malformed inputs raise a clear message instead of a silent wrong answer, because the difference between an unparseable string and a valid URL with surprising content is exactly the difference that matters when debugging.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>Auditing a marketing link</h3><p>Paste a long campaign URL and the parameter list shows the tracking parameters separated from the real destination path. Stripping them by hand is easy once you can see the path is identical without them.</p>
+<h3>Debugging an API call</h3><p>A request that returns unexpected results often carries a mangled parameter. Pasting the request URL shows the decoded values, and the double-encoded percent sequence or the space that became a plus sign is immediately visible.</p>
+<h3>Checking a suspicious link</h3><p>A link that looks like your bank but parses to an unfamiliar hostname, or one with another site's URL buried in a redirect parameter, is exposed the moment the components are laid out side by side.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Reading the display name instead of the hostname. The registered domain, not the first label, tells you who you are dealing with.</li><li>Ignoring the userinfo section. Credentials before the at-sign are legal but rare; their presence in a link you did not create is a warning sign.</li><li>Assuming query parameter order means anything. Servers may read parameters in any order; duplicates are legal and frequently a bug.</li><li>Forgetting that fragments never reach servers. Anything after the hash is client-side only, which is why analytics based on it need special handling.</li><li>Pasting URLs with surrounding whitespace or markdown. Trim the input if the parser flags it; a leading space makes the string unparseable.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Check the origin first when evaluating trust; it is the security boundary everything else hangs off.</li><li>Use the decoded parameter list to strip tracking parameters before sharing links.</li><li>When a URL misbehaves, compare the parsed components against what you intended to send, component by component.</li><li>Remember the default ports, eighty and four hundred forty-three, so an explicit odd port stands out immediately.</li><li>Pair this tool with the URL encoder and decoder when you need to modify and re-encode a component safely.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>Does the parser send my URL anywhere?</h3><p>No. Parsing uses your browser's built-in URL implementation locally, and nothing is transmitted or logged.</p>
+<h3>Why does my URL fail to parse?</h3><p>The string is missing a scheme or contains characters that make it invalid as an absolute URL. Add the https prefix or fix the syntax the error message points to.</p>
+<h3>What is the difference between hostname and origin?</h3><p>The hostname is just the domain. The origin is scheme, hostname and port together, and it is what browsers treat as the security boundary for scripts and cookies.</p>
+<h3>Why are some characters shown as percent codes?</h3><p>The component table shows values as the URL stores them; the query parameter list additionally shows decoded values so you can read the real content.</p>
+<h3>Can it parse URLs with international characters?</h3><p>Yes. Modern URLs encode non-ASCII names as punycode, and the parser shows the encoded host exactly as the browser resolves it.</p>
+<h3>Does it handle fragments used by single-page apps?</h3><p>Yes. The fragment is reported verbatim, which is exactly what client-side routers read to decide which view to render.</p>
+</div>
+<h2 class='section'>Related tools</h2><div class='grid'><a class='card' href='../tools/json-formatter.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>JSON Formatter</h3></div></a><a class='card' href='../tools/base64-encoder-decoder.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>Base64 Encode / Decode</h3></div></a><a class='card' href='../tools/url-encoder-decoder.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>URL Encoder / Decoder</h3></div></a><a class='card' href='../tools/uuid-generator.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>UUID Generator</h3></div></a></div>
+</div></main>
+<footer class="site"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads. 63 tools live, more shipping weekly.</p>
+      <a class="gh-link" href="https://github.com/maisamwork/MSCALE"><svg class="" style="color:#e6e9f0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>github.com/maisamwork/MSCALE</span></a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a>
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      <a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a>
+    </div>
+    <div>
+      <h4>Popular tools</h4>
+      <a href="../tools/percentage-calculator.html">Percentage Calculator</a><a href="../tools/word-counter.html">Word Counter</a><a href="../tools/json-formatter.html">JSON Formatter</a><a href="../tools/password-generator.html">Password Generator</a><a href="../tools/unit-converter.html">Unit Converter</a><a href="../tools/image-resizer.html">Image Resizer</a>
+      <h4 class="gap-top">Resources</h4>
+      <a href="../blog/">Blog</a>
+      <a href="../tools/">All tools</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser — your data never leaves your device.</p>
+</div></footer>
+</body>
+</html>

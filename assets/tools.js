@@ -1134,7 +1134,7 @@ function swReset() {
 let cdTarget = 0, cdTotal = 0, cdTimer = null;
 function cdStart() {
   const d = document.getElementById("cd-date").value;
-  const tm = document.getElementById("cd-time").value || "00:00";
+  const tm = document.getElementById("cd-time-val").value || "09:00";
   if (!d) { out("cd-msg", "<span class='error'>Pick a date first.</span>"); return; }
   cdTarget = new Date(d + "T" + tm).getTime();
   cdTotal = cdTarget - Date.now();
@@ -1166,4 +1166,364 @@ function cdTick() {
 (function () {
   const el = document.getElementById("wc-table");
   if (el && !el.innerHTML) wcRefTable();
+})();
+
+/* ============ Modern custom date & time pickers (replace native) ============ */
+const DP_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DP_DOW = ["S","M","T","W","T","F","S"];
+function dpISO(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function attachDatePicker(id) {
+  const inp = document.getElementById(id);
+  if (!inp || inp.dataset.dp) return;
+  inp.dataset.dp = "1"; inp.readOnly = true; inp.classList.add("dt-input");
+  inp.placeholder = "Pick a date"; inp.setAttribute("autocomplete", "off");
+  const wrap = document.createElement("div"); wrap.className = "dp-wrap";
+  inp.parentNode.insertBefore(wrap, inp); wrap.appendChild(inp);
+  const panel = document.createElement("div"); panel.className = "dp-panel"; panel.style.display = "none";
+  wrap.appendChild(panel);
+  let view = new Date();
+  function render() {
+    const y = view.getFullYear(), m = view.getMonth();
+    const startDow = new Date(y, m, 1).getDay();
+    const days = new Date(y, m + 1, 0).getDate();
+    const today = dpISO(new Date());
+    let h = '<div class="dp-head"><button type="button" class="dp-nav" data-n="-1">&lsaquo;</button><span class="dp-title">' + DP_MONTHS[m] + " " + y + '</span><button type="button" class="dp-nav" data-n="1">&rsaquo;</button></div><div class="dp-grid">';
+    h += DP_DOW.map((d) => '<span class="dp-dow">' + d + "</span>").join("");
+    for (let i = 0; i < startDow; i++) h += "<span></span>";
+    for (let d = 1; d <= days; d++) {
+      const iso = y + "-" + String(m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+      const cls = "dp-day" + (inp.value === iso ? " dp-sel" : "") + (iso === today ? " dp-today" : "");
+      h += '<button type="button" class="' + cls + '" data-d="' + d + '">' + d + "</button>";
+    }
+    panel.innerHTML = h + '</div><div class="dp-foot"><button type="button" class="dp-clear">Clear</button></div>';
+  }
+  inp.addEventListener("click", () => {
+    if (inp.value) { const p = inp.value.split("-"); view = new Date(+p[0], +p[1] - 1, 1); }
+    render();
+    panel.style.display = panel.style.display === "none" ? "block" : "none";
+  });
+  panel.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    const fire = () => { inp.dispatchEvent(new Event("input")); inp.dispatchEvent(new Event("change")); };
+    if (b.classList.contains("dp-nav")) { view = new Date(view.getFullYear(), view.getMonth() + +b.dataset.n, 1); render(); }
+    else if (b.classList.contains("dp-clear")) { inp.value = ""; render(); panel.style.display = "none"; fire(); }
+    else if (b.classList.contains("dp-day")) { inp.value = dpISO(new Date(view.getFullYear(), view.getMonth(), +b.dataset.d)); render(); panel.style.display = "none"; fire(); }
+  });
+  document.addEventListener("click", (e) => { if (!wrap.contains(e.target)) panel.style.display = "none"; });
+  render();
+}
+function attachTimePicker(dispId, hiddenId, def) {
+  const inp = document.getElementById(dispId), hid = document.getElementById(hiddenId);
+  if (!inp || !hid || inp.dataset.tp) return;
+  inp.dataset.tp = "1"; inp.readOnly = true; inp.classList.add("dt-input");
+  inp.placeholder = "Pick a time"; inp.setAttribute("autocomplete", "off");
+  const wrap = document.createElement("div"); wrap.className = "dp-wrap";
+  inp.parentNode.insertBefore(wrap, inp); wrap.appendChild(inp);
+  const panel = document.createElement("div"); panel.className = "dp-panel"; panel.style.display = "none";
+  wrap.appendChild(panel);
+  let h12 = ((+def.split(":")[0] + 11) % 12) + 1, ap = +def.split(":")[0] >= 12 ? "PM" : "AM", m = +def.split(":")[1];
+  let colH = "", colM = "";
+  for (let i = 1; i <= 12; i++) colH += '<button type="button" data-h="' + i + '">' + String(i).padStart(2, "0") + "</button>";
+  for (let i = 0; i < 60; i++) colM += '<button type="button" data-m="' + i + '">' + String(i).padStart(2, "0") + "</button>";
+  panel.innerHTML = '<div class="tp-row"><div class="tp-col">' + colH + '</div><div class="tp-col">' + colM + '</div><div class="tp-col tp-ap"><button type="button" data-ap="AM">AM</button><button type="button" data-ap="PM">PM</button></div></div>';
+  function sync() {
+    const h = (h12 % 12) + (ap === "PM" ? 12 : 0);
+    inp.value = String(h12).padStart(2, "0") + ":" + String(m).padStart(2, "0") + " " + ap;
+    hid.value = String(h).padStart(2, "0") + ":" + String(m).padStart(2, "0");
+    panel.querySelectorAll("[data-h]").forEach((b) => b.classList.toggle("tp-on", +b.dataset.h === h12));
+    panel.querySelectorAll("[data-m]").forEach((b) => b.classList.toggle("tp-on", +b.dataset.m === m));
+    panel.querySelectorAll("[data-ap]").forEach((b) => b.classList.toggle("tp-on", b.dataset.ap === ap));
+  }
+  inp.addEventListener("click", () => { panel.style.display = panel.style.display === "none" ? "block" : "none"; });
+  panel.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.h !== undefined && b.dataset.h !== "") h12 = +b.dataset.h;
+    else if (b.dataset.m !== undefined && b.dataset.m !== "") { m = +b.dataset.m; panel.style.display = "none"; }
+    else if (b.dataset.ap) { ap = b.dataset.ap; panel.style.display = "none"; }
+    sync();
+  });
+  document.addEventListener("click", (e) => { if (!wrap.contains(e.target)) panel.style.display = "none"; });
+  sync();
+}
+function initPickers() {
+  ["cd-date", "inv-date", "inv-due", "age-dob", "dd2-a", "dd2-b"].forEach(attachDatePicker);
+  attachTimePicker("cd-time", "cd-time-val", "09:00");
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initPickers);
+else initPickers();
+
+/* ===================== Batch 12: advanced tools ===================== */
+
+/* ---- Password Strength Checker ---- */
+const PW_COMMON = ["password", "123456", "qwerty", "letmein", "admin", "welcome", "iloveyou", "monkey", "dragon", "football", "abc123", "111111", "summer", "winter"];
+function pwSecFmt(sec) {
+  if (sec < 1) return "instantly";
+  const mins = sec / 60, h = mins / 60, d = h / 24, y = d / 365;
+  if (y > 1e9) return "billions of years";
+  if (y > 1000) return Math.round(y).toLocaleString() + " years";
+  if (y > 1) return Math.round(y) + " years";
+  if (d > 1) return Math.round(d) + " days";
+  if (h > 1) return Math.round(h) + " hours";
+  if (mins > 1) return Math.round(mins) + " minutes";
+  return Math.round(sec) + " seconds";
+}
+function pwCheck() {
+  const pw = document.getElementById("pw-in").value;
+  let classes = 0;
+  if (/[a-z]/.test(pw)) classes++;
+  if (/[A-Z]/.test(pw)) classes++;
+  if (/[0-9]/.test(pw)) classes++;
+  if (/[^A-Za-z0-9]/.test(pw)) classes++;
+  const pool = { 0: 0, 1: 26, 2: 52, 3: 62, 4: 95 }[classes] || 0;
+  const bits = pw ? Math.round(pw.length * Math.log2(pool || 2)) : 0;
+  const sec = bits ? Math.pow(2, bits - 1) / 1e10 : 0;
+  const lower = pw.toLowerCase();
+  const issues = [];
+  if (pw.length < 12) issues.push("Shorter than 12 characters \u2014 length is the cheapest entropy.");
+  if (!/[A-Z]/.test(pw)) issues.push("No uppercase letters.");
+  if (!/[0-9]/.test(pw)) issues.push("No digits.");
+  if (!/[^A-Za-z0-9]/.test(pw)) issues.push("No symbols.");
+  if (/(.)\1{2,}/.test(pw)) issues.push("Contains repeated characters.");
+  if (/(012|123|234|345|456|567|678|789|abc|bcd|cde|def|qwer|asdf)/i.test(pw)) issues.push("Contains a sequence or keyboard walk.");
+  if (PW_COMMON.some((c) => lower.includes(c))) issues.push("Contains a commonly leaked word.");
+  const score = Math.max(0, Math.min(100, bits * 1.4 - issues.length * 8));
+  const fill = document.getElementById("pw-fill");
+  fill.style.width = score + "%";
+  fill.style.background = score < 40 ? "var(--err)" : score < 70 ? "#fbbf24" : "var(--ok)";
+  document.getElementById("pw-stats").innerHTML =
+    `<div class="stat"><b>${bits}</b><span>Entropy (bits)</span></div>
+     <div class="stat"><b>${pool}</b><span>Charset pool</span></div>
+     <div class="stat"><b>${pwSecFmt(sec)}</b><span>Offline crack time</span></div>
+     <div class="stat"><b>${pw.length}</b><span>Length</span></div>`;
+  document.getElementById("pw-out").innerHTML = issues.length
+    ? "<b>To improve:</b><ul>" + issues.map((i) => "<li>" + escHtml(i) + "</li>").join("") + "</ul>"
+    : (pw ? "<b>Excellent.</b> No structural weaknesses detected \u2014 pair it with two-factor authentication." : "");
+}
+
+/* ---- Cron Expression Explainer ---- */
+const CRON_DOW = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
+const CRON_MON = { jan: 1, feb: 2, mar: 3, apr: 4, may: 5, jun: 6, jul: 7, aug: 8, sep: 9, oct: 10, nov: 11, dec: 12 };
+const CRON_DOW_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const CRON_MON_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+function cronParseField(f, min, max, nameMap) {
+  const set = new Set();
+  for (const part of f.split(",")) {
+    let body = part, step = 1;
+    if (part.includes("/")) { const [a, b] = part.split("/"); body = a; step = parseInt(b, 10); }
+    let lo, hi;
+    const norm = (x) => { const xl = x.trim().toLowerCase(); return nameMap && nameMap[xl] !== undefined ? nameMap[xl] : parseInt(x, 10); };
+    if (body === "*") { lo = min; hi = max; }
+    else if (body.includes("-")) { const [l, r] = body.split("-"); lo = norm(l); hi = norm(r); }
+    else { lo = norm(body); hi = part.includes("/") ? max : lo; }
+    if (isNaN(lo) || isNaN(hi) || isNaN(step) || step < 1 || lo < min || hi > max || lo > hi) throw new Error(part);
+    for (let i = lo; i <= hi; i += step) set.add(i);
+  }
+  return set;
+}
+function cronSetLabel(set, min, max, names) {
+  if (set.size === max - min + 1) return "every " + names.unit;
+  const arr = [...set].sort((a, b) => a - b);
+  const list = arr.slice(0, 10).map((v) => names.fmt ? names.fmt(v) : v).join(", ");
+  return (names.prefix || "") + list + (arr.length > 10 ? " \u2026 (" + arr.length + " values)" : "");
+}
+function cronExplain() {
+  const v = document.getElementById("cr-in").value.trim();
+  const parts = v.split(/\s+/);
+  const el = document.getElementById("cr-out"), nextEl = document.getElementById("cr-next");
+  nextEl.innerHTML = "";
+  if (!v) { el.innerHTML = ""; return; }
+  if (parts.length !== 5) { el.innerHTML = "<span class='error'>Enter exactly 5 fields: minute, hour, day-of-month, month, day-of-week.</span>"; return; }
+  try {
+    const M = cronParseField(parts[0], 0, 59);
+    const H = cronParseField(parts[1], 0, 23);
+    const DOM = cronParseField(parts[2], 1, 31);
+    const MON = cronParseField(parts[3], 1, 12, CRON_MON);
+    const DOW = cronParseField(parts[4], 0, 6, CRON_DOW);
+    const rows = [
+      ["Minute", cronSetLabel(M, 0, 59, { unit: "minute" })],
+      ["Hour", cronSetLabel(H, 0, 23, { unit: "hour" })],
+      ["Day of month", cronSetLabel(DOM, 1, 31, { unit: "day", prefix: "day " })],
+      ["Month", cronSetLabel(MON, 1, 12, { unit: "month", fmt: (v) => CRON_MON_NAMES[v - 1] })],
+      ["Day of week", cronSetLabel(DOW, 0, 6, { unit: "day of week", fmt: (v) => CRON_DOW_NAMES[v] })],
+    ];
+    if (parts[2] !== "*" && parts[4] !== "*") rows.push(["Note", "Both day fields are restricted \u2014 the job runs when EITHER matches (standard cron OR rule)."]);
+    el.innerHTML = `<table class="wc-table"><tbody>` + rows.map(([k, val]) => `<tr><th>${k}</th><td>${escHtml(val)}</td></tr>`).join("") + `</tbody></table>`;
+    const domR = parts[2] !== "*", dowR = parts[4] !== "*";
+    const d = new Date();
+    d.setSeconds(0, 0); d.setMinutes(d.getMinutes() + 1);
+    const runs = [];
+    for (let i = 0; i < 366 * 24 * 60 && runs.length < 5; i++) {
+      const domOk = DOM.has(d.getDate()), dowOk = DOW.has(d.getDay());
+      const dayOk = domR && dowR ? (domOk || dowOk) : (domOk && dowOk);
+      if (M.has(d.getMinutes()) && H.has(d.getHours()) && MON.has(d.getMonth() + 1) && dayOk) runs.push(new Date(d));
+      d.setMinutes(d.getMinutes() + 1);
+    }
+    nextEl.innerHTML = runs.length
+      ? "<ul>" + runs.map((r) => "<li>" + r.toLocaleString() + "</li>").join("") + "</ul>"
+      : "No future runs \u2014 the fields describe a moment that never occurs.";
+  } catch (err) {
+    el.innerHTML = "<span class='error'>Invalid value in field: " + escHtml(String(err.message)) + "</span>";
+  }
+}
+
+/* ---- CSS Gradient Generator ---- */
+function grDraw() {
+  const c1 = document.getElementById("gr-c1").value, c2 = document.getElementById("gr-c2").value, a = document.getElementById("gr-ang").value;
+  document.getElementById("gr-angv").textContent = a;
+  document.getElementById("gr-prev").style.background = `linear-gradient(${a}deg, ${c1}, ${c2})`;
+  document.getElementById("gr-out").value = `background: linear-gradient(${a}deg, ${c1}, ${c2});`;
+}
+
+/* ---- Box Shadow Generator ---- */
+function bsDraw() {
+  const g = (id) => document.getElementById(id);
+  const x = g("bs-x").value, y = g("bs-y").value, bl = g("bs-bl").value, sp = g("bs-sp").value;
+  g("bs-xv").textContent = x; g("bs-yv").textContent = y; g("bs-blv").textContent = bl; g("bs-spv").textContent = sp;
+  const opv = g("bs-op").value; g("bs-opv").textContent = opv;
+  const n = parseInt(g("bs-color").value.slice(1), 16);
+  const v = (g("bs-inset").checked ? "inset " : "") + `${x}px ${y}px ${bl}px ${sp}px rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${(opv / 100).toFixed(2)})`;
+  g("bs-box").style.boxShadow = v;
+  g("bs-out").value = `box-shadow: ${v};`;
+}
+
+/* ---- Text to Speech ---- */
+let ttsVoices = [];
+function ttsLoad() {
+  if (!("speechSynthesis" in window)) return;
+  ttsVoices = speechSynthesis.getVoices();
+  const sel = document.getElementById("tts-voice");
+  if (sel) sel.innerHTML = ttsVoices.map((v, i) => `<option value="${i}">${escHtml(v.name)} (${escHtml(v.lang)})</option>`).join("");
+}
+if ("speechSynthesis" in window) { ttsLoad(); speechSynthesis.onvoiceschanged = ttsLoad; }
+function ttsPlay() {
+  if (!("speechSynthesis" in window)) { out("tts-msg", "<span class='error'>Your browser does not support speech synthesis.</span>"); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(document.getElementById("tts-in").value);
+  const v = ttsVoices[+document.getElementById("tts-voice").value];
+  if (v) u.voice = v;
+  u.rate = +document.getElementById("tts-rate").value;
+  u.pitch = +document.getElementById("tts-pitch").value;
+  speechSynthesis.speak(u);
+}
+function ttsStop() { if ("speechSynthesis" in window) speechSynthesis.cancel(); }
+
+/* ---- Typing Speed Test ---- */
+const TY_WORDS = "the of and to in is you that it he was for on are as with his they at be this have from or one had by word but not what all were we when your can said there use an each which she do how their if will up other about out many then them these so some her would make like him into time has look two more write go see number no way could people my than first water been call who oil its now find long down day did get come made may part".split(" ");
+let tyList = [], tyIdx = 0, tyStart = 0, tyDone = false, tyErrChars = 0, tyTyped = 0;
+function tyRender() {
+  document.getElementById("ty-words").innerHTML = tyList
+    .map((w, i) => `<span class="ty-w${i < tyIdx ? " ty-done" : i === tyIdx ? " ty-act" : ""}">${w}</span>`)
+    .join(" ");
+}
+function tyNew() {
+  tyList = Array.from({ length: 25 }, () => TY_WORDS[Math.floor(Math.random() * TY_WORDS.length)]);
+  tyIdx = 0; tyStart = 0; tyDone = false; tyErrChars = 0; tyTyped = 0;
+  tyRender();
+  document.getElementById("ty-in").value = "";
+  document.getElementById("ty-stats").innerHTML = "";
+}
+function tyInput() {
+  const inp = document.getElementById("ty-in");
+  if (tyDone) return;
+  if (!tyStart) tyStart = Date.now();
+  const v = inp.value;
+  if (v.endsWith(" ")) {
+    const word = v.trim();
+    tyTyped += word.length + 1;
+    if (word !== tyList[tyIdx]) tyErrChars += word.length + 1;
+    tyIdx++;
+    inp.value = "";
+    if (tyIdx >= tyList.length) { tyDone = true; tyRender(); tyFinish(); return; }
+  }
+  tyRender();
+}
+function tyFinish() {
+  const mins = (Date.now() - tyStart) / 60000;
+  const correct = Math.max(0, tyTyped - tyErrChars);
+  const wpm = mins > 0 ? Math.round(correct / 5 / mins) : 0;
+  const acc = tyTyped ? Math.round(100 * correct / tyTyped) : 0;
+  document.getElementById("ty-stats").innerHTML =
+    `<div class="stat"><b>${wpm}</b><span>Words per minute</span></div>
+     <div class="stat"><b>${acc}%</b><span>Accuracy</span></div>
+     <div class="stat"><b>${((Date.now() - tyStart) / 1000).toFixed(1)}s</b><span>Time</span></div>`;
+}
+
+/* ---- Pomodoro Timer ---- */
+const PO_LEN = { focus: 25 * 60000, short: 5 * 60000, long: 15 * 60000 };
+let poPhase = "focus", poEnd = 0, poTimer = null, poCount = 0, poLeft = 0, poRun = false;
+function poFmt(ms) {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+}
+function poLabel() { return poPhase === "focus" ? "Focus session" : poPhase === "short" ? "Short break" : "Long break"; }
+function poTick() {
+  const left = poEnd - Date.now();
+  if (left <= 0) { poNext(); return; }
+  document.getElementById("po-display").textContent = poFmt(left);
+}
+function poNext() {
+  if (poPhase === "focus") {
+    poCount++;
+    poPhase = poCount % 4 === 0 ? "long" : "short";
+    document.getElementById("po-count").textContent = "Completed focus sessions: " + poCount;
+  } else poPhase = "focus";
+  poEnd = Date.now() + PO_LEN[poPhase];
+  document.getElementById("po-mode").textContent = poLabel();
+  poTick();
+}
+function poToggle() {
+  const btn = document.getElementById("po-start");
+  if (poRun) {
+    poLeft = poEnd - Date.now();
+    clearInterval(poTimer); poRun = false; btn.textContent = "Resume";
+  } else {
+    poEnd = Date.now() + (poLeft > 0 ? poLeft : PO_LEN[poPhase]);
+    clearInterval(poTimer); poTimer = setInterval(poTick, 250); poRun = true; btn.textContent = "Pause";
+  }
+}
+function poSkip() {
+  if (poRun) poEnd = Date.now();
+  else { poLeft = 0; poNext(); }
+}
+function poReset() {
+  clearInterval(poTimer);
+  poRun = false; poPhase = "focus"; poCount = 0; poLeft = 0;
+  document.getElementById("po-display").textContent = "25:00";
+  document.getElementById("po-mode").textContent = "Focus session";
+  document.getElementById("po-count").textContent = "Completed focus sessions: 0";
+  document.getElementById("po-start").textContent = "Start";
+}
+
+/* ---- URL Parser ---- */
+function urlParse() {
+  const v = document.getElementById("up-in").value.trim();
+  const el = document.getElementById("up-out");
+  if (!v) { el.innerHTML = ""; return; }
+  let u;
+  try { u = new URL(v); }
+  catch (e) { el.innerHTML = "<span class='error'>Not a valid absolute URL \u2014 include the https:// part.</span>"; return; }
+  const rows = [
+    ["Protocol", u.protocol.replace(":", "")],
+    ["Username", u.username || "\u2014"],
+    ["Password", u.password ? "(present)" : "\u2014"],
+    ["Hostname", u.hostname],
+    ["Port", u.port || (u.protocol === "https:" ? "443 (default)" : "80 (default)")],
+    ["Path", u.pathname],
+    ["Origin", u.origin],
+    ["Fragment", u.hash ? u.hash.slice(1) : "\u2014"],
+  ];
+  let params = "";
+  if (u.search) {
+    const entries = [...u.searchParams.entries()];
+    params = "<label>Query parameters (decoded)</label>" + entries
+      .map(([k, val]) => `<div class="up-param"><b>${escHtml(k)}</b> = ${escHtml(val)}</div>`).join("");
+  }
+  el.innerHTML = `<table class="wc-table"><tbody>` + rows.map(([k, val]) => `<tr><th>${k}</th><td>${escHtml(String(val))}</td></tr>`).join("") + `</tbody></table>` + params;
+}
+
+/* Initial render for tools that need it */
+(function () {
+  if (document.getElementById("gr-prev")) grDraw();
+  if (document.getElementById("bs-box")) bsDraw();
+  if (document.getElementById("ty-words")) tyNew();
 })();

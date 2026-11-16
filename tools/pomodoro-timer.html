@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Pomodoro Timer — Free Online Tool | MSCALE Tools</title>
+<meta name="description" content="Run automatic 25/5 Pomodoro focus cycles with long breaks every fourth session and a completed-session counter."/>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="Pomodoro Timer — Free Online Tool | MSCALE Tools"/>
+<meta property="og:description" content="Run automatic 25/5 Pomodoro focus cycles with long breaks every fourth session and a completed-session counter."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
+<script>document.documentElement.setAttribute("data-theme", (function(){try{return localStorage.getItem("mscale-theme")||"dark"}catch(e){return "dark"}})());</script>
+<link rel="stylesheet" href="../assets/style.css"/>
+<script src="../assets/live-tools.js" defer></script>
+<script src="../assets/app.js" defer></script>
+<script src="../assets/tools.js" defer></script>
+</head>
+<body>
+<header class="site"><div class="container">
+  <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+  <nav class="main" id="main-nav"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text</a><a href="../developer-tools/">Developer</a><a href="../converters/">Converters</a><a href="../pdf-tools/">PDF</a><a href="../image-tools/">Image</a><a href="../blog/">Blog</a><a class="nav-cta" href="../tools/">All tools</a></nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme"><svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  </div>
+</div></header>
+<main class="container"><div class="tool-wrap">
+<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html"><svg class="crumb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="../date-time-tools/">Date & Time Tools</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>Pomodoro Timer</span>
+</nav>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Pomodoro Timer", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Run automatic 25/5 Pomodoro focus cycles with long breaks every fourth session and a completed-session counter.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h1>Pomodoro Timer</h1></div><p>Run automatic 25/5 Pomodoro focus cycles with long breaks every fourth session and a completed-session counter.</p></div>
+
+<div class="panel">
+  <div id="po-mode" class="tool-note" style="text-align:center">Focus session</div>
+  <div id="po-display" class="big-time">25:00</div>
+  <div class="row">
+    <button class="btn" id="po-start" onclick="poToggle()">Start</button>
+    <button class="btn ghost" onclick="poSkip()">Skip</button>
+    <button class="btn ghost" onclick="poReset()">Reset</button>
+  </div>
+  <div id="po-count" class="result">Completed focus sessions: 0</div>
+</div>
+<div class="article">
+<h2 class="section">What Is the Pomodoro Timer?</h2>
+<p>The Pomodoro Technique is deceptively simple: work with total focus for twenty-five minutes, take a five-minute break, and after four cycles take a longer rest. Its power comes from what the interval does to your attention. A bounded session is easier to start than an open-ended task, easier to defend against interruptions, and easier to sustain, because the break is always visibly coming. This timer runs the full cycle for you, tracking completed sessions as you go.</p>
+<p>Anyone who has tried to run Pomodoro with a phone or a kitchen timer knows the friction: you time the focus block, then forget to time the break, then lose count of the rounds. This tool handles the whole rhythm. When a focus session ends it announces the break, when the break ends it calls you back to work, and every fourth break extends to fifteen minutes for a proper recovery.</p>
+<p>The timing is timestamp-based rather than tick-based, so the displayed countdown stays honest even if the tab sleeps or your computer pauses. Completed sessions accumulate in a counter, which turns an abstract day of work into a concrete, countable number, and counting Pomodoros is half the technique's motivational force.</p>
+<h2 class="section">How to Use the Pomodoro Timer</h2>
+<p>Press Start to begin a twenty-five-minute focus session. The display counts down, the mode label shows what phase you are in, and when the session ends the timer switches to a five-minute break automatically. Work through the cycle; after every fourth focus session the break lengthens to fifteen minutes. Use Skip to jump to the next phase and Reset to return everything to the start, clearing the session count.</p>
+<ol><li>Open the Pomodoro Timer page.</li><li>Decide the single task you will attack this session.</li><li>Press Start and work with full focus until the countdown ends.</li><li>Stop working when the break phase begins, even mid-flow.</li><li>Step away, stretch or look far away during the five-minute break.</li><li>Return when the timer calls you back to focus.</li><li>Note the completed-session counter rising after each focus phase.</li><li>Take the long fifteen-minute break after every fourth session.</li></ol>
+<h2 class="section">How the Pomodoro Timer Works</h2>
+<p>The timer tracks a phase state machine: focus, short break, long break, plus a session counter. Each phase has a duration, twenty-five minutes for focus, five for short breaks, fifteen after every fourth focus session. Transitions happen automatically when a phase's end timestamp passes, and the display is recomputed from the real clock on every tick, so the countdown never drifts regardless of what the browser is doing.</p>
+<p>The session counter is the technique's scoreboard. Seeing four completed Pomodoros before lunch is both a record and a motivator, and it gives you an honest unit for estimating future work: a task that took six Pomodoros last time is a six-Pomodoro task next time. Reset clears the counter when you want to start a fresh day.</p>
+<p>The discipline rules matter as much as the timing. A Pomodoro is indivisible: if an interruption genuinely cannot wait, the session is abandoned rather than paused, which trains you to batch interruptions instead of surrendering to each one. Internal distractions get a pen-and-paper note next to you and are handled in the break, a small practice that quietly defuses most of the urge to context-switch.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>Deep work on a hard task</h3><p>Commit to two Pomodoros on the report you have been avoiding. Starting is easier when the commitment is fifty minutes with a guaranteed break, and momentum usually carries you into a third session voluntarily.</p>
+<h3>Study revision blocks</h3><p>Run focus sessions per topic, one chapter or problem set per Pomodoro, with breaks for water and movement. The counter becomes a revision log: eight sessions is a full, honestly measured evening of study.</p>
+<h3>Taming a distracted morning</h3><p>When a day has fragmented into email and tabs, a single Pomodoro re-establishes control. One bounded session of pure focus resets the pattern for the rest of the day.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Skipping breaks because you are in flow. The break is what makes the next session sustainable; take it, especially the long one after four cycles.</li><li>Using the timer for tasks under ten minutes. Tiny tasks belong on a quick list, not in a focus block.</li><li>Browsing your phone during breaks. A scrolled break refreshes nothing; move, hydrate or look out a window instead.</li><li>Pausing mid-session for interruptions. Abandon and restart instead; the mild cost is what builds interruption resistance.</li><li>Turning the counter into a pressure metric. Pomodoros measure focused time, not worth; a hard task may yield fewer sessions and that is fine.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Write the session's single task down before pressing Start; ambiguity is the enemy of focus.</li><li>Keep a distraction pad beside you and capture stray thoughts instead of chasing them.</li><li>Start your first Pomodoro within thirty minutes of sitting down, before the day fragments.</li><li>Adjust durations to your reality; consistency beats orthodoxy.</li><li>Review your session count at day's end to calibrate how much focused work a day really holds.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>Why twenty-five minutes?</h3><p>It is long enough to make real progress and short enough that starting feels easy. The exact number matters less than using a consistent, bounded interval with a real break.</p>
+<h3>What happens at the end of a session?</h3><p>The timer transitions automatically to the break phase, announces the switch, and later calls you back to focus. You never have to manage the schedule yourself.</p>
+<h3>Can I change the durations?</h3><p>The tool uses the classic rhythm of twenty-five, five and fifteen minutes. The same structure works with any interval scheme; consistency matters more than the numbers.</p>
+<h3>Does the countdown stay accurate in a background tab?</h3><p>Yes. Timing is computed from real clock timestamps rather than counted ticks, so the remaining time is correct even if the tab was throttled or the computer slept briefly.</p>
+<h3>What does the session counter mean?</h3><p>It counts completed focus sessions since the last reset, so four means you have earned the long break. It resets with the Reset button.</p>
+<h3>Should I stop mid-task when the session ends?</h3><p>Note exactly where you are, take the break, and resume in the next session. The stopping point is deliberately a natural rest for the mind, and returning is easier than pushing through.</p>
+</div>
+<h2 class='section'>Related tools</h2><div class='grid'><a class='card' href='../tools/date-difference-calculator.html'><div class='card-head'><svg class="card-ic" style="color:#60a5fa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h3>Date Difference Calculator</h3></div></a><a class='card' href='../tools/stopwatch-online.html'><div class='card-head'><svg class="card-ic" style="color:#60a5fa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h3>Online Stopwatch</h3></div></a><a class='card' href='../tools/countdown-timer.html'><div class='card-head'><svg class="card-ic" style="color:#60a5fa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h3>Countdown Timer</h3></div></a></div>
+</div></main>
+<footer class="site"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads. 63 tools live, more shipping weekly.</p>
+      <a class="gh-link" href="https://github.com/maisamwork/MSCALE"><svg class="" style="color:#e6e9f0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>github.com/maisamwork/MSCALE</span></a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a>
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      <a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a>
+    </div>
+    <div>
+      <h4>Popular tools</h4>
+      <a href="../tools/percentage-calculator.html">Percentage Calculator</a><a href="../tools/word-counter.html">Word Counter</a><a href="../tools/json-formatter.html">JSON Formatter</a><a href="../tools/password-generator.html">Password Generator</a><a href="../tools/unit-converter.html">Unit Converter</a><a href="../tools/image-resizer.html">Image Resizer</a>
+      <h4 class="gap-top">Resources</h4>
+      <a href="../blog/">Blog</a>
+      <a href="../tools/">All tools</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser — your data never leaves your device.</p>
+</div></footer>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>CSS Gradient Generator — Free Online Tool | MSCALE Tools</title>
+<meta name="description" content="Design linear gradients with two colour pickers and an angle slider, live preview and copy-ready CSS output."/>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="CSS Gradient Generator — Free Online Tool | MSCALE Tools"/>
+<meta property="og:description" content="Design linear gradients with two colour pickers and an angle slider, live preview and copy-ready CSS output."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
+<script>document.documentElement.setAttribute("data-theme", (function(){try{return localStorage.getItem("mscale-theme")||"dark"}catch(e){return "dark"}})());</script>
+<link rel="stylesheet" href="../assets/style.css"/>
+<script src="../assets/live-tools.js" defer></script>
+<script src="../assets/app.js" defer></script>
+<script src="../assets/tools.js" defer></script>
+</head>
+<body>
+<header class="site"><div class="container">
+  <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+  <nav class="main" id="main-nav"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text</a><a href="../developer-tools/">Developer</a><a href="../converters/">Converters</a><a href="../pdf-tools/">PDF</a><a href="../image-tools/">Image</a><a href="../blog/">Blog</a><a class="nav-cta" href="../tools/">All tools</a></nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme"><svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  </div>
+</div></header>
+<main class="container"><div class="tool-wrap">
+<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html"><svg class="crumb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="../color-tools/">Color Tools</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>CSS Gradient Generator</span>
+</nav>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "CSS Gradient Generator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Design linear gradients with two colour pickers and an angle slider, live preview and copy-ready CSS output.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><h1>CSS Gradient Generator</h1></div><p>Design linear gradients with two colour pickers and an angle slider, live preview and copy-ready CSS output.</p></div>
+
+<div class="panel">
+  <div class="row">
+    <div><label>Start colour</label><input type="color" id="gr-c1" value="#ff7000" oninput="grDraw()"></div>
+    <div><label>End colour</label><input type="color" id="gr-c2" value="#7c3aed" oninput="grDraw()"></div>
+    <div><label>Angle: <span id="gr-angv">135</span>°</label><input type="range" id="gr-ang" min="0" max="360" value="135" oninput="grDraw()"></div>
+  </div>
+  <div id="gr-prev" class="gr-prev"></div>
+  <label>CSS</label>
+  <textarea id="gr-out" readonly style="min-height:80px"></textarea>
+  <button class="btn ghost" onclick="copyText('gr-out')">Copy CSS</button>
+</div>
+<div class="article">
+<h2 class="section">What Is the CSS Gradient Generator?</h2>
+<p>Gradients are the fastest way to add depth and polish to a web page, and CSS makes them a one-line affair once you can speak their syntax. The trouble is that nobody speaks it fluently: angles, colour stops, hard stops and multiple layers are easy to miswrite and tedious to tune by hand. This generator gives you two colour pickers, an angle dial and a live preview that updates as you drag, then hands you the exact CSS declaration to paste into your stylesheet.</p>
+<p>The preview is the real interface. Instead of imagining what a diagonal fade from orange to violet looks like, you see it at full width instantly, and every adjustment of the angle slider or either colour repaints the canvas in real time. Below the preview, the generated gradient declaration sits in a copy-ready block, formatted exactly as modern CSS expects it, including the degree value and hex colours.</p>
+<p>Because everything is computed in the browser, the tool is instant and private, and the output it produces is framework-agnostic: the same declaration works in a plain stylesheet, a utility-class arbitrary value, a CSS-in-JS object or a design-token file. Whether you are building a hero banner, a button hover state or a subtle card background, the workflow is the same: pick, drag, copy.</p>
+<h2 class="section">How to Use the CSS Gradient Generator</h2>
+<p>Choose your starting and ending colours with the two colour pickers, drag the angle slider until the preview looks right, and copy the generated CSS. The angle is measured in the standard CSS convention where zero degrees points up and ninety degrees points right, so the slider maps one-to-one with what browsers render. For a two-colour fade you need nothing else; the tool keeps the output minimal and valid.</p>
+<ol><li>Open the CSS Gradient Generator page.</li><li>Pick the first colour with the left colour picker.</li><li>Pick the second colour with the right colour picker.</li><li>Drag the angle slider and watch the preview rotate live.</li><li>Fine-tune until the transition sits where you want it.</li><li>Copy the generated CSS from the output block.</li><li>Paste the declaration into your stylesheet as a background or background-image value.</li></ol>
+<h2 class="section">How the CSS Gradient Generator Works</h2>
+<p>A linear gradient is defined by a direction and a list of colour stops. The generator writes the direction as an angle in degrees, which is more predictable than keyword directions like toward the bottom right because the angle is continuous and identical across browsers. The two colours become stops at the default positions, zero percent and one hundred percent, which lets the browser distribute the blend evenly across the element.</p>
+<p>Hex colours are emitted in the compact modern form the pickers provide, and they are interchangeable with rgb, hsl or any other CSS colour format if you prefer to edit them by hand. The generated declaration is a plain background-image value, so it layers correctly with background colours, images and blend modes without any special handling.</p>
+<p>The angle convention has one famous wrinkle that the preview eliminates: in CSS, zero degrees points upward and angles increase clockwise, which is the opposite of the mathematical convention most people learned. Dragging the slider while watching the preview teaches the convention in seconds, and the copy button guarantees the number you settled on is the number that ships.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>A hero banner background</h3><p>A deep navy to warm orange gradient at around 160 degrees gives a landing-page hero a sense of light and atmosphere with a single declaration. Copy the output, paste it as the hero's background, and layer white text over it.</p>
+<h3>A subtle card wash</h3><p>Two nearly identical colours a few percent apart in lightness produce a barely-there gradient that lifts cards off flat backgrounds without shouting. Set both pickers to neighbouring shades and keep the angle at 145 degrees.</p>
+<h3>A button hover state</h3><p>Generate a brighter variant of your button gradient, then apply the first gradient normally and the second on hover with a short transition. The two copied declarations become an instant polished interaction.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Forgetting that zero degrees points up, not right. If your gradient runs the wrong way, the angle convention is almost always the reason.</li><li>Choosing two colours with identical lightness. Gradients between colours of very different lightness read cleanly; equal-lightness pairs can look muddy or vibrate.</li><li>Pasting the gradient into a color property instead of background or background-image. Gradients are images in CSS, not colours.</li><li>Stacking a gradient over an image without transparency. The gradient will fully cover the image unless at least one stop uses rgba or a transparency keyword.</li><li>Hard-coding the gradient in a dozen places. Put the declaration in a custom property or design token and reference it once.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Keep hero gradients between about 120 and 200 degrees for a natural top-lit feel.</li><li>Use at most two or three stops; more stops usually read as noise rather than design.</li><li>Test the gradient behind real text to confirm contrast survives at both ends.</li><li>Save your favourite gradient declarations in a snippet file for reuse across projects.</li><li>Pair a gradient background with a subtle inner border for a premium, layered look.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>Can I use more than two colours?</h3><p>The generator outputs the classic two-stop fade, but the copied declaration is ordinary CSS, so you can add more stops by hand, with a middle colour pinned at the fifty percent mark.</p>
+<h3>Do gradients work in every browser?</h3><p>Linear gradients with the angle syntax are supported by every browser in current use, including mobile. No prefixes are needed for modern targets.</p>
+<h3>Why does my gradient look different on another screen?</h3><p>Wide-gamut displays render saturated colours more vividly. Keep important text contrast high enough that the design survives the difference.</p>
+<h3>Can I make a radial gradient instead?</h3><p>This tool focuses on linear gradients. The same colour logic applies to radial gradients, which you can write by swapping the function name and direction for a shape and position.</p>
+<h3>Is the generated CSS minified or pretty?</h3><p>It is emitted as a single clean declaration, ready to paste into any stylesheet or inline style attribute without reformatting.</p>
+<h3>Does the tool store my colours?</h3><p>No. Everything is computed locally in your browser and nothing is uploaded or saved.</p>
+</div>
+<h2 class='section'>Related tools</h2><div class='grid'><a class='card' href='../tools/color-converter.html'><div class='card-head'><svg class="card-ic" style="color:#f472b6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><h3>Color Converter</h3></div></a><a class='card' href='../tools/palette-generator.html'><div class='card-head'><svg class="card-ic" style="color:#f472b6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><h3>Color Palette Generator</h3></div></a><a class='card' href='../tools/box-shadow-generator.html'><div class='card-head'><svg class="card-ic" style="color:#f472b6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><h3>Box Shadow Generator</h3></div></a></div>
+</div></main>
+<footer class="site"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads. 63 tools live, more shipping weekly.</p>
+      <a class="gh-link" href="https://github.com/maisamwork/MSCALE"><svg class="" style="color:#e6e9f0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>github.com/maisamwork/MSCALE</span></a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a>
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      <a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a>
+    </div>
+    <div>
+      <h4>Popular tools</h4>
+      <a href="../tools/percentage-calculator.html">Percentage Calculator</a><a href="../tools/word-counter.html">Word Counter</a><a href="../tools/json-formatter.html">JSON Formatter</a><a href="../tools/password-generator.html">Password Generator</a><a href="../tools/unit-converter.html">Unit Converter</a><a href="../tools/image-resizer.html">Image Resizer</a>
+      <h4 class="gap-top">Resources</h4>
+      <a href="../blog/">Blog</a>
+      <a href="../tools/">All tools</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser — your data never leaves your device.</p>
+</div></footer>
+</body>
+</html>

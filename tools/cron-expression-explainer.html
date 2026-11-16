@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Cron Expression Explainer — Free Online Tool | MSCALE Tools</title>
+<meta name="description" content="Translate any 5-field cron expression into plain English and see its next five run times before it surprises you in production."/>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="Cron Expression Explainer — Free Online Tool | MSCALE Tools"/>
+<meta property="og:description" content="Translate any 5-field cron expression into plain English and see its next five run times before it surprises you in production."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
+<script>document.documentElement.setAttribute("data-theme", (function(){try{return localStorage.getItem("mscale-theme")||"dark"}catch(e){return "dark"}})());</script>
+<link rel="stylesheet" href="../assets/style.css"/>
+<script src="../assets/live-tools.js" defer></script>
+<script src="../assets/app.js" defer></script>
+<script src="../assets/tools.js" defer></script>
+</head>
+<body>
+<header class="site"><div class="container">
+  <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+  <nav class="main" id="main-nav"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text</a><a href="../developer-tools/">Developer</a><a href="../converters/">Converters</a><a href="../pdf-tools/">PDF</a><a href="../image-tools/">Image</a><a href="../blog/">Blog</a><a class="nav-cta" href="../tools/">All tools</a></nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme"><svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  </div>
+</div></header>
+<main class="container"><div class="tool-wrap">
+<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html"><svg class="crumb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="../developer-tools/">Developer Tools</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>Cron Expression Explainer</span>
+</nav>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Cron Expression Explainer", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Translate any 5-field cron expression into plain English and see its next five run times before it surprises you in production.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>Cron Expression Explainer</h1></div><p>Translate any 5-field cron expression into plain English and see its next five run times before it surprises you in production.</p></div>
+
+<div class="panel">
+  <label>Cron expression (5 fields)</label>
+  <input id="cr-in" oninput="cronExplain()" placeholder="*/15 9-17 * * 1-5" autocomplete="off">
+  <div id="cr-out" class="result"></div>
+  <label>Next 5 runs (your local time)</label>
+  <div id="cr-next" class="result"></div>
+</div>
+<div class="article">
+<h2 class="section">What Is the Cron Expression Explainer?</h2>
+<p>A cron expression is five small fields that together describe a schedule, and it is one of the most compact languages in computing. It is also one of the easiest to get wrong, because a single misplaced character silently changes a job from every hour to once a year. This explainer takes any standard five-field expression and translates it into plain English, field by field, so you can see exactly when your job will run before it surprises you at three in the morning.</p>
+<p>Beyond translation, the tool computes the next scheduled run times from the current clock. Reading a description tells you what an expression means in principle; seeing the next five concrete timestamps tells you what it means in practice, including the subtle interactions between the day-of-month and day-of-week fields that trip up even experienced administrators. If the next runs are not what you expected, the expression is wrong, and now you know before production does.</p>
+<p>The explainer runs entirely in your browser and follows the classic cron conventions used by Linux crontab and most job schedulers: five fields for minute, hour, day of month, month and day of week, with asterisks, ranges, steps, lists and the day-of-week and month names accepted. Nothing is uploaded, so it is safe to paste expressions from private infrastructure.</p>
+<h2 class="section">How to Use the Cron Expression Explainer</h2>
+<p>Paste or type a five-field cron expression into the input and the explanation appears immediately, with each field broken out in order and the next scheduled executions listed below. Adjust the expression and the reading updates live, which makes it a fast way to experiment: change a step from every fifteen minutes to every five and watch the next-run list densify. If a field is invalid, the tool says which field and why rather than failing silently.</p>
+<ol><li>Open the Cron Expression Explainer page.</li><li>Type a five-field expression such as every fifteen minutes of the working weekday.</li><li>Read the plain-English breakdown of each field in order.</li><li>Check the list of next run times computed from the current time.</li><li>Confirm the runs match your intention, especially the day fields.</li><li>Adjust ranges or steps until the next-run list is exactly right.</li><li>Copy the validated expression back into your crontab or scheduler.</li></ol>
+<h2 class="section">How the Cron Expression Explainer Works</h2>
+<p>Each field is parsed independently against its own grammar. A field can be an asterisk meaning every unit, a single number, a range like nine to seventeen, a step meaning every fifteenth unit, a list such as zero, fifteen, thirty and forty-five, or named values like MON for weekdays. The explainer resolves each component and renders it as a sentence, so five asterisks read as every minute of every day.</p>
+<p>The next-run calculation walks forward from the current minute, minute by minute, testing each candidate timestamp against all five fields until it accumulates five matches. That brute-force approach is simple and faithful to how cron itself behaves, including the classic rule that when both day-of-month and day-of-week are restricted, a run happens when either one matches. The walk is capped so impossible expressions, like February thirtieth, report no future runs instead of hanging.</p>
+<p>Field interaction is where the explainer earns its keep. The pair of a star day-of-month with weekdays in day-of-week means weekdays, but first and fifteenth in day-of-month with Monday in day-of-week means both the first and the fifteenth and every Monday. Descriptions plus concrete next-run timestamps make those interactions visible, which is precisely the class of bug that otherwise surfaces as a mysterious double run or a silent skip.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>The weekday working-hours classic</h3><p>An expression running every fifteen minutes between nine and five, Monday to Friday, is the most common production schedule in existence. The explainer shows the next five such minutes, confirming the schedule before you paste it into a live crontab.</p>
+<h3>Monthly report job</h3><p>A schedule of zero minutes past six in the morning on the first of every month is written with zero in the minute field and six in the hour field. Seeing the next run listed as the first of next month at six catches the common mistake of writing the hour value in the minute position.</p>
+<h3>Diagnosing a surprising schedule</h3><p>An expression with both day-of-month and day-of-week restricted often runs more often than intended. The next-run list exposes the either-or behaviour immediately, turning a confusing cron rule into an obvious fact.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Swapping the minute and hour fields. The first field is minutes, the second is hours; zero then nine means nine in the morning, while nine then zero means nine minutes past every hour.</li><li>Forgetting that day-of-month and day-of-week combine with OR when both are restricted. Restrict both only when you truly want either condition to trigger a run.</li><li>Using a zero step or a reversed range. Steps must be positive and ranges must ascend, or the field is invalid.</li><li>Assuming the scheduler's timezone matches yours. Cron runs in the machine's local time; the next-run list here uses your browser clock, so confirm server timezones separately.</li><li>Nesting named and numeric values inconsistently. Mixing MON with six in one field is valid but confusing; pick one style per expression.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Validate every expression here before adding it to a live crontab.</li><li>Prefer explicit ranges over bare asterisks in the hour field to keep jobs inside working hours.</li><li>Use step values for high-frequency jobs instead of long comma lists; they read faster and edit safer.</li><li>Remember field order with the phrase minutes, hours, day, month, weekday.</li><li>When a job must run on a specific date regardless of weekday, restrict day-of-month and leave day-of-week as star.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>Which cron dialect does the tool support?</h3><p>The standard five-field POSIX-style syntax used by Linux crontab, including ranges, steps, lists and month or weekday names. Six-field variants with seconds are not part of classic cron and are not supported.</p>
+<h3>Why do the next runs use my local time?</h3><p>The tool computes from your browser clock so the timestamps match what you see on your watch. Your server may run in a different timezone; check it before scheduling anything timezone-sensitive.</p>
+<h3>Can I use it for expressions from Kubernetes CronJobs?</h3><p>Yes. Kubernetes CronJobs use the same five-field syntax, so the explanation and next-run list apply directly. Systemd timers use a different OnCalendar syntax, which this tool does not parse.</p>
+<h3>What does a step of five in the minute field mean?</h3><p>It means every fifth minute: 00, 05, 10 and so on through 55, every hour that the remaining fields allow.</p>
+<h3>Why does my expression show no next runs?</h3><p>The fields describe a moment that never occurs, such as February thirtieth, or a combination the OR rule never satisfies. Re-read the field breakdown to find the impossible constraint.</p>
+<h3>Does the tool store or send my expression?</h3><p>No. Parsing and the next-run walk happen entirely in your browser, and nothing is transmitted or logged.</p>
+</div>
+<h2 class='section'>Related tools</h2><div class='grid'><a class='card' href='../tools/json-formatter.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>JSON Formatter</h3></div></a><a class='card' href='../tools/base64-encoder-decoder.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>Base64 Encode / Decode</h3></div></a><a class='card' href='../tools/url-encoder-decoder.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>URL Encoder / Decoder</h3></div></a><a class='card' href='../tools/uuid-generator.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>UUID Generator</h3></div></a></div>
+</div></main>
+<footer class="site"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads. 63 tools live, more shipping weekly.</p>
+      <a class="gh-link" href="https://github.com/maisamwork/MSCALE"><svg class="" style="color:#e6e9f0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>github.com/maisamwork/MSCALE</span></a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a>
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      <a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a>
+    </div>
+    <div>
+      <h4>Popular tools</h4>
+      <a href="../tools/percentage-calculator.html">Percentage Calculator</a><a href="../tools/word-counter.html">Word Counter</a><a href="../tools/json-formatter.html">JSON Formatter</a><a href="../tools/password-generator.html">Password Generator</a><a href="../tools/unit-converter.html">Unit Converter</a><a href="../tools/image-resizer.html">Image Resizer</a>
+      <h4 class="gap-top">Resources</h4>
+      <a href="../blog/">Blog</a>
+      <a href="../tools/">All tools</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser — your data never leaves your device.</p>
+</div></footer>
+</body>
+</html>
