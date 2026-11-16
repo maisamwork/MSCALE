@@ -51,7 +51,7 @@ function setupSearch() {
     const q = input.value.trim().toLowerCase();
     const live = (window.LIVE_TOOLS || []).filter((t) => t.name.toLowerCase().includes(q));
     const soon = CATALOG.filter((t) => t.n.toLowerCase().includes(q)).slice(0, 60)
-      .map((t) => ({ name: t.n, cat: t.c, desc: t.s || "", url: t.c ? "category/" + t.c + ".html" : "#" }));
+      .map((t) => ({ name: t.n, cat: t.c, desc: t.s || "", url: t.c ? t.c + "/" : "#" }));
     renderList([...live, ...soon]);
   });
 }
