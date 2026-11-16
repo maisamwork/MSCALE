@@ -2,6 +2,10 @@ import json, os, re
 from openpyxl import load_workbook
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
+import sys as _sys
+_sys.path.insert(0, ROOT)
+from content import CONTENT
+from content.blog import BLOG_POSTS
 DATA_XLSX = "/workspace/tools-catalog.xlsx"
 
 BRAND = 'MSCALE<span>Tools</span>'
@@ -21,6 +25,10 @@ ICONS = {
     "seo-web-tools": '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
     "date-time-tools": '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
     "finance-tools": '<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
+    "zap": '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    "smartphone": '<rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/>',
+    "book-open": '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+    "shield-check": '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
 }
 
 INTROS = {
@@ -144,7 +152,7 @@ def header(title, desc, depth=""):
 <body>
 <header class="site"><div class="container">
   <a class="brand" href="{depth}index.html">{svg_icon("wrench", "brand-icon")}MSCALE<span>Tools</span></a>
-  <nav class="main">{nav}<a href="{depth}index.html#all">All tools</a></nav>
+  <nav class="main">{nav}<a href="{depth}blog/">Blog</a><a href="{depth}index.html#all">All tools</a></nav>
 </div></header>
 <main class="container">"""
 
@@ -598,6 +606,124 @@ TOOL_DESC = {
     "palette-generator": "Generate tints and shades from any hex color. Click a swatch to copy.",
 }
 
+def article_wordcount(c):
+    texts = list(c["intro"]) + [c["how"][0]] + list(c["steps"]) + list(c["works"])
+    texts += [f"{t} {b}" for t, b in c["examples"]]
+    texts += list(c.get("mistakes", []))
+    texts += list(c["tips"])
+    texts += [f"{q} {a}" for q, a in c["faqs"]]
+    return len(re.findall(r"[A-Za-z0-9'\u2019\-]+", " ".join(texts)))
+
+
+def article_html(slug, name):
+    c = CONTENT[slug]
+    out = ['<div class="article">']
+    out.append(f'<h2 class="section">What Is the {esc(name)}?</h2>')
+    out += [f"<p>{esc(p)}</p>" for p in c["intro"]]
+    out.append(f'<h2 class="section">How to Use the {esc(name)}</h2>')
+    out.append(f"<p>{esc(c['how'][0])}</p>")
+    out.append("<ol>" + "".join(f"<li>{esc(s)}</li>" for s in c["steps"]) + "</ol>")
+    out.append(f'<h2 class="section">How the {esc(name)} Works</h2>')
+    out += [f"<p>{esc(p)}</p>" for p in c["works"]]
+    out.append('<h2 class="section">Examples and Practical Use Cases</h2>')
+    for t, b in c["examples"]:
+        out.append(f"<h3>{esc(t)}</h3><p>{esc(b)}</p>")
+    if c.get("mistakes"):
+        out.append('<h2 class="section">Common Mistakes to Avoid</h2>')
+        out.append("<ul>" + "".join(f"<li>{esc(m)}</li>" for m in c["mistakes"]) + "</ul>")
+    out.append('<h2 class="section">Tips, Benefits and Limitations</h2>')
+    out.append("<ul>" + "".join(f"<li>{esc(t)}</li>" for t in c["tips"]) + "</ul>")
+    out.append('<h2 class="section">Frequently Asked Questions</h2>')
+    for q, a in c["faqs"]:
+        out.append(f"<h3>{esc(q)}</h3><p>{esc(a)}</p>")
+    out.append("</div>")
+    return "\n".join(out)
+
+
+def blog_wordcount(post):
+    texts = []
+    for kind, val in post["blocks"]:
+        if kind in ("p", "h2", "h3"):
+            texts.append(val)
+        elif kind in ("ul", "ol"):
+            texts.extend(val)
+        elif kind == "faq":
+            texts.extend(f"{q} {a}" for q, a in val)
+    return len(re.findall(r"[A-Za-z0-9'\u2019\-]+", " ".join(texts)))
+
+
+def blog_blocks_html(post):
+    out = []
+    for kind, val in post["blocks"]:
+        if kind == "p":
+            out.append(f"<p>{esc(val)}</p>")
+        elif kind == "h2":
+            out.append(f'<h2 class="section">{esc(val)}</h2>')
+        elif kind == "h3":
+            out.append(f"<h3>{esc(val)}</h3>")
+        elif kind in ("ul", "ol"):
+            tag = "ul" if kind == "ul" else "ol"
+            out.append(f"<{tag}>" + "".join(f"<li>{esc(i)}</li>" for i in val) + f"</{tag}>")
+        elif kind == "faq":
+            out.append('<h2 class="section">Frequently Asked Questions</h2>')
+            for q, a in val:
+                out.append(f"<h3>{esc(q)}</h3><p>{esc(a)}</p>")
+    return "\n".join(out)
+
+
+def blog_post_html(post):
+    blocks = blog_blocks_html(post)
+    jsonld = json.dumps({
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": post["title"],
+        "description": post["desc"],
+        "datePublished": post["date"],
+        "author": {"@type": "Organization", "name": "MSCALE Tools"},
+    })
+    related = "".join(
+        f'<a class="card" href="../tools/{s}.html"><div class="card-head">{svg_icon(CAT_SLUG_BY_NAME.get(c, "wrench"), "card-ic")}<h3>{n}</h3></div><p>{d}</p><span class="tag">LIVE</span></a>'
+        for s, n, c, d in LIVE[:4]
+    )
+    return (
+        header(f'{post["title"]} | MSCALE Tools Blog', post["desc"], "../")
+        + f"""<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html">{svg_icon("wrench", "crumb-ic")}Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="../blog/">Blog</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>{esc(post["title"])}</span>
+</nav>
+<article class="prose">
+<script type="application/ld+json">{jsonld}</script>
+<p class="post-meta">{post["date"]} &middot; MSCALE Tools</p>
+<h1>{esc(post["title"])}</h1>
+{blocks}
+</article>
+<h2 class="section">Try these tools</h2>
+<div class="grid">{related}</div>"""
+        + footer("../")
+    )
+
+
+def blog_index_html():
+    cards = "".join(
+        f"""<a class="card blog-card" href="{p['slug']}.html">
+<h3>{esc(p["title"])}</h3>
+<p>{esc(p["desc"])}</p>
+<span class="post-meta">{p["date"]}</span>
+</a>"""
+        for p in BLOG_POSTS
+    )
+    return (
+        header("Blog | MSCALE Tools", "Practical guides on word counts, password security, JSON, images and getting the most from online tools.", "../")
+        + """<div class="tool-head"><div class="tool-title">""" + svg_icon("book-open", "tool-ic big") + """<h1>Blog</h1></div>
+<p>Practical, in-depth guides from the MSCALE Tools team. Every article is a full read, no fluff.</p></div>
+<div class="blog-grid">""" + cards + "</div>"
+        + footer("../")
+    )
+
+
 def tool_page(slug, name, cat, desc):
     cat_slug = CAT_SLUG_BY_NAME.get(cat, "calculators")
     body = TOOL_BODIES[slug]
@@ -624,6 +750,7 @@ def tool_page(slug, name, cat, desc):
         "description": desc,
         "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
     })
+    article = article_html(slug, name)
     return (
         header(f"{name} — Free Online Tool | MSCALE Tools", desc, "../")
         + f"""<div class="tool-wrap">
@@ -631,6 +758,7 @@ def tool_page(slug, name, cat, desc):
 <script type="application/ld+json">{jsonld}</script>
 <div class="tool-head"><div class="tool-title">{svg_icon(cat_slug, "tool-ic")}<h1>{name}</h1></div><p>{desc}</p></div>
 {body}
+{article}
 {rel_html}
 </div>"""
         + footer("../")
@@ -664,36 +792,57 @@ def build_catalog():
 def index_page(catalog):
     cat_counts = {}
     for item in catalog:
+        cat_counts[item["c"]] = cat_counts[item["c"]] if item["c"] in cat_counts else 0
+    cat_counts = {}
+    for item in catalog:
         cat_counts[item["c"]] = cat_counts.get(item["c"], 0) + 1
-    extra_cats = [("pdf-tools", "PDF Tools"), ("image-tools", "Image Tools"), ("seo-web-tools", "SEO & Web Tools"),
-                  ("date-time-tools", "Date & Time Tools"), ("finance-tools", "Finance & Business")]
     cat_cards = ""
     for slug, (name, _, _, _) in CAT_PAGES.items():
         n = cat_counts.get(slug, 0) + len([1 for s, _, c, _ in LIVE if CAT_SLUG_BY_NAME.get(c) == slug])
         cat_cards += (f"<a class='cat-card' href='{slug}/'><span class='icon-box'>{svg_icon(slug)}</span>"
                       f"<h3>{name}</h3><p>{n} tools</p></a>")
-    for slug, name in extra_cats:
-        if slug not in CAT_PAGES:
-            continue
-        n = cat_counts.get(slug, 0) + len([1 for s, _, c, _ in LIVE if CAT_SLUG_BY_NAME.get(c) == slug])
-        cat_cards += (f"<a class='cat-card' href='{slug}/'><span class='icon-box'>{svg_icon(slug)}</span>"
-                      f"<h3>{name}</h3><p>{n} tools</p></a>")
-    live_cards = "".join(
+    featured_slugs = ["percentage-calculator", "word-counter", "json-formatter", "password-generator",
+                      "unit-converter", "color-converter", "image-resizer", "loan-emi-calculator"]
+    live_by_slug = {s: (n, c, d) for s, n, c, d in LIVE}
+    featured_cards = "".join(
+        f"<a class='card' href='tools/{s}.html'><div class='card-head'>{svg_icon(CAT_SLUG_BY_NAME.get(live_by_slug[s][1], 'wrench'), 'card-ic')}<h3>{live_by_slug[s][0]}</h3></div><p>{live_by_slug[s][2]}</p><span class='tag'>LIVE</span></a>"
+        for s in featured_slugs if s in live_by_slug
+    )
+    all_cards = "".join(
         f"<a class='card' href='tools/{s}.html'><div class='card-head'>{svg_icon(CAT_SLUG_BY_NAME.get(c, 'wrench'), 'card-ic')}<h3>{n}</h3></div><p>{d}</p><span class='tag'>LIVE</span></a>"
         for s, n, c, d in LIVE
     )
+    blog_cards = "".join(
+        f"<a class='card blog-card' href='blog/{p['slug']}.html'><h3>{esc(p['title'])}</h3><p>{esc(p['desc'])}</p><span class='post-meta'>{p['date']}</span></a>"
+        for p in BLOG_POSTS
+    )
     total = len(catalog) + len(LIVE)
-    return header("MSCALE Tools — Free Online Tools", "Free online calculators, text tools, developer tools and converters. Fast, private, no sign-up.") + f"""
-<div class="hero">
-  <h1>Every tool you need, <em>in one place</em></h1>
-  <p>{total}+ tools indexed — {len(LIVE)} live right now, more shipping weekly. Everything runs in your browser: fast and private.</p>
-  <div class="search-wrap">{svg_icon("search", "search-ic")}<input id="search" placeholder="Search {total}+ tools… (e.g. percentage, json, password)" /></div>
+    return header("MSCALE Tools \u2014 Free Online Tools", "Free online calculators, text tools, developer tools and converters. Fast, private, no sign-up.") + f"""
+<div class="hero hero-new">
+  <p class="hero-kicker">Free online tools</p>
+  <h1>All-in-one tools platform</h1>
+  <p class="hero-sub">Fast, free and easy-to-use online tools for productivity, development, design and more. No sign-up \u2014 everything runs right in your browser.</p>
+  <form class="hero-search" onsubmit="event.preventDefault();var el=document.getElementById('tool-list');if(el)el.scrollIntoView({{behavior:'smooth'}});">
+    {svg_icon("search", "search-ic")}
+    <input id="search" placeholder="Search for tools (e.g. calculator, JSON, password\u2026)" />
+    <button class="btn" type="submit">Search</button>
+  </form>
   <p id="count-note" style="font-size:13px"></p>
 </div>
-<h2 class="section" id="all">Live tools</h2>
-<div class="grid" id="tool-list">{live_cards}</div>
-<h2 class="section">Browse by category</h2>
+<section class="features">
+  <div class="feature">{svg_icon("zap")}<div><b>Fast &amp; free</b><span>No sign-up, no limits</span></div></div>
+  <div class="feature">{svg_icon("shield-check")}<div><b>100% private</b><span>Everything runs on your device</span></div></div>
+  <div class="feature">{svg_icon("smartphone")}<div><b>Works anywhere</b><span>Desktop, tablet and mobile</span></div></div>
+  <div class="feature">{svg_icon("converters")}<div><b>Always growing</b><span>New tools added regularly</span></div></div>
+</section>
+<h2 class="section">Popular tool categories</h2>
 <div class="cat-grid">{cat_cards}</div>
+<h2 class="section" id="all">Featured tools</h2>
+<div class="grid">{featured_cards}</div>
+<h2 class="section">All live tools</h2>
+<div class="grid" id="tool-list">{all_cards}</div>
+<h2 class="section">From the blog</h2>
+<div class="blog-grid">{blog_cards}</div>
 """ + footer("")
 
 
@@ -778,6 +927,19 @@ def main():
 </main>
 </body>
 </html>""")
+    os.makedirs(f"{ROOT}/blog", exist_ok=True)
+    with open(f"{ROOT}/blog/index.html", "w") as f:
+        f.write(blog_index_html())
+    for post in BLOG_POSTS:
+        with open(f"{ROOT}/blog/{post['slug']}.html", "w") as f:
+            f.write(blog_post_html(post))
+    report = [(s, article_wordcount(CONTENT[s])) for s in TOOL_BODIES]
+    for post in BLOG_POSTS:
+        report.append(("blog/" + post["slug"], blog_wordcount(post)))
+    oob = [(s, n) for s, n in report if not (1000 <= n <= 1200)]
+    if oob:
+        raise SystemExit("CONTENT WORD COUNT OUT OF RANGE (1000-1200): " + repr(oob))
+    print("word counts OK: %d pages, min %d, max %d" % (len(report), min(n for _, n in report), max(n for _, n in report)))
     print(f"catalog: {len(catalog)} entries; pages written")
 
 main()

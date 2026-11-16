@@ -19,7 +19,7 @@
 <body>
 <header class="site"><div class="container">
   <a class="brand" href="../index.html"><svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>MSCALE<span>Tools</span></a>
-  <nav class="main"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a><a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a><a href="../index.html#all">All tools</a></nav>
+  <nav class="main"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a><a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a><a href="../blog/">Blog</a><a href="../index.html#all">All tools</a></nav>
 </div></header>
 <main class="container"><div class="tool-wrap">
 <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -46,6 +46,38 @@
   <p id="img-info" style="color:var(--muted);font-size:13px"></p>
   <img id="img-preview" alt="preview" />
   <a id="img-download" class="btn" style="display:none">↓ Download</a>
+</div>
+<div class="article">
+<h2 class="section">What Is the Image Resizer?</h2>
+<p>Images arrive too big for their purpose: a 4,000-pixel photo for a 400-pixel avatar, a 5-megabyte screenshot for a forum post, a PNG that should be a JPG. Uploading them anyway wastes bandwidth and time. This Image Resizer resizes and converts images entirely in your browser, with no upload at any point.</p>
+<p>Drop in an image, set the target width or height, and the tool scales it while preserving aspect ratio. You can also convert the format, choosing JPEG for photographs, PNG for sharp graphics and transparency, or WebP for the best size-to-quality balance, and adjust quality to hit a target file size.</p>
+<p>Because the resizing happens on your device using the browser's canvas, private photos never leave your machine, and there is no upload wait even on slow connections. Bloggers, developers, marketplace sellers and anyone attaching images to forms or emails get right-sized files in seconds.</p>
+<h2 class="section">How to Use the Image Resizer</h2>
+<p>Select or drop an image, set the desired dimensions, choose the output format and quality, and process. The preview shows the result before you download it, so sizing and quality can be adjusted and re-processed until the file is right.</p>
+<ol><li>Select or drop your image into the input area.</li><li>Set the target width or height; the other dimension follows the aspect ratio.</li><li>Choose the output format: keep the original, JPEG, PNG or WebP.</li><li>Adjust the quality slider for lossy formats to balance size against sharpness.</li><li>Process, check the preview and file size, then download the result.</li></ol>
+<h2 class="section">How the Image Resizer Works</h2>
+<p>Resizing uses the browser's canvas with high-quality scaling: the image is redrawn at the target dimensions rather than cropped or stretched. Locking to one dimension preserves the aspect ratio automatically, which prevents the distorted look that comes from setting width and height independently.</p>
+<p>Format choice drives file size more than anything else. JPEG compresses photographs efficiently but discards detail and does not support transparency. PNG stores every pixel losslessly and keeps transparency, making it right for screenshots, logos and line art, at a larger size. WebP typically beats both, often producing 25 to 35 percent smaller files than JPEG at similar visual quality, with broad modern browser support.</p>
+<p>Quality settings apply to lossy formats: lower quality means smaller files and progressively more visible compression artefacts, especially around sharp edges and text. The practical method is to process, inspect the preview at actual size, and step the quality down until artefacts appear, then back up one notch. The displayed file size confirms the saving before you download.</p>
+<p>Choosing dimensions is a design decision that starts with the destination. Profile avatars, thumbnails and inline blog images each have conventional sizes, and matching them avoids both blurry upscaling and wasted bytes on downscaling done by the receiving platform. A useful habit is to decide the largest size at which the image will ever display, export at that size, and let responsive layouts shrink it as needed.</p>
+<p>The quality-versus-size trade has a shape worth knowing: the first steps down from maximum quality buy large size reductions for imperceptible changes, while the last steps buy tiny reductions for visible damage. This is why the practical advice is to start around 80 percent quality and adjust from evidence, inspecting the preview rather than assuming. WebP's better compression shifts the whole curve, which is why it has become the default choice for web images where supported.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>Preparing a profile picture</h3><p>A 3,000-pixel phone photo becomes a clean 400-pixel square avatar. Resizing with the aspect ratio preserved, then converting to JPEG at 85 percent quality, takes the file from megabytes to tens of kilobytes.</p>
+<h3>Lightening a blog post</h3><p>A writer's screenshots are crisp but heavy PNGs. Converting body-image screenshots to WebP at 80 percent quality typically cuts the page weight by more than half with no visible difference.</p>
+<h3>Meeting an upload limit</h3><p>A form accepts images up to 1 megabyte. Processing at progressively lower quality until the displayed size fits gives a compliant file in one pass, without guesswork.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Uploading full-resolution originals because resizing felt optional, wasting bandwidth on every view.</li><li>Setting both width and height independently and distorting the aspect ratio.</li><li>Using maximum quality on lossy formats and wondering why files barely shrank.</li><li>Converting sharp graphics to JPEG and being surprised by ringing artefacts around edges.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Shrink on one dimension only and let the aspect ratio handle the other.</li><li>Use JPEG for photos, PNG for sharp graphics and transparency, WebP when size matters most.</li><li>Step quality down until artefacts appear, then back up; 75 to 85 percent is often indistinguishable.</li><li>Resize before uploading anywhere; sending full-resolution originals is the most common waste.</li><li>Keep your original file; processing here never modifies your source, it produces a new download.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>Are my images uploaded to a server?</h3><p>No. All processing happens in your browser using the canvas API. Your images never leave your device.</p>
+<h3>What is the best format for photographs?</h3><p>WebP generally gives the smallest files at equal quality, with JPEG as the universally safe fallback. PNG is the wrong choice for photos; it produces files several times larger.</p>
+<h3>Why did my PNG get bigger as a JPEG?</h3><p>If it was a screenshot or graphic with flat colours and sharp edges, PNG is the efficient format. JPEG suits continuous-tone photographs; converting graphics to it can inflate size and blur edges.</p>
+<h3>How do I hit an exact file size limit?</h3><p>Adjust quality and re-process while watching the displayed output size. Each pass takes seconds, so converging on a limit is quick.</p>
+<h3>Does resizing reduce image quality?</h3><p>Downscaling discards pixels by design, which is appropriate and usually invisible at display size. Quality settings on lossy formats add a separate, controllable trade-off.</p>
+<h3>Can it enlarge small images?</h3><p>It can scale up, but enlarging cannot recreate detail that was never captured, so results soften. Downscaling is where this tool shines.</p>
+<h3>Does the tool keep EXIF data like location?</h3><p>Re-encoding through the canvas strips metadata, including location tags, which is a privacy benefit when sharing photos. Keep your original file if you need the metadata.</p>
+<h3>What resolution should I target for the web?</h3><p>Match the largest display size on the devices your audience uses, commonly 1,200 to 1,600 pixels wide for content images, and let the format and quality settings handle file size.</p>
 </div>
 
 </div></main>

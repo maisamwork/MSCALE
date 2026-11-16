@@ -19,7 +19,7 @@
 <body>
 <header class="site"><div class="container">
   <a class="brand" href="../index.html"><svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>MSCALE<span>Tools</span></a>
-  <nav class="main"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a><a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a><a href="../index.html#all">All tools</a></nav>
+  <nav class="main"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a><a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a><a href="../blog/">Blog</a><a href="../index.html#all">All tools</a></nav>
 </div></header>
 <main class="container"><div class="tool-wrap">
 <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -39,6 +39,40 @@
   </div>
   <button class="btn" onclick="dateDiff()">Calculate difference</button>
   <div id="dd2-out" class="result">Pick two dates.</div>
+</div>
+<div class="article">
+<h2 class="section">What Is the Date Difference Calculator?</h2>
+<p>How long between two dates is a question with deceptively many answers: days is simple, but working people think in weeks, contracts in months, and life in years. This Date Difference Calculator gives all of them at once, computed properly across real calendar rules including leap years.</p>
+<p>Pick a start date and an end date, and the tool reports the total days between them plus the breakdown in weeks, months and years. Both orders work: the tool computes the absolute gap, so end before start gives the same span.</p>
+<p>Project managers use it for timelines and deadlines, HR for tenure and notice periods, travellers for trip lengths, students for countdowns, and anyone handling contracts, warranties or subscriptions where the exact span matters. It runs entirely in your browser, so the dates you check stay private.</p>
+<h2 class="section">How to Use the Date Difference Calculator</h2>
+<p>Choose two dates and read the results immediately: total days, weeks and days, and the calendar breakdown in years, months and days. Change either date and everything updates together.</p>
+<ol><li>Pick the start date.</li><li>Pick the end date.</li><li>Read the total number of days between them.</li><li>Check the weeks-and-days view for a more human scale.</li><li>Read the years-months-days breakdown for calendar-accurate phrasing.</li></ol>
+<h2 class="section">How the Date Difference Calculator Works</h2>
+<p>Total days counts the actual calendar days between the dates, inclusive of the span's length and correctly handling leap years, because the arithmetic uses real dates rather than a nominal 365-day year. This is the figure to use for interest, deadlines and anything measured in days.</p>
+<p>The weeks-and-days view divides total days by seven, which is how most people actually schedule: a 45-day project is easier to plan as six weeks and three days. The remainder is shown explicitly rather than rounded away.</p>
+<p>The years-months-days breakdown counts completed calendar units, borrowing across unequal month lengths the way age is calculated. This is the phrasing contracts and formal documents use: two years, three months and ten days is a different claim from 815 days, and both views are provided so you can use whichever the situation requires.</p>
+<p>Boundary conventions are the detail that turns a date difference from a calculation into a decision, and they deserve explicit attention. Interest calculations, rental periods and legal notice periods each specify whether the start day, the end day, or both count. The tool reports the span between the dates; translating that span into the convention your document uses is a one-line decision, but making it explicitly is what prevents the off-by-one that surfaces in an audit.</p>
+<p>Month arithmetic has a quirk worth knowing because it affects the years-months-days breakdown: months are counted as completed calendar units, so a span from January 31 to March 1 contains one completed month, February, and one day. This matches how tenancy and employment spans are normally counted, but it can surprise anyone expecting thirty-day months. The days total is always available as the unambiguous alternative.</p>
+<p>A practical tip for recurring calculations: keep the two dates in the same format your source documents use, and re-read them before entering. Transposed day and month values are the most common input error, especially with dates like the third of May, which some regions write 03/05 and others 05/03. The tool accepts dates unambiguously through its picker, which is precisely why pickers beat typed dates for this kind of work.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>Project timeline</h3><p>A project starts March 3 and must finish June 30. The tool reports 119 days, or 17 weeks exactly, which becomes the number the schedule is built around rather than a vague about four months.</p>
+<h3>Tenure and notice periods</h3><p>An employment span from a start date to a leaving date reads as 3 years, 2 months and 14 days, the format HR systems and references require, alongside the 806-day total for records.</p>
+<h3>Travel and subscriptions</h3><p>A trip from the 10th to the 24th is 14 days for insurance purposes; a subscription held from one renewal to the cancellation date shows exactly how many days were paid for.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Using the days figure where the convention requires inclusive counting of both endpoints, or vice versa.</li><li>Expecting the years-months-days breakdown to equal a fixed multiple of the weeks figure.</li><li>Ignoring leap years in hand calculations spanning February.</li><li>Comparing spans across different timezones as if date-only values carried timezone information.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Decide whether your context counts the start day, the end day, or both; the tool reports the span.</li><li>Use the days figure for anything contractual or interest-bearing; it is unambiguous.</li><li>Use the weeks view for planning and the years-months-days view for formal phrasing.</li><li>Leap years are handled automatically, so February spans need no manual adjustment.</li><li>The order of the dates does not matter; the gap is reported as a positive span.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>Does the count include both endpoint dates?</h3><p>The tool reports the span between the dates. If your context counts both the first and last day inclusively, add one day to the total.</p>
+<h3>How are leap years handled?</h3><p>Automatically. The calculation uses real calendar dates, so spans containing February 29 count the extra day correctly.</p>
+<h3>Why do the months differ from multiplying weeks by seven?</h3><p>Months have 28 to 31 days, so a month is not exactly four weeks. The days figure and the calendar breakdown are both exact; they measure the same span in different units.</p>
+<h3>Can I compare a date in the past with one in the future?</h3><p>Yes. Any two valid dates work, and the span is reported as a positive gap regardless of order.</p>
+<h3>What is the maximum range?</h3><p>Any range your browser's date handling supports, which comfortably covers a lifetime and most historical questions.</p>
+<h3>Is anything uploaded?</h3><p>No. The calculation happens entirely in your browser.</p>
+<h3>How do I count business days between dates?</h3><p>This tool counts calendar days. For business days, subtract weekends and holidays from the total, or use a dedicated business-day calculator that applies a holiday calendar.</p>
+<h3>Why does the same span show different month counts in different tools?</h3><p>Month counting conventions differ: completed calendar months versus nominal thirty-day months. This tool uses completed calendar months, the convention most contracts and HR systems use.</p>
+<h3>Can I add or subtract from a date here?</h3><p>This tool measures between two dates. To shift a date by a duration, use the Age Calculator with a future reference date, or compute the target date in a calendar and measure from there.</p>
 </div>
 
 </div></main>
