@@ -60,3 +60,14 @@ document.addEventListener("DOMContentLoaded", () => {
   loadCatalog();
   setupSearch();
 });
+
+(function () {
+  var t = document.getElementById("nav-toggle");
+  var n = document.getElementById("main-nav");
+  if (t && n) {
+    t.addEventListener("click", function () {
+      var open = n.classList.toggle("open");
+      t.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  }
+})();

@@ -28,7 +28,8 @@ ICONS = {
     "zap": '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
     "smartphone": '<rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/>',
     "book-open": '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
-    "shield-check": '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+    "shield-check": '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',    "menu": '<line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>',
+    "arrow-right": '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
 }
 
 INTROS = {
@@ -46,10 +47,24 @@ INTROS = {
     "finance-tools": "Practical finance calculators for loans, interest and taxes \u2014 clear results, no spreadsheets.",
 }
 
-def svg_icon(cat, cls=""):
-    return ('<svg class="' + cls + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+def svg_icon(cat, cls="", color=None):
+    style = f' style="color:{color}"' if color else ""
+    return ('<svg class="' + cls + '"' + style + ' viewBox="0 0 24 24" fill="none" stroke="currentColor" '
             'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
             + ICONS.get(cat, ICONS["wrench"]) + "</svg>")
+
+
+CAT_HUES = {
+    "calculators": "#ff9a3c", "text-tools": "#4cc3ff", "developer-tools": "#a78bfa",
+    "converters": "#2dd4bf", "security": "#34d399", "color-tools": "#f472b6",
+    "random-generators": "#fbbf24", "pdf-tools": "#f87171", "image-tools": "#e879f9",
+    "seo-web-tools": "#22d3ee", "date-time-tools": "#60a5fa", "finance-tools": "#10b981",
+    "wrench": "#ff7000",
+}
+
+
+def hue_of(cat_slug):
+    return CAT_HUES.get(cat_slug, "#ff7000")
 LIVE = [
     ("percentage-calculator", "Percentage Calculator", "Calculators", "Percent of a number, percentage change and more"),
     ("bmi-calculator", "BMI Calculator", "Calculators", "Body Mass Index with weight category"),
@@ -127,10 +142,11 @@ def esc(s):
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
 def header(title, desc, depth=""):
-    nav = "".join(
-        f'<a href="{depth}{slug}/">{name}</a>'
-        for slug, (name, _, _, _) in CAT_PAGES.items()
-    )
+    nav_items = [
+        ("calculators", "Calculators"), ("text-tools", "Text"), ("developer-tools", "Developer"),
+        ("converters", "Converters"), ("pdf-tools", "PDF"), ("image-tools", "Image"),
+    ]
+    nav = "".join(f'<a href="{depth}{slug}/">{name}</a>' for slug, name in nav_items)
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -151,41 +167,51 @@ def header(title, desc, depth=""):
 </head>
 <body>
 <header class="site"><div class="container">
-  <a class="brand" href="{depth}index.html">{svg_icon("wrench", "brand-icon")}MSCALE<span>Tools</span></a>
-  <nav class="main">{nav}<a href="{depth}blog/">Blog</a><a href="{depth}index.html#all">All tools</a></nav>
+  <a class="brand" href="{depth}index.html"><span class="brand-tile">{svg_icon("wrench")}</span>MSCALE<span>Tools</span></a>
+  <nav class="main" id="main-nav">{nav}<a href="{depth}blog/">Blog</a><a class="nav-cta" href="{depth}index.html#all">All tools</a></nav>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">{svg_icon("menu")}</button>
 </div></header>
 <main class="container">"""
 
+
 def footer(depth):
-    cats = "".join(
-        f'<a href="{depth}{slug}/">{name}</a>'
-        for slug, (name, _, _, _) in CAT_PAGES.items()
-    )
-    popular = ["percentage-calculator", "word-counter", "json-formatter", "password-generator",
-               "bmi-calculator", "unit-converter", "image-resizer", "compound-interest-calculator"]
     names_by_slug = {s: n for s, n, _, _ in LIVE}
+    half = (len(CAT_PAGES) + 1) // 2
+    slugs = list(CAT_PAGES.keys())
+    cats1 = "".join(f'<a href="{depth}{slug}/">{CAT_PAGES[slug][0]}</a>' for slug in slugs[:half])
+    cats2 = "".join(f'<a href="{depth}{slug}/">{CAT_PAGES[slug][0]}</a>' for slug in slugs[half:])
+    popular = ["percentage-calculator", "word-counter", "json-formatter", "password-generator",
+               "unit-converter", "image-resizer"]
     pop = "".join(f'<a href="{depth}tools/{s}.html">{names_by_slug[s]}</a>' for s in popular)
     return f"""</main>
 <footer class="site"><div class="container">
   <div class="footer-grid">
     <div class="footer-brand">
-      <a class="brand" href="{depth}index.html">{svg_icon("wrench", "brand-icon")}MSCALE<span>Tools</span></a>
-      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads.</p>
-      <p><a href="https://github.com/maisamwork/MSCALE">GitHub</a></p>
+      <a class="brand" href="{depth}index.html"><span class="brand-tile">{svg_icon("wrench")}</span>MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser \u2014 fast, private, no sign-up, no uploads. {len(LIVE)} tools live, more shipping weekly.</p>
+      <a class="gh-link" href="https://github.com/maisamwork/MSCALE">{svg_icon("developer-tools", "", "#e6e9f0")}<span>github.com/maisamwork/MSCALE</span></a>
     </div>
     <div>
       <h4>Categories</h4>
-      {cats}
+      {cats1}
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      {cats2}
     </div>
     <div>
       <h4>Popular tools</h4>
       {pop}
+      <h4 class="gap-top">Resources</h4>
+      <a href="{depth}blog/">Blog</a>
+      <a href="{depth}index.html#all">All live tools</a>
     </div>
   </div>
-  <p class="copyright">© 2026 MSCALE Tools. All processing happens client-side in your browser.</p>
+  <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser \u2014 your data never leaves your device.</p>
 </div></footer>
 </body>
 </html>"""
+
 
 TOOL_BODIES = {
 "percentage-calculator": """
@@ -682,7 +708,7 @@ def blog_post_html(post):
         "author": {"@type": "Organization", "name": "MSCALE Tools"},
     })
     related = "".join(
-        f'<a class="card" href="../tools/{s}.html"><div class="card-head">{svg_icon(CAT_SLUG_BY_NAME.get(c, "wrench"), "card-ic")}<h3>{n}</h3></div><p>{d}</p><span class="tag">LIVE</span></a>'
+        f'<a class="card" href="../tools/{s}.html"><div class="card-head">{svg_icon(CAT_SLUG_BY_NAME.get(c, "wrench"), "card-ic", hue_of(CAT_SLUG_BY_NAME.get(c, "wrench")))}<h3>{n}</h3></div><p>{d}</p><span class="tag">LIVE</span></a>'
         for s, n, c, d in LIVE[:4]
     )
     return (
@@ -731,7 +757,7 @@ def tool_page(slug, name, cat, desc):
     rel_html = ""
     if related:
         rel_html = "<h2 class='section'>Related tools</h2><div class='grid'>" + "".join(
-            f"<a class='card' href='../tools/{s}.html'><div class='card-head'>{svg_icon(cat_slug, 'card-ic')}<h3>{n}</h3></div></a>"
+            f"<a class='card' href='../tools/{s}.html'><div class='card-head'>{svg_icon(cat_slug, 'card-ic', hue_of(cat_slug))}<h3>{n}</h3></div></a>"
             for s, n in related
         ) + "</div>"
     crumb = f"""<nav class="breadcrumb" aria-label="Breadcrumb">
@@ -799,17 +825,17 @@ def index_page(catalog):
     cat_cards = ""
     for slug, (name, _, _, _) in CAT_PAGES.items():
         n = cat_counts.get(slug, 0) + len([1 for s, _, c, _ in LIVE if CAT_SLUG_BY_NAME.get(c) == slug])
-        cat_cards += (f"<a class='cat-card' href='{slug}/'><span class='icon-box'>{svg_icon(slug)}</span>"
-                      f"<h3>{name}</h3><p>{n} tools</p></a>")
+        cat_cards += (f"<a class='cat-card' href='{slug}/'><span class='icon-box' style='color:{hue_of(slug)};background:{hue_of(slug)}22'>{svg_icon(slug)}</span>"
+                      f"<h3>{name}</h3><p>{n} tools<span class='cat-arrow'>{svg_icon('arrow-right')}</span></p></a>")
     featured_slugs = ["percentage-calculator", "word-counter", "json-formatter", "password-generator",
                       "unit-converter", "color-converter", "image-resizer", "loan-emi-calculator"]
     live_by_slug = {s: (n, c, d) for s, n, c, d in LIVE}
     featured_cards = "".join(
-        f"<a class='card' href='tools/{s}.html'><div class='card-head'>{svg_icon(CAT_SLUG_BY_NAME.get(live_by_slug[s][1], 'wrench'), 'card-ic')}<h3>{live_by_slug[s][0]}</h3></div><p>{live_by_slug[s][2]}</p><span class='tag'>LIVE</span></a>"
+        f"<a class='card' href='tools/{s}.html'><div class='card-head'>{svg_icon(CAT_SLUG_BY_NAME.get(live_by_slug[s][1], 'wrench'), 'card-ic', hue_of(CAT_SLUG_BY_NAME.get(live_by_slug[s][1], 'wrench')))}<h3>{live_by_slug[s][0]}</h3></div><p>{live_by_slug[s][2]}</p><span class='tag'>LIVE</span></a>"
         for s in featured_slugs if s in live_by_slug
     )
     all_cards = "".join(
-        f"<a class='card' href='tools/{s}.html'><div class='card-head'>{svg_icon(CAT_SLUG_BY_NAME.get(c, 'wrench'), 'card-ic')}<h3>{n}</h3></div><p>{d}</p><span class='tag'>LIVE</span></a>"
+        f"<a class='card' href='tools/{s}.html'><div class='card-head'>{svg_icon(CAT_SLUG_BY_NAME.get(c, 'wrench'), 'card-ic', hue_of(CAT_SLUG_BY_NAME.get(c, 'wrench')))}<h3>{n}</h3></div><p>{d}</p><span class='tag'>LIVE</span></a>"
         for s, n, c, d in LIVE
     )
     blog_cards = "".join(
@@ -830,10 +856,10 @@ def index_page(catalog):
   <p id="count-note" style="font-size:13px"></p>
 </div>
 <section class="features">
-  <div class="feature">{svg_icon("zap")}<div><b>Fast &amp; free</b><span>No sign-up, no limits</span></div></div>
-  <div class="feature">{svg_icon("shield-check")}<div><b>100% private</b><span>Everything runs on your device</span></div></div>
-  <div class="feature">{svg_icon("smartphone")}<div><b>Works anywhere</b><span>Desktop, tablet and mobile</span></div></div>
-  <div class="feature">{svg_icon("converters")}<div><b>Always growing</b><span>New tools added regularly</span></div></div>
+  <div class="feature"><span class="f-tile" style="color:#ff9a3c;background:rgba(255,154,60,.14)">{svg_icon("zap")}</span><div><b>Fast &amp; free</b><span>No sign-up, no limits</span></div></div>
+  <div class="feature"><span class="f-tile" style="color:#34d399;background:rgba(52,211,153,.14)">{svg_icon("shield-check")}</span><div><b>100% private</b><span>Everything runs on your device</span></div></div>
+  <div class="feature"><span class="f-tile" style="color:#60a5fa;background:rgba(96,165,250,.14)">{svg_icon("smartphone")}</span><div><b>Works anywhere</b><span>Desktop, tablet and mobile</span></div></div>
+  <div class="feature"><span class="f-tile" style="color:#a78bfa;background:rgba(167,139,250,.14)">{svg_icon("converters")}</span><div><b>Always growing</b><span>New tools added regularly</span></div></div>
 </section>
 <h2 class="section">Popular tool categories</h2>
 <div class="cat-grid">{cat_cards}</div>
@@ -849,7 +875,7 @@ def index_page(catalog):
 def category_page(slug, name, icon, live_slugs, catalog_cat):
     live_names_by_slug = {s: (n, d) for s, n, _, d in LIVE}
     live_cards = "".join(
-        f"<a class='card' href='../tools/{s}.html'><div class='card-head'>{svg_icon(slug, 'card-ic')}<h3>{live_names_by_slug[s][0]}</h3></div>"
+        f"<a class='card' href='../tools/{s}.html'><div class='card-head'>{svg_icon(slug, 'card-ic', hue_of(slug))}<h3>{live_names_by_slug[s][0]}</h3></div>"
         f"<p>{live_names_by_slug[s][1]}</p><span class='tag'>LIVE</span></a>"
         for s in live_slugs
     )
