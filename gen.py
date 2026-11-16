@@ -764,7 +764,7 @@ def tools_index_html(catalog):
 <span>All tools</span>
 </nav>
 <div class="tools-head">
-  <h1>Explore {total_live + total_catalog}+ free tools</h1>
+  <h1>Explore {total_live + total_catalog}+ <em>free tools</em></h1>
   <p>Search and filter the most complete browser-based toolbox. 100% private, no sign-up, instant results.</p>
 </div>
 <div class="tools-stats">
@@ -908,7 +908,7 @@ def index_page(catalog):
     return header("MSCALE Tools \u2014 Free Online Tools", "Free online calculators, text tools, developer tools and converters. Fast, private, no sign-up.") + f"""
 <div class="hero hero-new">
   <p class="hero-kicker">Free online tools</p>
-  <h1>All-in-one tools platform</h1>
+  <h1>All-in-one <em>tools platform</em></h1>
   <p class="hero-sub">Fast, free and easy-to-use online tools for productivity, development, design and more. No sign-up \u2014 everything runs right in your browser.</p>
   <form class="hero-search" onsubmit="event.preventDefault();var el=document.getElementById('tool-list');if(el)el.scrollIntoView({{behavior:'smooth'}});">
     {svg_icon("search", "search-ic")}
