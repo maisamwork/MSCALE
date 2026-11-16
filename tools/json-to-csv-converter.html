@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>JSON to CSV Converter — Free Online Tool | MSCALE Tools</title>
+<meta name="description" content="Convert a JSON array of objects into a clean CSV for Excel or Google Sheets. Quote-aware, private and free, right in your browser."/>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="JSON to CSV Converter — Free Online Tool | MSCALE Tools"/>
+<meta property="og:description" content="Convert a JSON array of objects into a clean CSV for Excel or Google Sheets. Quote-aware, private and free, right in your browser."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
+<script>document.documentElement.setAttribute("data-theme", (function(){try{return localStorage.getItem("mscale-theme")||"dark"}catch(e){return "dark"}})());</script>
+<link rel="stylesheet" href="../assets/style.css"/>
+<script src="../assets/live-tools.js" defer></script>
+<script src="../assets/app.js" defer></script>
+<script src="../assets/tools.js" defer></script>
+</head>
+<body>
+<header class="site"><div class="container">
+  <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+  <nav class="main" id="main-nav"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text</a><a href="../developer-tools/">Developer</a><a href="../converters/">Converters</a><a href="../pdf-tools/">PDF</a><a href="../image-tools/">Image</a><a href="../blog/">Blog</a><a class="nav-cta" href="../tools/">All tools</a></nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme"><svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  </div>
+</div></header>
+<main class="container"><div class="tool-wrap">
+<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html"><svg class="crumb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="../developer-tools/">Developer Tools</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>JSON to CSV Converter</span>
+</nav>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "JSON to CSV Converter", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Convert a JSON array of objects into a clean CSV for Excel or Google Sheets. Quote-aware, private and free, right in your browser.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>JSON to CSV Converter</h1></div><p>Convert a JSON array of objects into a clean CSV for Excel or Google Sheets. Quote-aware, private and free, right in your browser.</p></div>
+
+<div class="panel">
+  <label>JSON array of objects</label>
+  <textarea id="j2c-in" placeholder='[{"name": "Ada", "role": "Engineer"}, {"name": "Grace", "role": "Admiral"}]'></textarea>
+  <button class="btn" onclick="jsonToCsv()">Convert to CSV</button>
+  <label>CSV output</label>
+  <textarea id="j2c-out" style="min-height:180px" readonly></textarea>
+  <button class="btn" onclick="copyText('j2c-out')">Copy CSV</button>
+  <a id="j2c-dl" class="btn ghost" style="display:none;margin-left:6px" download="data.csv">Download .csv</a>
+</div>
+<div class="article">
+<h2 class="section">What Is the JSON to CSV Converter?</h2>
+<p>Data lives in JSON but decisions happen in spreadsheets. APIs return arrays of objects, logs export structured records, and databases dump rows as JSON, while managers, accountants and analysts all want a CSV they can open in Excel. This JSON to CSV Converter turns a JSON array of objects into a clean CSV, entirely in your browser, with correct handling of nested values and quoting.</p>
+<p>Paste your JSON or drop a file, and the tool collects the keys from your objects, uses them as the header row, and writes one line per record with proper escaping. Strings containing commas, quotes or newlines are wrapped and escaped exactly as the CSV standard requires, so the file opens correctly in Excel, Google Sheets and any other tool.</p>
+<p>The direction matters: the CSV to JSON tool on this site handles the way in, and this one handles the way out. Together they cover the full round trip between spreadsheet world and API world, with no upload of your data at any point, which matters when the rows are customers, orders or anything else confidential.</p>
+<h2 class="section">How to Use the JSON to CSV Converter</h2>
+<p>Paste a JSON array of objects or load a file, then convert. The tool writes a header row from the object keys and one CSV line per record, quoting values where needed, ready to copy or download.</p>
+<ol><li>Paste your JSON into the input box, or click to load a .json file.</li><li>Check that the JSON is an array of objects; the tool reports a clear error if it is not.</li><li>Click Convert to produce the CSV output.</li><li>Review the header row; it is built from the keys found across your objects.</li><li>Use Copy to grab the CSV, or Download to save it as a .csv file.</li><li>Open the result in Excel or Google Sheets to confirm the columns line up.</li></ol>
+<h2 class="section">How the JSON to CSV Converter Works</h2>
+<p>The converter first parses your JSON with the browser's own parser, so malformed input is caught immediately with a meaningful error instead of a broken file. It then walks the array and gathers the union of all keys, because real-world records are rarely uniform: one object may have a field another lacks. Missing values become empty cells, and the header always contains every column found anywhere in the data.</p>
+<p>Values are stringified sensibly. Numbers keep their digits, booleans become true and false, nulls become empty cells, and nested objects or arrays are written as compact JSON strings inside the cell so no information is silently lost. Every value that contains a comma, a double quote or a line break is wrapped in quotes, and embedded quotes are doubled, which is exactly what RFC 4180, the CSV standard, requires.</p>
+<p>Doing this locally is the privacy-preserving choice. Spreadsheet exports often contain names, emails, salaries or order details, and pasting them into a random web converter sends that data to someone else's server. Here the parsing, transformation and file generation all happen in your browser's memory, and the download is created on your device, so the data follows the same path it would in an offline desktop tool.</p>
+<p>Character encoding is the quiet variable in CSV work. The tool outputs UTF-8, which covers every language and symbol, and Excel reads it correctly when you open the file directly or choose UTF-8 in the import dialog. Problems appear when a tool assumes a legacy Windows encoding and displays accented characters as mojibake; re-importing with UTF-8 selected fixes it, which is why the import dialog, not the file, is the first thing to check.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>API data for a report</h3><p>A developer pulls 500 order records from a shop API as JSON. Converting them to CSV produces a spreadsheet the sales team can filter and pivot without any technical help.</p>
+<h3>Log analysis</h3><p>A server exports structured log entries as JSON lines converted into an array. The CSV output lets an analyst sort by timestamp, filter by error type and chart volumes in Excel.</p>
+<h3>Database handoff</h3><p>A NoSQL collection exported as JSON needs to reach a client who lives in spreadsheets. One conversion produces the familiar column-and-row file, with nested attributes preserved inside cells.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Pasting a single JSON object instead of an array; wrap it in square brackets so the tool has rows to work with.</li><li>Assuming every object has the same keys; the header is built from all keys found, and missing ones become empty cells.</li><li>Opening the CSV in a tool that guesses encodings when the data contains non-Latin characters; choose UTF-8 when importing.</li><li>Hand-editing quoted cells afterwards and breaking the quoting; re-convert from the JSON instead.</li><li>Forgetting that nested objects become JSON strings in a cell, which is lossless but not column-split.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Validate in the other direction too: convert the CSV back with the CSV to JSON tool to confirm the round trip.</li><li>Keep the JSON as your source of truth and regenerate the CSV whenever the data changes.</li><li>Use Copy for quick pastes into Google Sheets and Download for files you will email or archive.</li><li>Check the header row first when a conversion looks wrong; unexpected keys reveal unexpected data.</li><li>Sort and filter in the spreadsheet, not in the JSON, once the data is in CSV form.</li><li>Remember the tool works offline once loaded, so sensitive exports never need to leave your machine.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>Does my data get uploaded?</h3><p>No. Parsing and conversion happen entirely in your browser. The CSV is generated in memory and downloaded locally, with no server involved.</p>
+<h3>What JSON shape does the tool accept?</h3><p>An array of objects, such as a list of records with named fields. A single object should be wrapped in brackets to become a one-row table.</p>
+<h3>How are nested objects and arrays handled?</h3><p>They are written into the cell as compact JSON strings, so no data is lost. Flatten your objects first if you need each nested field as its own column.</p>
+<h3>Are commas and quotes in values handled correctly?</h3><p>Yes. Values containing commas, quotes or newlines are wrapped in quotes and internal quotes are doubled, following the CSV standard, so Excel and Sheets parse them correctly.</p>
+<h3>What happens if objects have different keys?</h3><p>The header contains the union of all keys, and any record missing a key simply gets an empty cell in that column.</p>
+<h3>Is there a size limit?</h3><p>The practical limit is your browser's memory. Thousands of records convert in well under a second on an ordinary computer.</p>
+</div>
+<h2 class='section'>Related tools</h2><div class='grid'><a class='card' href='../tools/json-formatter.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>JSON Formatter</h3></div></a><a class='card' href='../tools/base64-encoder-decoder.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>Base64 Encode / Decode</h3></div></a><a class='card' href='../tools/url-encoder-decoder.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>URL Encoder / Decoder</h3></div></a><a class='card' href='../tools/uuid-generator.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>UUID Generator</h3></div></a></div>
+</div></main>
+<footer class="site"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads. 47 tools live, more shipping weekly.</p>
+      <a class="gh-link" href="https://github.com/maisamwork/MSCALE"><svg class="" style="color:#e6e9f0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>github.com/maisamwork/MSCALE</span></a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a>
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      <a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a>
+    </div>
+    <div>
+      <h4>Popular tools</h4>
+      <a href="../tools/percentage-calculator.html">Percentage Calculator</a><a href="../tools/word-counter.html">Word Counter</a><a href="../tools/json-formatter.html">JSON Formatter</a><a href="../tools/password-generator.html">Password Generator</a><a href="../tools/unit-converter.html">Unit Converter</a><a href="../tools/image-resizer.html">Image Resizer</a>
+      <h4 class="gap-top">Resources</h4>
+      <a href="../blog/">Blog</a>
+      <a href="../tools/">All tools</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser — your data never leaves your device.</p>
+</div></footer>
+</body>
+</html>

@@ -548,3 +548,356 @@ function dateDiff() {
   if (m < 0) { y--; m += 12; }
   out("dd2-out", `<b>${days.toLocaleString()}</b> days total<br>or <b>${y}</b> years, <b>${m}</b> months, <b>${d}</b> days<br>or <b>${Math.floor(days / 7)}</b> weeks and ${days % 7} day(s)<br>or <b>${(days * 24).toLocaleString()}</b> hours`);
 }
+
+/* ---------- Batch 9+10 tools ---------- */
+function dlBytes(bytes, name, type) {
+  const url = URL.createObjectURL(new Blob([bytes], { type }));
+  const a = document.createElement("a");
+  a.href = url; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+/* PDF Merge */
+let pmFiles = [];
+function pmRender() {
+  const el = document.getElementById("pm-list");
+  el.innerHTML = pmFiles.map((f, i) =>
+    `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:14px">` +
+    `<b style="color:var(--accent);min-width:18px">${i + 1}.</b> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>` +
+    `<button class="btn ghost" style="margin:0;padding:3px 9px;font-size:12px" onclick="pmMove(${i},-1)">↑</button>` +
+    `<button class="btn ghost" style="margin:0;padding:3px 9px;font-size:12px" onclick="pmMove(${i},1)">↓</button>` +
+    `<button class="btn ghost" style="margin:0;padding:3px 9px;font-size:12px" onclick="pmDel(${i})">✕</button></div>`).join("");
+}
+function pmMove(i, d) { const j = i + d; if (j < 0 || j >= pmFiles.length) return; [pmFiles[i], pmFiles[j]] = [pmFiles[j], pmFiles[i]]; pmRender(); }
+function pmDel(i) { pmFiles.splice(i, 1); pmRender(); }
+document.addEventListener("change", (e) => {
+  if (e.target && e.target.id === "pm-files") { pmFiles = [...e.target.files]; pmRender(); }
+});
+async function pdfMerge() {
+  if (pmFiles.length < 2) { out("pm-out", "Select at least two PDF files."); return; }
+  if (!window.PDFLib) { out("pm-out", '<span class="error">PDF library still loading — try again in a second.</span>'); return; }
+  try {
+    const { PDFDocument } = window.PDFLib;
+    const merged = await PDFDocument.create();
+    for (const f of pmFiles) {
+      const src = await PDFDocument.load(await f.arrayBuffer(), { ignoreEncryption: true });
+      (await merged.copyPages(src, src.getPageIndices())).forEach((p) => merged.addPage(p));
+    }
+    const name = (document.getElementById("pm-name").value || "merged.pdf").replace(/\.pdf$/i, "") + ".pdf";
+    dlBytes(await merged.save(), name, "application/pdf");
+    out("pm-out", `Merged <b>${pmFiles.length}</b> files into <b>${merged.getPageCount()}</b> pages. Your download has started.`);
+  } catch (err) {
+    out("pm-out", '<span class="error">Could not read a file. Make sure every file is a valid, non-encrypted PDF.</span>');
+  }
+}
+
+/* PDF Split */
+function parseRanges(str, max) {
+  const pages = new Set();
+  for (const part of str.split(",")) {
+    const t = part.trim();
+    if (!t) continue;
+    const m = t.match(/^(\d+)-(\d+)$/);
+    if (m) {
+      let a = +m[1], b = +m[2];
+      if (a > b) [a, b] = [b, a];
+      for (let p = a; p <= b; p++) { if (p < 1 || p > max) return null; pages.add(p - 1); }
+    } else if (/^\d+$/.test(t)) {
+      const p = +t;
+      if (p < 1 || p > max) return null;
+      pages.add(p - 1);
+    } else return null;
+  }
+  return [...pages].sort((a, b) => a - b);
+}
+async function pdfSplit() {
+  const f = document.getElementById("ps-file").files[0];
+  if (!f) { out("ps-out", "Select a PDF file first."); return; }
+  if (!window.PDFLib) { out("ps-out", '<span class="error">PDF library still loading — try again in a second.</span>'); return; }
+  try {
+    const { PDFDocument } = window.PDFLib;
+    const src = await PDFDocument.load(await f.arrayBuffer(), { ignoreEncryption: true });
+    const max = src.getPageCount();
+    const idx = parseRanges(document.getElementById("ps-range").value, max);
+    if (!idx || !idx.length) { out("ps-out", `<span class="error">Invalid range. This file has ${max} pages — use numbers from 1 to ${max}, like 1-3,5.</span>`); return; }
+    const doc = await PDFDocument.create();
+    (await doc.copyPages(src, idx)).forEach((p) => doc.addPage(p));
+    const name = (document.getElementById("ps-name").value || "extracted.pdf").replace(/\.pdf$/i, "") + ".pdf";
+    dlBytes(await doc.save(), name, "application/pdf");
+    out("ps-out", `Extracted <b>${idx.length}</b> of ${max} pages. Your download has started.`);
+  } catch (err) {
+    out("ps-out", '<span class="error">Could not read the file. Is it a valid, non-encrypted PDF?</span>');
+  }
+}
+
+/* Image Compressor */
+function imgCompress() {
+  const f = document.getElementById("ic-file").files[0];
+  if (!f) { out("ic-out", "Select an image first."); return; }
+  const img = new Image();
+  img.onload = () => {
+    const maxW = parseInt(document.getElementById("ic-w").value) || img.width;
+    const scale = Math.min(1, maxW / img.width);
+    const c = document.createElement("canvas");
+    c.width = Math.max(1, Math.round(img.width * scale));
+    c.height = Math.max(1, Math.round(img.height * scale));
+    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+    const fmt = document.getElementById("ic-fmt").value;
+    const q = parseInt(document.getElementById("ic-q").value) / 100;
+    c.toBlob((b) => {
+      if (!b) { out("ic-out", '<span class="error">Could not encode in this format — try JPEG.</span>'); return; }
+      const kb1 = (f.size / 1024).toFixed(1), kb2 = (b.size / 1024).toFixed(1);
+      const pct = Math.max(0, Math.round((1 - b.size / f.size) * 100));
+      out("ic-out", `Original: <b>${kb1} KB</b> → Compressed: <b>${kb2} KB</b> (${pct}% smaller, ${c.width}×${c.height}px)`);
+      const url = URL.createObjectURL(b);
+      const pv = document.getElementById("ic-preview"); pv.src = url; pv.style.display = "block";
+      const dl = document.getElementById("ic-dl"); dl.href = url; dl.style.display = "inline-flex";
+      dl.download = f.name.replace(/\.\w+$/, "") + "-compressed." + (fmt === "image/png" ? "png" : fmt === "image/webp" ? "webp" : "jpg");
+    }, fmt, q);
+  };
+  img.onerror = () => out("ic-out", '<span class="error">Could not read that image file.</span>');
+  img.src = URL.createObjectURL(f);
+}
+
+/* Image Cropper */
+let icrImg = null;
+document.addEventListener("change", (e) => {
+  if (e.target && e.target.id === "icr-file") {
+    const f = e.target.files[0];
+    if (!f) return;
+    const img = new Image();
+    img.onload = () => {
+      icrImg = img;
+      document.getElementById("icr-dims").textContent = `Original: ${img.width} × ${img.height} px`;
+      document.getElementById("icr-w").value = img.width;
+      document.getElementById("icr-h").value = img.height;
+      out("icr-out", `Image loaded (${img.width}×${img.height}). Set the crop area and click Apply crop.`);
+    };
+    img.src = URL.createObjectURL(f);
+  }
+});
+function imgCrop() {
+  if (!icrImg) { out("icr-out", "Load an image first."); return; }
+  const W = icrImg.width, H = icrImg.height;
+  let x = parseInt(document.getElementById("icr-x").value) || 0;
+  let y = parseInt(document.getElementById("icr-y").value) || 0;
+  let w = parseInt(document.getElementById("icr-w").value) || (W - x);
+  let h = parseInt(document.getElementById("icr-h").value) || (H - y);
+  x = Math.max(0, Math.min(x, W - 1)); y = Math.max(0, Math.min(y, H - 1));
+  w = Math.max(1, Math.min(w, W - x)); h = Math.max(1, Math.min(h, H - y));
+  const c = document.createElement("canvas");
+  let ow = parseInt(document.getElementById("icr-ow").value) || w;
+  ow = Math.max(1, Math.min(ow, w));
+  c.width = ow; c.height = Math.max(1, Math.round(h * (ow / w)));
+  c.getContext("2d").drawImage(icrImg, x, y, w, h, 0, 0, c.width, c.height);
+  const fmt = document.getElementById("icr-fmt").value;
+  c.toBlob((b) => {
+    out("icr-out", `Cropped to <b>${w}×${h}</b> from (${x}, ${y})` + (ow !== w ? `, resized to <b>${c.width}×${c.height}</b>` : "") + ".");
+    const url = URL.createObjectURL(b);
+    const pv = document.getElementById("icr-preview"); pv.src = url; pv.style.display = "block";
+    const dl = document.getElementById("icr-dl"); dl.href = url; dl.style.display = "inline-flex";
+    dl.download = "cropped." + (fmt === "image/jpeg" ? "jpg" : "png");
+  }, fmt, 0.92);
+}
+
+/* Meta Tag Generator */
+function metaGen() {
+  const v = (id) => (document.getElementById(id).value || "").trim();
+  const esc2 = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const title = v("mt-title"), desc = v("mt-desc"), url = v("mt-url"), author = v("mt-author"), img = v("mt-img");
+  const g = document.getElementById("mt-google");
+  g.innerHTML = `<div style="color:#1a0dab;font-size:18px;line-height:1.3">${esc2(title || "Your page title appears here")}</div>` +
+    `<div style="color:#006621;font-size:13px">${esc2(url || "https://example.com")}</div>` +
+    `<div style="color:#545454;font-size:13.5px;line-height:1.45">${esc2(desc || "Your meta description appears here — aim for 140–160 characters.")}</div>`;
+  const lines = [
+    `<!-- Primary meta tags -->`,
+    `<title>${esc2(title)}</title>`,
+    `<meta name="description" content="${esc2(desc)}" />`,
+    author ? `<meta name="author" content="${esc2(author)}" />` : "",
+    url ? `<link rel="canonical" href="${esc2(url)}" />` : "",
+    ``,
+    `<!-- Open Graph / Facebook / LinkedIn -->`,
+    `<meta property="og:type" content="website" />`,
+    url ? `<meta property="og:url" content="${esc2(url)}" />` : "",
+    `<meta property="og:title" content="${esc2(title)}" />`,
+    `<meta property="og:description" content="${esc2(desc)}" />`,
+    img ? `<meta property="og:image" content="${esc2(img)}" />` : "",
+    ``,
+    `<!-- Twitter -->`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${esc2(title)}" />`,
+    `<meta name="twitter:description" content="${esc2(desc)}" />`,
+    img ? `<meta name="twitter:image" content="${esc2(img)}" />` : "",
+  ];
+  document.getElementById("mt-code").value = lines.filter((l) => l !== "").join("\n");
+}
+
+/* Keyword Density Checker */
+const KD_STOP = new Set(("a,an,the,and,or,but,if,then,else,when,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,down,in,out,on,off,over,under,again,further,once,here,there,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,can,will,just,is,are,was,were,be,been,being,have,has,had,having,do,does,did,doing,would,should,could,of,it,its,this,that,these,those,i,you,he,she,we,they,them,his,her,their,our,your,my,me,as").split(","));
+function kwDensity() {
+  const raw = document.getElementById("kd-in").value;
+  const stop = document.getElementById("kd-stop").checked;
+  const words = raw.toLowerCase().replace(/[^\p{L}\p{N}'’\- ]/gu, " ").split(/\s+/).filter(Boolean);
+  if (words.length < 10) { out("kd-out", "Paste at least a paragraph of text."); return; }
+  const kept = stop ? words.filter((w) => !KD_STOP.has(w)) : words;
+  const total = words.length;
+  const tables = [[], [], []];
+  for (let n = 1; n <= 3; n++) {
+    const counts = new Map();
+    for (let i = 0; i + n <= kept.length; i++) {
+      const gram = kept.slice(i, i + n).join(" ");
+      counts.set(gram, (counts.get(gram) || 0) + 1);
+    }
+    tables[n - 1] = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+  }
+  const max1 = tables[0].length ? tables[0][0][1] : 1;
+  const bar = (c) => `<div style="display:inline-block;height:9px;background:var(--grad);border-radius:5px;width:${Math.max(2, Math.round(c / max1 * 130))}px"></div>`;
+  const fmt = (n) => tables[n - 1].map(([g, c]) =>
+    `<div class="wf-row"><span class="wf-word" style="width:190px">${g}</span>${n === 1 ? bar(c) : ""}<span style="margin-left:auto;font-size:12.5px;color:var(--muted)">${c}× · ${(c / total * 100).toFixed(1)}%</span></div>`).join("") || "<p>—</p>";
+  out("kd-out",
+    `<p style="margin:0 0 10px">Total words: <b>${total}</b>${stop ? ` · analysing <b>${kept.length}</b> after stopword filter` : ""}</p>` +
+    `<b>One-word phrases</b>${fmt(1)}<br><b>Two-word phrases</b>${fmt(2)}<br><b>Three-word phrases</b>${fmt(3)}`);
+}
+
+/* XML Sitemap Generator */
+function sitemapGen() {
+  const urls = [...new Set(document.getElementById("sm-urls").value.split(/\s+/).filter(Boolean))];
+  const freq = document.getElementById("sm-freq").value;
+  const prio = document.getElementById("sm-prio").value;
+  const ok = urls.filter((u) => /^https?:\/\/.+\..+/.test(u));
+  const skipped = urls.length - ok.length;
+  const today = new Date().toISOString().slice(0, 10);
+  const esc2 = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const body = ok.map((u) =>
+    `  <url>\n    <loc>${esc2(u)}</loc>\n    <lastmod>${today}</lastmod>` +
+    (freq ? `\n    <changefreq>${freq}</changefreq>` : "") +
+    (prio ? `\n    <priority>${prio}</priority>` : "") + `\n  </url>`).join("\n");
+  const xml = ok.length ? `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>` : "";
+  document.getElementById("sm-out").value = xml;
+  const dl = document.getElementById("sm-dl");
+  if (ok.length) {
+    dl.href = URL.createObjectURL(new Blob([xml], { type: "application/xml" }));
+    dl.style.display = "inline-flex";
+  } else dl.style.display = "none";
+  const note = document.getElementById("sm-out");
+  note.placeholder = ok.length
+    ? `Generated ${ok.length} URL entries${skipped ? ` · ${skipped} invalid skipped (use full https:// addresses)` : ""}`
+    : "Paste at least one valid URL (starting with https://)";
+}
+
+/* Slug Generator */
+function slugifyOne(t, sep, lower, stop, maxLen) {
+  let s = t.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  s = s.replace(/[^A-Za-z0-9\s\-_]/g, " ").trim();
+  let parts = s.split(/[\s\-_]+/).filter(Boolean);
+  if (lower) parts = parts.map((p) => p.toLowerCase());
+  if (stop) parts = parts.filter((p) => !KD_STOP.has(p.toLowerCase()));
+  if (maxLen > 0 && parts.length) {
+    const outp = [];
+    let len = 0;
+    for (const p of parts) {
+      const add = p.length + (outp.length ? 1 : 0);
+      if (len + add > maxLen) break;
+      outp.push(p); len += add;
+    }
+    if (outp.length) parts = outp;
+  }
+  return parts.join(sep);
+}
+function slugGen() {
+  const lines = document.getElementById("sl-in").value.split("\n").map((l) => l.trim()).filter(Boolean);
+  if (!lines.length) { document.getElementById("sl-out").value = ""; return; }
+  const sep = document.getElementById("sl-sep").value;
+  const lower = document.getElementById("sl-lower").checked;
+  const stop = document.getElementById("sl-stop").checked;
+  const maxLen = parseInt(document.getElementById("sl-len").value) || 0;
+  document.getElementById("sl-out").value = lines.map((l) => slugifyOne(l, sep, lower, stop, maxLen)).join("\n");
+}
+
+/* Invoice Generator */
+function invAddRow() {
+  const div = document.createElement("div");
+  div.className = "row inv-row";
+  div.style.marginBottom = "6px";
+  div.innerHTML = `<div style="flex:3"><input type="text" placeholder="Description" oninput="invoiceRender()" /></div>` +
+    `<div><input type="number" placeholder="Qty" value="1" min="0" oninput="invoiceRender()" /></div>` +
+    `<div><input type="number" placeholder="Rate" min="0" step="0.01" oninput="invoiceRender()" /></div>` +
+    `<div style="flex:0"><button class="btn ghost" style="margin:0;padding:9px 12px" onclick="this.closest('.inv-row').remove();invoiceRender()">✕</button></div>`;
+  document.getElementById("inv-items").appendChild(div);
+  invoiceRender();
+}
+function invItems() {
+  return [...document.querySelectorAll("#inv-items .inv-row")].map((r) => {
+    const inputs = r.querySelectorAll("input");
+    return { d: inputs[0].value, q: parseFloat(inputs[1].value) || 0, rate: parseFloat(inputs[2].value) || 0 };
+  }).filter((i) => i.d || i.q * i.rate);
+}
+function invoiceRender() {
+  const v = (id) => (document.getElementById(id).value || "").trim();
+  const items = invItems();
+  const taxPct = parseFloat(v("inv-tax")) || 0;
+  const sub = items.reduce((s, i) => s + i.q * i.rate, 0);
+  const tax = sub * taxPct / 100;
+  const money = (n) => n.toFixed(2);
+  const rows = items.map((i) =>
+    `<tr><td style="padding:7px 4px;border-bottom:1px solid var(--border)">${i.d || "—"}</td>` +
+    `<td style="padding:7px 4px;border-bottom:1px solid var(--border);text-align:center">${i.q || ""}</td>` +
+    `<td style="padding:7px 4px;border-bottom:1px solid var(--border);text-align:right">${money(i.rate)}</td>` +
+    `<td style="padding:7px 4px;border-bottom:1px solid var(--border);text-align:right">${money(i.q * i.rate)}</td></tr>`).join("");
+  document.getElementById("inv-print").innerHTML =
+    `<div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px">` +
+    `<div><div style="font-size:22px;font-weight:800;color:var(--accent)">INVOICE</div>` +
+    `<div style="font-size:12px;color:var(--muted)">#${v("inv-num") || "—"}</div></div>` +
+    `<div style="font-size:12.5px;color:var(--muted);text-align:right">Issued: ${v("inv-date") || "—"}<br>Due: ${v("inv-due") || "—"}</div></div>` +
+    `<div style="display:flex;gap:30px;margin:18px 0;flex-wrap:wrap;font-size:13px">` +
+    `<div><b>From</b><br>${v("inv-from") || "—"}<br><span style="color:var(--muted)">${v("inv-from2")}</span></div>` +
+    `<div><b>To</b><br>${v("inv-to") || "—"}<br><span style="color:var(--muted)">${v("inv-to2")}</span></div></div>` +
+    `<table style="width:100%;border-collapse:collapse;font-size:13.5px"><tr>` +
+    `<th style="text-align:left;padding:7px 4px;border-bottom:2px solid var(--border2)">Description</th>` +
+    `<th style="text-align:center;padding:7px 4px;border-bottom:2px solid var(--border2)">Qty</th>` +
+    `<th style="text-align:right;padding:7px 4px;border-bottom:2px solid var(--border2)">Rate</th>` +
+    `<th style="text-align:right;padding:7px 4px;border-bottom:2px solid var(--border2)">Amount</th></tr>` +
+    (rows || `<tr><td colspan="4" style="padding:10px;color:var(--muted)">No line items yet.</td></tr>`) +
+    `</table>` +
+    `<div style="margin-top:14px;text-align:right;font-size:14px">` +
+    `<div>Subtotal: <b>${money(sub)}</b></div>` +
+    (taxPct ? `<div>Tax (${taxPct}%): <b>${money(tax)}</b></div>` : "") +
+    `<div style="font-size:17px;margin-top:5px">Total due: <b style="color:var(--accent)">${money(sub + tax)}</b></div></div>`;
+}
+function invPrint() {
+  const html = document.getElementById("inv-print").innerHTML;
+  const w = window.open("", "_blank");
+  if (!w) { alert("Allow pop-ups to print the invoice."); return; }
+  w.document.write(`<!doctype html><html><head><title>Invoice</title><style>body{font-family:system-ui,sans-serif;max-width:720px;margin:30px auto;padding:0 20px;color:#1a1a1a}table{width:100%;border-collapse:collapse}th{text-align:left;border-bottom:2px solid #ccc;padding:7px 4px}td{border-bottom:1px solid #ddd;padding:7px 4px}</style></head><body>` +
+    html.replace(/class="[^"]*"/g, "").replace(/var\(--[^)]+\)/g, "#1a1a1a") + `</body></html>`);
+  w.document.close();
+  setTimeout(() => w.print(), 250);
+}
+
+/* init invoice rows */
+document.addEventListener("DOMContentLoaded", () => {
+  if (document.getElementById("inv-items")) { invAddRow(); invAddRow(); }
+});
+
+/* JSON to CSV Converter */
+function jsonToCsv() {
+  let data;
+  try { data = JSON.parse(document.getElementById("j2c-in").value); }
+  catch (e) { out("j2c-out", '<span class="error">Invalid JSON: ' + e.message + "</span>"); return; }
+  if (!Array.isArray(data) || !data.length || typeof data[0] !== "object") {
+    out("j2c-out", '<span class="error">Input must be a non-empty JSON array of objects, e.g. [{"a":1}].</span>'); return;
+  }
+  const q = (v) => {
+    if (v === null || v === undefined) return "";
+    if (typeof v === "object") v = JSON.stringify(v);
+    v = String(v);
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  };
+  const keys = [...new Set(data.flatMap((o) => Object.keys(o)))];
+  const csv = [keys.join(",")].concat(data.map((o) => keys.map((k) => q(o[k])).join(","))).join("\n");
+  document.getElementById("j2c-out").value = csv;
+  const dl = document.getElementById("j2c-dl");
+  dl.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  dl.style.display = "inline-flex";
+  out("j2c-out", "");
+}

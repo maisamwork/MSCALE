@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Invoice Generator — Free Online Tool | MSCALE Tools</title>
+<meta name="description" content="Create professional invoices with line items, automatic tax and totals, then print or save as PDF. Free and private."/>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="Invoice Generator — Free Online Tool | MSCALE Tools"/>
+<meta property="og:description" content="Create professional invoices with line items, automatic tax and totals, then print or save as PDF. Free and private."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
+<script>document.documentElement.setAttribute("data-theme", (function(){try{return localStorage.getItem("mscale-theme")||"dark"}catch(e){return "dark"}})());</script>
+<link rel="stylesheet" href="../assets/style.css"/>
+<script src="../assets/live-tools.js" defer></script>
+<script src="../assets/app.js" defer></script>
+<script src="../assets/tools.js" defer></script>
+</head>
+<body>
+<header class="site"><div class="container">
+  <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+  <nav class="main" id="main-nav"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text</a><a href="../developer-tools/">Developer</a><a href="../converters/">Converters</a><a href="../pdf-tools/">PDF</a><a href="../image-tools/">Image</a><a href="../blog/">Blog</a><a class="nav-cta" href="../tools/">All tools</a></nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme"><svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  </div>
+</div></header>
+<main class="container"><div class="tool-wrap">
+<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html"><svg class="crumb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="../finance-tools/">Finance & Business</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>Invoice Generator</span>
+</nav>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Invoice Generator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Create professional invoices with line items, automatic tax and totals, then print or save as PDF. Free and private.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg><h1>Invoice Generator</h1></div><p>Create professional invoices with line items, automatic tax and totals, then print or save as PDF. Free and private.</p></div>
+
+<div class="panel">
+  <div class="row">
+    <div><label>Your business name</label><input type="text" id="inv-from" placeholder="Acme Studio" oninput="invoiceRender()" /></div>
+    <div><label>Your details</label><input type="text" id="inv-from2" placeholder="Address · email · phone" oninput="invoiceRender()" /></div>
+  </div>
+  <div class="row">
+    <div><label>Client name</label><input type="text" id="inv-to" placeholder="Client Ltd" oninput="invoiceRender()" /></div>
+    <div><label>Client details</label><input type="text" id="inv-to2" placeholder="Address" oninput="invoiceRender()" /></div>
+  </div>
+  <div class="row">
+    <div><label>Invoice number</label><input type="text" id="inv-num" value="2025-001" oninput="invoiceRender()" /></div>
+    <div><label>Issue date</label><input type="date" id="inv-date" oninput="invoiceRender()" /></div>
+    <div><label>Due date</label><input type="date" id="inv-due" oninput="invoiceRender()" /></div>
+    <div><label>Tax %</label><input type="number" id="inv-tax" value="0" min="0" oninput="invoiceRender()" /></div>
+  </div>
+  <label>Line items</label>
+  <div id="inv-items"></div>
+  <button class="btn ghost" onclick="invAddRow()">+ Add line item</button>
+  <h3 style="margin:18px 0 6px">Preview</h3>
+  <div id="inv-print" style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:22px"></div>
+  <button class="btn" onclick="invPrint()">Print / Save PDF</button>
+</div>
+<div class="article">
+<h2 class="section">What Is the Invoice Generator?</h2>
+<p>Freelancers and small businesses need invoices constantly, and dedicated invoicing software is often overkill: an account, a subscription, and a template you fight with for a two-line invoice. This Invoice Generator builds a clean, professional invoice right in your browser from your business details, a client, and a list of line items, then prints or saves it as a PDF through your browser's own print dialog.</p>
+<p>Fill in your business name and details, the client's information, invoice number and dates, then add line items with descriptions, quantities and rates. Tax is calculated automatically, totals update live, and the preview shows exactly the document your client will receive. One click opens the print dialog, where Save as PDF produces the final file.</p>
+<p>Because everything is computed and rendered locally, your pricing, client names and financial details never touch a server. There is no account, no watermark and no limit on the number of invoices, which makes the tool a practical default for occasional invoicing needs of every kind.</p>
+<h2 class="section">How to Use the Invoice Generator</h2>
+<p>Enter your details, the client's details, and add line items with quantity and rate. Tax and totals calculate automatically as you type. When the preview looks right, click Print / Save PDF and choose your printer or Save as PDF.</p>
+<ol><li>Enter your business name, address and contact details at the top of the form.</li><li>Fill in the client's name and address.</li><li>Set the invoice number, issue date and due date.</li><li>Add each line item with a description, quantity and unit rate; use the add button for more rows.</li><li>Enter your tax rate as a percentage; it applies to the subtotal automatically.</li><li>Review the live preview, then click Print / Save PDF and choose Save as PDF in the dialog.</li></ol>
+<h2 class="section">How the Invoice Generator Works</h2>
+<p>The generator is a live document builder. Every keystroke updates an invoice layout rendered beside the form: items multiply quantity by rate, the subtotal sums the items, tax applies at your percentage, and the total is the sum of both. Because the maths is declarative rather than manual, arithmetic errors, the classic invoice problem, simply cannot happen.</p>
+<p>The preview mirrors a conventional invoice layout: your business block and the client block side by side, a reference and dates row, an itemised table with aligned amounts, and a totals block ending in the amount due. This familiarity matters because clients process invoices by pattern recognition; a document that looks like every invoice they have paid before gets paid faster than a creative layout.</p>
+<p>Printing is delegated to the browser's print engine, which is the most reliable PDF generator available without a server. The print dialog's Save as PDF option produces a properly paginated, selectable-text PDF with no watermark, using whatever paper size your system defaults to. The alternative, generating PDFs in JavaScript, adds complexity and libraries for a result that is less faithful than the browser's own engine. All data stays in your browser the whole time; nothing is transmitted or stored.</p>
+<p>Numbering and records are what turn a document into an accounting trail. Keep the issued PDFs in one folder named by year, and keep a simple spreadsheet alongside it mapping invoice numbers to clients, amounts and payment dates. The generator produces the document; that index turns it into a system, which is what an accountant or tax authority actually asks to see: every invoice accounted for, in order, with nothing missing from the sequence.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>Freelance project invoice</h3><p>A designer completes a branding project: forty hours at a rate, plus a fixed logo fee as a second line. Ten percent tax applies automatically, and the saved PDF goes to the client the same afternoon.</p>
+<h3>Recurring monthly billing</h3><p>A consultant invoices three retainer clients monthly. Reusing the tool each month with updated dates and hours takes two minutes per invoice, with the invoice number incremented by hand.</p>
+<h3>Deposit request</h3><p>A builder issues a 30 percent deposit invoice before starting work, listing the deposit as a single line item with the project reference in the description.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Reusing the same invoice number across invoices, which confuses accounting on both sides; increment numbers consistently.</li><li>Forgetting the due date, which removes the client's clearest payment cue and invites late payment.</li><li>Typing tax percentages as decimals, entering 0.2 when the field expects 20, which shrinks the tax line.</li><li>Omitting your own contact details, forcing the client's accounts department to chase information before paying.</li><li>Not checking the preview before printing, and missing a spelling mistake in the client's name on the permanent PDF.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Keep a simple numbering scheme like 2025-001, 2025-002 so invoices sort naturally by year.</li><li>Put payment terms and bank details in your business notes so every invoice carries them.</li><li>Describe line items specifically; detailed descriptions reduce client queries and speed up approval.</li><li>Save each generated PDF with a consistent file name including the invoice number for easy retrieval.</li><li>For a flat-fee item, set quantity to 1 and the rate to the full amount.</li><li>Since nothing is uploaded, the tool is safe for confidential client rates and terms.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>How do I save the invoice as a PDF?</h3><p>Click Print / Save PDF and choose the Save as PDF destination in your browser's print dialog. The result is a clean, selectable-text PDF with no watermark.</p>
+<h3>Is my invoicing data stored or uploaded?</h3><p>No. Everything is computed and rendered in your browser, and printing uses your local print engine. Nothing is sent to or stored on any server.</p>
+<h3>Can I add my logo?</h3><p>The current layout is text-based for speed and reliability. You can add a logo afterwards by opening the saved PDF in any PDF editor, or keep branding in your business header text.</p>
+<h3>Does it handle tax automatically?</h3><p>Yes. Enter a tax percentage and it applies to the subtotal, showing the tax amount and grand total live as you edit items.</p>
+<h3>Can I make multiple invoices in one session?</h3><p>Yes, with no limits. Update the invoice number and details, and print again; the tool is free and requires no account.</p>
+<h3>Will the printed layout match the preview?</h3><p>Yes. The print output uses the same invoice layout as the preview, paginated by your browser's print engine at your paper size.</p>
+<h3>Can I use it for quotes and estimates too?</h3><p>Yes. The layout works for any numbered commercial document: set the title context in your item descriptions, or keep a parallel numbering series like Q-001 for quotes that later convert into invoices.</p>
+</div>
+<h2 class='section'>Related tools</h2><div class='grid'><a class='card' href='../tools/compound-interest-calculator.html'><div class='card-head'><svg class="card-ic" style="color:#10b981" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg><h3>Compound Interest Calculator</h3></div></a><a class='card' href='../tools/gst-vat-calculator.html'><div class='card-head'><svg class="card-ic" style="color:#10b981" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg><h3>GST / VAT Calculator</h3></div></a></div>
+</div></main>
+<footer class="site"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads. 47 tools live, more shipping weekly.</p>
+      <a class="gh-link" href="https://github.com/maisamwork/MSCALE"><svg class="" style="color:#e6e9f0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>github.com/maisamwork/MSCALE</span></a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a>
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      <a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a>
+    </div>
+    <div>
+      <h4>Popular tools</h4>
+      <a href="../tools/percentage-calculator.html">Percentage Calculator</a><a href="../tools/word-counter.html">Word Counter</a><a href="../tools/json-formatter.html">JSON Formatter</a><a href="../tools/password-generator.html">Password Generator</a><a href="../tools/unit-converter.html">Unit Converter</a><a href="../tools/image-resizer.html">Image Resizer</a>
+      <h4 class="gap-top">Resources</h4>
+      <a href="../blog/">Blog</a>
+      <a href="../tools/">All tools</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser — your data never leaves your device.</p>
+</div></footer>
+</body>
+</html>

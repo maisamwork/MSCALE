@@ -72,54 +72,64 @@ LIVE = [
     ("bmi-calculator", "BMI Calculator", "Calculators", "Body Mass Index with weight category"),
     ("age-calculator", "Age Calculator", "Calculators", "Exact age in years, months and days"),
     ("loan-emi-calculator", "Loan / EMI Calculator", "Calculators", "Monthly payment, total interest and total cost"),
-    ("word-counter", "Word Counter", "Text", "Words, characters, sentences and reading time"),
-    ("case-converter", "Case Converter", "Text", "UPPER, lower, Title, camelCase, snake_case, kebab"),
-    ("remove-duplicate-lines", "Remove Duplicate Lines", "Text", "Deduplicate text lines, with case and trim options"),
-    ("reverse-text", "Reverse Text", "Text", "Reverse characters, words or lines"),
-    ("json-formatter", "JSON Formatter", "Developer", "Beautify, validate and minify JSON"),
-    ("base64-encoder-decoder", "Base64 Encode / Decode", "Developer", "UTF-8 safe Base64 conversion"),
-    ("url-encoder-decoder", "URL Encoder / Decoder", "Developer", "Percent-encode or decode URLs and text"),
-    ("uuid-generator", "UUID Generator", "Developer", "Generate v4 UUIDs in bulk"),
-    ("unit-converter", "Unit Converter", "Converters", "Length, weight, data size and temperature"),
-    ("timestamp-converter", "Timestamp Converter", "Converters", "Unix timestamp to date and back, live clock"),
-    ("password-generator", "Password Generator", "Security", "Strong random passwords with entropy estimate"),
-    ("color-converter", "Color Converter", "Color", "HEX to RGB to HSL with live preview"),
-    ("random-number-generator", "Random Number Generator", "Random", "Random numbers in any range, unique option"),
-    ("dice-roller", "Dice Roller", "Random", "Roll up to 20 dice with any number of sides"),
-    ("coin-flipper", "Coin Flipper", "Random", "Flip one coin or a thousand, with counts"),
     ("discount-calculator", "Discount Calculator", "Calculators", "Sale price, savings and final price with tax"),
     ("tip-calculator", "Tip Calculator", "Calculators", "Tip amount, total and per-person split"),
-    ("compound-interest-calculator", "Compound Interest Calculator", "Finance", "Future value with contributions and compounding"),
-    ("gst-vat-calculator", "GST / VAT Calculator", "Finance", "Add or remove sales tax from any amount"),
-    ("date-difference-calculator", "Date Difference Calculator", "Date & Time", "Days, weeks, months and years between dates"),
-    ("find-and-replace", "Find and Replace", "Text", "Replace text with case and regex options"),
-    ("text-sorter", "Line Sorter", "Text", "Sort lines A-Z, Z-A, by length or shuffle"),
-    ("lorem-ipsum-generator", "Lorem Ipsum Generator", "Text", "Placeholder text by paragraphs and sentences"),
-    ("word-frequency-counter", "Word Frequency Counter", "Text", "Top words with visual frequency bars"),
-    ("hash-generator", "Hash Generator", "Developer", "SHA-1, SHA-256 and SHA-512 hashes instantly"),
-    ("jwt-decoder", "JWT Decoder", "Developer", "Decode JWT header and payload, check expiry"),
-    ("regex-tester", "Regex Tester", "Developer", "Test regular expressions with live highlighting"),
-    ("csv-to-json-converter", "CSV to JSON Converter", "Developer", "Convert CSV or TSV to JSON, quote-aware"),
-    ("html-encoder-decoder", "HTML Encoder / Decoder", "Developer", "Escape or unescape HTML entities"),
+    ("word-counter", "Word Counter", "Text Tools", "Words, characters, sentences and reading time"),
+    ("case-converter", "Case Converter", "Text Tools", "UPPER, lower, Title, camelCase, snake_case, kebab"),
+    ("remove-duplicate-lines", "Remove Duplicate Lines", "Text Tools", "Deduplicate text lines, with case and trim options"),
+    ("reverse-text", "Reverse Text", "Text Tools", "Reverse characters, words or lines"),
+    ("find-and-replace", "Find and Replace", "Text Tools", "Replace text with case and regex options"),
+    ("text-sorter", "Line Sorter", "Text Tools", "Sort lines A-Z, Z-A, by length or shuffle"),
+    ("lorem-ipsum-generator", "Lorem Ipsum Generator", "Text Tools", "Placeholder text by paragraphs and sentences"),
+    ("word-frequency-counter", "Word Frequency Counter", "Text Tools", "Top words with visual frequency bars"),
+    ("json-formatter", "JSON Formatter", "Developer Tools", "Beautify, validate and minify JSON"),
+    ("base64-encoder-decoder", "Base64 Encode / Decode", "Developer Tools", "UTF-8 safe Base64 conversion"),
+    ("url-encoder-decoder", "URL Encoder / Decoder", "Developer Tools", "Percent-encode or decode URLs and text"),
+    ("uuid-generator", "UUID Generator", "Developer Tools", "Generate v4 UUIDs in bulk"),
+    ("hash-generator", "Hash Generator", "Developer Tools", "SHA-1, SHA-256 and SHA-512 hashes instantly"),
+    ("jwt-decoder", "JWT Decoder", "Developer Tools", "Decode JWT header and payload, check expiry"),
+    ("regex-tester", "Regex Tester", "Developer Tools", "Test regular expressions with live highlighting"),
+    ("csv-to-json-converter", "CSV to JSON Converter", "Developer Tools", "Convert CSV or TSV to JSON, quote-aware"),
+    ("html-encoder-decoder", "HTML Encoder / Decoder", "Developer Tools", "Escape or unescape HTML entities"),
+    ("json-to-csv-converter", "JSON to CSV Converter", "Developer Tools", "Turn a JSON array into a clean CSV for spreadsheets"),
+    ("unit-converter", "Unit Converter", "Converters", "Length, weight, data size and temperature"),
+    ("timestamp-converter", "Timestamp Converter", "Converters", "Unix timestamp to date and back, live clock"),
     ("number-base-converter", "Number Base Converter", "Converters", "Binary, octal, decimal and hexadecimal"),
     ("roman-numeral-converter", "Roman Numeral Converter", "Converters", "Roman numerals to numbers and back"),
-    ("image-resizer", "Image Resizer", "Image", "Resize and convert images in your browser"),
-    ("palette-generator", "Color Palette Generator", "Color", "Shades and tints from any color, click to copy"),
+    ("password-generator", "Password Generator", "Security Tools", "Strong random passwords with entropy estimate"),
+    ("color-converter", "Color Converter", "Color Tools", "HEX to RGB to HSL with live preview"),
+    ("palette-generator", "Color Palette Generator", "Color Tools", "Shades and tints from any color, click to copy"),
+    ("random-number-generator", "Random Number Generator", "Random Generators", "Random numbers in any range, unique option"),
+    ("dice-roller", "Dice Roller", "Random Generators", "Roll up to 20 dice with any number of sides"),
+    ("coin-flipper", "Coin Flipper", "Random Generators", "Flip one coin or a thousand, with counts"),
+    ("pdf-merge", "PDF Merge", "PDF Tools", "Combine multiple PDFs into one, right in your browser"),
+    ("pdf-split", "PDF Split", "PDF Tools", "Extract pages or ranges into a new PDF"),
+    ("image-resizer", "Image Resizer", "Image Tools", "Resize and convert images in your browser"),
+    ("image-compressor", "Image Compressor", "Image Tools", "Shrink JPG, PNG and WebP with a quality slider"),
+    ("image-cropper", "Image Cropper", "Image Tools", "Crop images to exact pixels, locally and privately"),
+    ("meta-tag-generator", "Meta Tag Generator", "SEO & Web Tools", "Full meta, Open Graph and Twitter tags with live previews"),
+    ("keyword-density-checker", "Keyword Density Checker", "SEO & Web Tools", "One, two and three-word phrase density analysis"),
+    ("xml-sitemap-generator", "XML Sitemap Generator", "SEO & Web Tools", "Build a valid sitemap.xml from your URL list"),
+    ("slug-generator", "Slug Generator", "SEO & Web Tools", "Turn titles into clean URL slugs, with batch mode"),
+    ("date-difference-calculator", "Date Difference Calculator", "Date & Time Tools", "Days, weeks, months and years between dates"),
+    ("compound-interest-calculator", "Compound Interest Calculator", "Finance & Business", "Future value with contributions and compounding"),
+    ("gst-vat-calculator", "GST / VAT Calculator", "Finance & Business", "Add or remove sales tax from any amount"),
+    ("invoice-generator", "Invoice Generator", "Finance & Business", "Professional invoices with line items, tax and print to PDF"),
 ]
 
 CAT_PAGES = {
     "calculators": ("Calculators", "\U0001F9EE", ["percentage-calculator", "bmi-calculator", "age-calculator", "loan-emi-calculator", "discount-calculator", "tip-calculator"], "Calculators"),
     "text-tools": ("Text Tools", "\U0001F4DD", ["word-counter", "case-converter", "remove-duplicate-lines", "reverse-text", "find-and-replace", "text-sorter", "lorem-ipsum-generator", "word-frequency-counter"], "Text Tools"),
-    "developer-tools": ("Developer Tools", "\U0001F4BB", ["json-formatter", "base64-encoder-decoder", "url-encoder-decoder", "uuid-generator", "hash-generator", "jwt-decoder", "regex-tester", "csv-to-json-converter", "html-encoder-decoder"], "Developer Tools"),
+    "developer-tools": ("Developer Tools", "\U0001F4BB", ["json-formatter", "base64-encoder-decoder", "url-encoder-decoder", "uuid-generator", "hash-generator", "jwt-decoder", "regex-tester", "csv-to-json-converter", "html-encoder-decoder", "json-to-csv-converter"], "Developer Tools"),
     "converters": ("Converters", "\U0001F504", ["unit-converter", "timestamp-converter", "number-base-converter", "roman-numeral-converter"], "Converters (Units & Numbers)"),
     "security": ("Security Tools", "\U0001F512", ["password-generator"], "Security & Encoding"),
     "color-tools": ("Color Tools", "\U0001F3A8", ["color-converter", "palette-generator"], "Color & Design Tools"),
     "random-generators": ("Random Generators", "\U0001F3B2", ["random-number-generator", "dice-roller", "coin-flipper"], "Random & Fun Generators"),
-    "pdf-tools": ("PDF Tools", "\U0001F4C4", [], "PDF Tools"),
-    "image-tools": ("Image Tools", "\U0001F5BC\uFE0F", ["image-resizer"], "Image Tools"),
-    "seo-web-tools": ("SEO & Web Tools", "\U0001F4C8", [], "SEO & Web Tools"),
+    "pdf-tools": ("PDF Tools", "\U0001F4C4", ["pdf-merge", "pdf-split"], "PDF Tools"),
+    "image-tools": ("Image Tools", "\U0001F5BC\uFE0F", ["image-resizer", "image-compressor", "image-cropper"], "Image Tools"),
+    "seo-web-tools": ("SEO & Web Tools", "\U0001F4C8", ["meta-tag-generator", "keyword-density-checker", "xml-sitemap-generator", "slug-generator"], "SEO & Web Tools"),
     "date-time-tools": ("Date & Time Tools", "\U0001F550", ["date-difference-calculator"], "Date & Time Tools"),
-    "finance-tools": ("Finance & Business", "\U0001F4B0", ["compound-interest-calculator", "gst-vat-calculator"], "Finance & Business"),
+    "finance-tools": ("Finance & Business", "\U0001F4B0", ["compound-interest-calculator", "gst-vat-calculator", "invoice-generator"], "Finance & Business"),
 }
 
 CATALOG_CATS = {
@@ -220,6 +230,148 @@ def footer(depth):
 
 
 TOOL_BODIES = {
+"json-to-csv-converter": """
+<div class="panel">
+  <label>JSON array of objects</label>
+  <textarea id="j2c-in" placeholder='[{"name": "Ada", "role": "Engineer"}, {"name": "Grace", "role": "Admiral"}]'></textarea>
+  <button class="btn" onclick="jsonToCsv()">Convert to CSV</button>
+  <label>CSV output</label>
+  <textarea id="j2c-out" style="min-height:180px" readonly></textarea>
+  <button class="btn" onclick="copyText('j2c-out')">Copy CSV</button>
+  <a id="j2c-dl" class="btn ghost" style="display:none;margin-left:6px" download="data.csv">Download .csv</a>
+</div>""",
+
+"pdf-merge": """
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<div class="panel">
+  <label>PDF files (choose two or more, in order)</label>
+  <input type="file" id="pm-files" accept="application/pdf" multiple />
+  <div id="pm-list" style="margin-top:10px"></div>
+  <div class="row"><div><label>Output file name</label><input type="text" id="pm-name" value="merged.pdf" /></div></div>
+  <button class="btn" onclick="pdfMerge()">Merge PDFs</button>
+  <div id="pm-out" class="result">Select two or more PDF files to merge.</div>
+</div>""",
+"pdf-split": """
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<div class="panel">
+  <label>PDF file</label>
+  <input type="file" id="ps-file" accept="application/pdf" />
+  <label>Pages to keep (e.g. 1-3,5,8-10)</label>
+  <input type="text" id="ps-range" placeholder="1-3,5" />
+  <div class="row"><div><label>Output file name</label><input type="text" id="ps-name" value="extracted.pdf" /></div></div>
+  <button class="btn" onclick="pdfSplit()">Extract pages</button>
+  <div id="ps-out" class="result">Select a PDF and type the pages to keep.</div>
+</div>""",
+"image-compressor": """
+<div class="panel">
+  <label>Image</label>
+  <input type="file" id="ic-file" accept="image/*" />
+  <div class="row">
+    <div><label>Format</label><select id="ic-fmt"><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option><option value="image/png">PNG</option></select></div>
+    <div><label>Quality: <span id="ic-qv">75</span>%</label><input type="range" id="ic-q" min="10" max="100" value="75" style="padding:0" oninput="document.getElementById('ic-qv').textContent=this.value" /></div>
+    <div><label>Max width (px, optional)</label><input type="number" id="ic-w" placeholder="original" /></div>
+  </div>
+  <button class="btn" onclick="imgCompress()">Compress</button>
+  <div id="ic-out" class="result">Select an image to compress.</div>
+  <img id="ic-preview" alt="Preview" style="max-width:100%;margin-top:12px;display:none;border-radius:8px" />
+  <a id="ic-dl" class="btn ghost" style="display:none;margin-top:10px" download>Download compressed image</a>
+</div>""",
+"image-cropper": """
+<div class="panel">
+  <label>Image</label>
+  <input type="file" id="icr-file" accept="image/*" />
+  <p id="icr-dims" class="tools-count">No image loaded.</p>
+  <div class="row">
+    <div><label>X</label><input type="number" id="icr-x" value="0" /></div>
+    <div><label>Y</label><input type="number" id="icr-y" value="0" /></div>
+    <div><label>Width</label><input type="number" id="icr-w" placeholder="to edge" /></div>
+    <div><label>Height</label><input type="number" id="icr-h" placeholder="to edge" /></div>
+    <div><label>Output width (optional)</label><input type="number" id="icr-ow" placeholder="original" /></div>
+  </div>
+  <div class="row"><div><label>Format</label><select id="icr-fmt"><option value="image/png">PNG</option><option value="image/jpeg">JPEG</option></select></div></div>
+  <button class="btn" onclick="imgCrop()">Apply crop</button>
+  <div id="icr-out" class="result">Load an image and set the crop area.</div>
+  <img id="icr-preview" alt="Preview" style="max-width:100%;margin-top:12px;display:none;border-radius:8px" />
+  <a id="icr-dl" class="btn ghost" style="display:none;margin-top:10px" download>Download cropped image</a>
+</div>""",
+"meta-tag-generator": """
+<div class="panel">
+  <div class="row">
+    <div><label>Page title</label><input type="text" id="mt-title" placeholder="Best Coffee Grinders of 2025" oninput="metaGen()" /></div>
+    <div><label>Author / brand</label><input type="text" id="mt-author" placeholder="Your Name" oninput="metaGen()" /></div>
+  </div>
+  <label>Meta description</label>
+  <textarea id="mt-desc" style="min-height:80px" placeholder="A compelling 150-character summary of the page." oninput="metaGen()"></textarea>
+  <div class="row">
+    <div><label>Page URL</label><input type="text" id="mt-url" placeholder="https://example.com/page" oninput="metaGen()" /></div>
+    <div><label>Social image URL</label><input type="text" id="mt-img" placeholder="https://example.com/card.jpg" oninput="metaGen()" /></div>
+  </div>
+  <label>Google preview</label>
+  <div class="result" id="mt-google" style="white-space:normal;font-family:Arial,sans-serif"></div>
+  <label>Generated tags</label>
+  <textarea id="mt-code" style="min-height:220px" readonly></textarea>
+  <button class="btn" onclick="copyText('mt-code')">Copy tags</button>
+</div>""",
+"keyword-density-checker": """
+<div class="panel">
+  <label>Text to analyse</label>
+  <textarea id="kd-in" placeholder="Paste your article or page text here…"></textarea>
+  <label style="text-transform:none;letter-spacing:0"><input type="checkbox" id="kd-stop" checked style="width:auto;margin-right:8px" /> Hide common stop words (the, and, of…)</label>
+  <button class="btn" onclick="kwDensity()">Analyse density</button>
+  <div id="kd-out" class="result" style="white-space:normal">Paste text and click Analyse.</div>
+</div>""",
+"xml-sitemap-generator": """
+<div class="panel">
+  <label>Page URLs (one per line)</label>
+  <textarea id="sm-urls" placeholder="https://example.com/&#10;https://example.com/about&#10;https://example.com/blog/post-1"></textarea>
+  <div class="row">
+    <div><label>Change frequency</label><select id="sm-freq"><option value="">omit</option><option value="daily">daily</option><option value="weekly" selected>weekly</option><option value="monthly">monthly</option><option value="yearly">yearly</option></select></div>
+    <div><label>Priority (0.1–1.0)</label><input type="number" id="sm-prio" min="0.1" max="1" step="0.1" placeholder="omit" /></div>
+  </div>
+  <button class="btn" onclick="sitemapGen()">Generate sitemap</button>
+  <label>sitemap.xml</label>
+  <textarea id="sm-out" style="min-height:220px" readonly></textarea>
+  <button class="btn" onclick="copyText('sm-out')">Copy XML</button>
+  <a id="sm-dl" class="btn ghost" style="display:none;margin-left:6px" download="sitemap.xml">Download sitemap.xml</a>
+</div>""",
+"slug-generator": """
+<div class="panel">
+  <label>Titles (one per line for batch mode)</label>
+  <textarea id="sl-in" placeholder="10 Tips for Better Sleep&#10;Café Culture in Zürich&#10;How to Bake Sourdough"></textarea>
+  <div class="row">
+    <div><label>Separator</label><select id="sl-sep"><option value="-">Hyphen (-)</option><option value="_">Underscore (_)</option></select></div>
+    <div><label>Max length (0 = no limit)</label><input type="number" id="sl-len" value="0" min="0" /></div>
+  </div>
+  <label style="text-transform:none;letter-spacing:0"><input type="checkbox" id="sl-lower" checked style="width:auto;margin-right:8px" /> Lowercase</label>
+  <label style="text-transform:none;letter-spacing:0"><input type="checkbox" id="sl-stop" checked style="width:auto;margin-right:8px" /> Remove stop words (a, the, of, to…)</label>
+  <button class="btn" onclick="slugGen()">Generate slugs</button>
+  <label>Slugs</label>
+  <textarea id="sl-out" style="min-height:140px" readonly></textarea>
+  <button class="btn" onclick="copyText('sl-out')">Copy slugs</button>
+</div>""",
+"invoice-generator": """
+<div class="panel">
+  <div class="row">
+    <div><label>Your business name</label><input type="text" id="inv-from" placeholder="Acme Studio" oninput="invoiceRender()" /></div>
+    <div><label>Your details</label><input type="text" id="inv-from2" placeholder="Address · email · phone" oninput="invoiceRender()" /></div>
+  </div>
+  <div class="row">
+    <div><label>Client name</label><input type="text" id="inv-to" placeholder="Client Ltd" oninput="invoiceRender()" /></div>
+    <div><label>Client details</label><input type="text" id="inv-to2" placeholder="Address" oninput="invoiceRender()" /></div>
+  </div>
+  <div class="row">
+    <div><label>Invoice number</label><input type="text" id="inv-num" value="2025-001" oninput="invoiceRender()" /></div>
+    <div><label>Issue date</label><input type="date" id="inv-date" oninput="invoiceRender()" /></div>
+    <div><label>Due date</label><input type="date" id="inv-due" oninput="invoiceRender()" /></div>
+    <div><label>Tax %</label><input type="number" id="inv-tax" value="0" min="0" oninput="invoiceRender()" /></div>
+  </div>
+  <label>Line items</label>
+  <div id="inv-items"></div>
+  <button class="btn ghost" onclick="invAddRow()">+ Add line item</button>
+  <h3 style="margin:18px 0 6px">Preview</h3>
+  <div id="inv-print" style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:22px"></div>
+  <button class="btn" onclick="invPrint()">Print / Save PDF</button>
+</div>""",
 "percentage-calculator": """
 <div class="panel">
   <div class="row">
@@ -599,6 +751,16 @@ TOOL_BODIES = {
 
 
 TOOL_DESC = {
+    "json-to-csv-converter": "Convert a JSON array of objects into a clean CSV for Excel or Google Sheets. Quote-aware, private and free, right in your browser.",
+    "pdf-merge": "Merge two or more PDF files into one document in your browser. Private, free and no upload — files never leave your device.",
+    "pdf-split": "Extract specific pages or page ranges from a PDF into a new file. Runs entirely in your browser with full quality preserved.",
+    "image-compressor": "Compress JPG, PNG and WebP images in your browser with a quality slider and size preview. Free, private, no upload.",
+    "image-cropper": "Crop images to exact pixel coordinates in your browser, with optional resize. Private, free and no watermarks.",
+    "meta-tag-generator": "Generate complete meta, Open Graph and Twitter card tags with live Google and social previews for any page.",
+    "keyword-density-checker": "Analyse keyword density in any text: top one, two and three-word phrases with counts and percentages, stopword filter included.",
+    "xml-sitemap-generator": "Generate a valid sitemap.xml from your URL list with lastmod, changefreq and priority. Copy or download instantly.",
+    "slug-generator": "Convert titles into clean, lowercase URL slugs with accent transliteration, stop-word removal and batch mode.",
+    "invoice-generator": "Create professional invoices with line items, automatic tax and totals, then print or save as PDF. Free and private.",
     "percentage-calculator": "Free online percentage calculator: find X% of Y, what percent X is of Y, and percentage increase or decrease.",
     "bmi-calculator": "Calculate your Body Mass Index (BMI) instantly from weight and height, with WHO weight category.",
     "age-calculator": "Calculate your exact age in years, months and days from your date of birth.",
