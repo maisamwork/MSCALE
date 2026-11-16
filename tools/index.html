@@ -42,8 +42,17 @@
   <span class="stat-chip">No sign-up</span>
   <span class="stat-chip">Runs in your browser</span>
 </div>
+<div class='ad-slot' data-ad-slot='tools-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>728 × 90 ad space — paste your ad network code here</div></div>
 <div class="tools-layout">
-  <aside class="tools-side" id="tools-side"><button class="side-item active" data-cat="all"><span>Complete catalog</span><em>1863</em></button><button class='side-item' data-cat='calculators'><span class='side-dot' style='background:#ff9a3c'></span><span>Calculators</span><em>156</em></button><button class='side-item' data-cat='text-tools'><span class='side-dot' style='background:#4cc3ff'></span><span>Text Tools</span><em>161</em></button><button class='side-item' data-cat='developer-tools'><span class='side-dot' style='background:#a78bfa'></span><span>Developer Tools</span><em>165</em></button><button class='side-item' data-cat='converters'><span class='side-dot' style='background:#2dd4bf'></span><span>Converters</span><em>154</em></button><button class='side-item' data-cat='security'><span class='side-dot' style='background:#34d399'></span><span>Security Tools</span><em>152</em></button><button class='side-item' data-cat='color-tools'><span class='side-dot' style='background:#f472b6'></span><span>Color Tools</span><em>154</em></button><button class='side-item' data-cat='random-generators'><span class='side-dot' style='background:#fbbf24'></span><span>Random Generators</span><em>153</em></button><button class='side-item' data-cat='pdf-tools'><span class='side-dot' style='background:#f87171'></span><span>PDF Tools</span><em>152</em></button><button class='side-item' data-cat='image-tools'><span class='side-dot' style='background:#e879f9'></span><span>Image Tools</span><em>155</em></button><button class='side-item' data-cat='seo-web-tools'><span class='side-dot' style='background:#22d3ee'></span><span>SEO & Web Tools</span><em>154</em></button><button class='side-item' data-cat='date-time-tools'><span class='side-dot' style='background:#60a5fa'></span><span>Date & Time Tools</span><em>154</em></button><button class='side-item' data-cat='finance-tools'><span class='side-dot' style='background:#10b981'></span><span>Finance & Business</span><em>153</em></button><div class="side-note">Live tools work right now. Catalog tools are coming soon — new ones ship weekly.</div></aside>
+  <aside class="tools-side" id="tools-side"><button class="side-item active" data-cat="all"><span>Complete catalog</span><em>1863</em></button><button class='side-item' data-cat='calculators'><span class='side-dot' style='background:#ff9a3c'></span><span>Calculators</span><em>156</em></button><button class='side-item' data-cat='text-tools'><span class='side-dot' style='background:#4cc3ff'></span><span>Text Tools</span><em>161</em></button><button class='side-item' data-cat='developer-tools'><span class='side-dot' style='background:#a78bfa'></span><span>Developer Tools</span><em>165</em></button><button class='side-item' data-cat='converters'><span class='side-dot' style='background:#2dd4bf'></span><span>Converters</span><em>154</em></button><button class='side-item' data-cat='security'><span class='side-dot' style='background:#34d399'></span><span>Security Tools</span><em>152</em></button><button class='side-item' data-cat='color-tools'><span class='side-dot' style='background:#f472b6'></span><span>Color Tools</span><em>154</em></button><button class='side-item' data-cat='random-generators'><span class='side-dot' style='background:#fbbf24'></span><span>Random Generators</span><em>153</em></button><button class='side-item' data-cat='pdf-tools'><span class='side-dot' style='background:#f87171'></span><span>PDF Tools</span><em>152</em></button><button class='side-item' data-cat='image-tools'><span class='side-dot' style='background:#e879f9'></span><span>Image Tools</span><em>155</em></button><button class='side-item' data-cat='seo-web-tools'><span class='side-dot' style='background:#22d3ee'></span><span>SEO & Web Tools</span><em>154</em></button><button class='side-item' data-cat='date-time-tools'><span class='side-dot' style='background:#60a5fa'></span><span>Date & Time Tools</span><em>154</em></button><button class='side-item' data-cat='finance-tools'><span class='side-dot' style='background:#10b981'></span><span>Finance & Business</span><em>153</em></button><div class="side-note">Live tools work right now. Catalog tools are coming soon — new ones ship weekly.</div><div class="side-news">
+      <div class="side-title">Newsletter</div>
+      <p>New tools and guides, straight to your inbox. No spam, unsubscribe anytime.</p>
+      <form onsubmit="return nlSub(event)">
+        <input type="email" required placeholder="you@email.com">
+        <button class="btn" type="submit">Subscribe</button>
+      </form>
+      <div id="nl-msg" class="tool-note"></div>
+    </div></aside>
   <div class="tools-main">
     <div class="tools-controls">
       <div class="search-wrap"><svg class="search-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="tools-search" placeholder="Search tools (e.g. 'word count', 'password')" /></div>
@@ -56,6 +65,11 @@
     <p id="tools-count" class="tools-count"></p>
     <div class="grid" id="tools-grid"></div>
     <div style="text-align:center;margin-top:22px"><button id="tools-more" class="btn ghost" style="display:none">Load more tools</button></div>
+    <div class='ad-slot' data-ad-slot='tools-feed' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 160 ad space — paste your ad network code here</div></div>
+    <div class="banner-cta">
+      <div><b>Every tool you need right here in your browser.</b><span>Free, private, no sign-up — 63 tools live today.</span></div>
+      <a class="btn" href="word-counter.html">Try Now</a>
+    </div>
   </div>
 </div></main>
 <footer class="site"><div class="container">

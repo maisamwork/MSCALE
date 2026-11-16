@@ -662,6 +662,91 @@ html[data-theme="light"] .hero-new::before, html[data-theme="light"] .tools-head
 .ty-act { color: var(--text); background: var(--card2); border-radius: 4px; padding: 0 .15rem; }
 .ty-done { color: var(--ok); }
 .up-param { padding: .3rem 0; border-bottom: 1px dashed var(--border); font-size: .9rem; word-break: break-all; }
+
+/* ---------- Homepage v3 (reference layout) ---------- */
+.hero-new {
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 2rem;
+  align-items: center;
+  text-align: left;
+}
+.hero-new .hero-kicker, .hero-new h1, .hero-new .hero-sub { margin-left: 0; }
+.hero-new .hero-search { margin: 1.5rem 0 0; text-align: left; }
+.hero-art { display: flex; justify-content: center; align-items: center; }
+.hero-illo { width: min(400px, 82vw); height: auto; }
+.cta-row { display: flex; gap: .7rem; flex-wrap: wrap; margin-top: 1.3rem; }
+.sec-head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: 1rem; margin: 2.6rem 0 1.2rem; flex-wrap: wrap;
+}
+.sec-head .section { margin: 0; }
+.sec-link {
+  display: inline-flex; align-items: center; gap: .3rem;
+  color: var(--accent2); font-weight: 600; font-size: .9rem;
+}
+.sec-link svg { width: 15px; height: 15px; }
+.sec-link:hover { color: var(--accent); }
+.btn-sm { padding: .42rem .95rem; font-size: .82rem; border-radius: var(--r-pill); }
+.cat-links { display: flex; flex-wrap: wrap; gap: .15rem .75rem; margin-top: .55rem; }
+.cat-links a { font-size: .78rem; color: var(--muted); }
+.cat-links a:hover { color: var(--accent2); }
+@media (max-width: 880px) {
+  .hero-new { grid-template-columns: 1fr; text-align: center; }
+  .hero-new .hero-search { margin-inline: auto; }
+  .cta-row { justify-content: center; }
+  .hero-art { display: none; }
+}
+
+/* ---------- Ad slots ---------- */
+.ad-slot {
+  border: 1px dashed var(--border2);
+  border-radius: var(--r-md);
+  background: var(--bg2);
+  padding: 14px;
+  margin: 26px auto;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.ad-tag {
+  font-size: .62rem; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); border: 1px solid var(--border2);
+  border-radius: var(--r-pill); padding: .1rem .55rem;
+}
+.ad-ph { color: var(--muted); font-size: .85rem; text-align: center; }
+
+/* ---------- /tools upgrades ---------- */
+.banner-cta {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  background: linear-gradient(135deg, rgba(255, 112, 0, .14), rgba(124, 58, 237, .12));
+  border: 1px solid var(--border2);
+  border-radius: var(--r-lg);
+  padding: 1.1rem 1.4rem;
+  margin: 26px 0 8px;
+  flex-wrap: wrap;
+}
+.banner-cta b { display: block; }
+.banner-cta span { color: var(--muted); font-size: .85rem; }
+.side-news {
+  margin-top: 14px;
+  background: var(--card2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 1rem;
+}
+.side-news p { font-size: .82rem; color: var(--muted); margin: .4rem 0 .7rem; }
+.side-news input { width: 100%; margin-bottom: .5rem; }
+.side-news .btn { width: 100%; }
+.card-cta {
+  display: inline-flex; align-items: center; gap: .25rem;
+  margin-top: .55rem; color: var(--accent2); font-weight: 600; font-size: .85rem;
+}
+.card.tool-card:hover .card-cta { color: var(--accent); }
+
+.hero-copy { min-width: 0; }
 </style>
 </head>
 <body>

@@ -93,8 +93,9 @@ function toolCardHtml(t, catName, hue) {
     ? '<span class="status live"><span class="dot"></span>Online</span>'
     : '<span class="status soon"><span class="dot"></span>Coming soon</span>';
   var meta = '<div class="card-meta">' + badge + status + "</div>";
+  var cta = '<span class="card-cta">Details &rarr;</span>';
   if (t.live) {
-    return '<a class="card tool-card" href="' + t.url + '">' + head + desc + meta + "</a>";
+    return '<a class="card tool-card" href="' + t.url + '">' + head + desc + meta + cta + "</a>";
   }
   return '<div class="card soon tool-card">' + head + desc + meta + "</div>";
 }
@@ -103,6 +104,10 @@ function initToolsPage() {
   var grid = document.getElementById("tools-grid");
   if (!grid) return;
   var state = { cat: "all", q: "", sort: "pop", shown: 48 };
+  try {
+    var qp = new URLSearchParams(location.search).get("q");
+    if (qp) { state.q = qp.toLowerCase(); var si = document.getElementById("tools-search"); if (si) si.value = qp; }
+  } catch (e) {}
   var ALL = [];
   var catName = {};
   var hueOf = function (cs) {
@@ -174,3 +179,12 @@ function initToolsPage() {
 
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initToolsPage);
 else initToolsPage();
+
+/* Newsletter subscribe (client-side placeholder) */
+function nlSub(e) {
+  e.preventDefault();
+  var el = document.getElementById("nl-msg");
+  if (el) el.textContent = "You’re on the list — welcome aboard!";
+  e.target.reset();
+  return false;
+}

@@ -1146,7 +1146,16 @@ def tools_index_html(catalog):
         n = live_per.get(slug, 0) + cat_per.get(slug, 0)
         side += (f"<button class='side-item' data-cat='{slug}'><span class='side-dot' style='background:{hue_of(slug)}'></span>"
                  f"<span>{cat_name[slug]}</span><em>{n}</em></button>")
-    side += """<div class="side-note">Live tools work right now. Catalog tools are coming soon \u2014 new ones ship weekly.</div>"""
+    side += """<div class="side-note">Live tools work right now. Catalog tools are coming soon — new ones ship weekly.</div>"""
+    side += """<div class="side-news">
+      <div class="side-title">Newsletter</div>
+      <p>New tools and guides, straight to your inbox. No spam, unsubscribe anytime.</p>
+      <form onsubmit="return nlSub(event)">
+        <input type="email" required placeholder="you@email.com">
+        <button class="btn" type="submit">Subscribe</button>
+      </form>
+      <div id="nl-msg" class="tool-note"></div>
+    </div>"""
     return (
         header(f"Explore {total_live + total_catalog}+ Free Online Tools | MSCALE Tools",
                f"Search and filter the full MSCALE toolbox: {total_live} live tools and {total_catalog} more coming soon. 100% private, no sign-up, everything runs in your browser.", "../")
@@ -1166,6 +1175,7 @@ def tools_index_html(catalog):
   <span class="stat-chip">No sign-up</span>
   <span class="stat-chip">Runs in your browser</span>
 </div>
+{ad_slot("tools-top")}
 <div class="tools-layout">
   <aside class="tools-side" id="tools-side">{side}</aside>
   <div class="tools-main">
@@ -1180,6 +1190,11 @@ def tools_index_html(catalog):
     <p id="tools-count" class="tools-count"></p>
     <div class="grid" id="tools-grid"></div>
     <div style="text-align:center;margin-top:22px"><button id="tools-more" class="btn ghost" style="display:none">Load more tools</button></div>
+    {ad_slot("tools-feed", "970 × 160")}
+    <div class="banner-cta">
+      <div><b>Every tool you need right here in your browser.</b><span>Free, private, no sign-up — {total_live} tools live today.</span></div>
+      <a class="btn" href="word-counter.html">Try Now</a>
+    </div>
   </div>
 </div>"""
         + footer("../")
@@ -1238,6 +1253,7 @@ def tool_page(slug, name, cat, desc):
 <script type="application/ld+json">{jsonld}</script>
 <div class="tool-head"><div class="tool-title">{svg_icon(cat_slug, "tool-ic")}<h1>{name}</h1></div><p>{desc}</p></div>
 {body}
+{ad_slot('tool-top', '970 × 120')}
 {article}
 {rel_html}
 </div>"""
@@ -1269,21 +1285,65 @@ def build_catalog():
     CATALOG = result
     return result
 
+def ad_slot(key, size="728 × 90"):
+    """Reusable ad placement slot. Swap the placeholder for real ad network code later."""
+    return (
+        f"<div class='ad-slot' data-ad-slot='{key}' aria-label='Advertisement'>"
+        f"<span class='ad-tag'>Ad</span>"
+        f"<div class='ad-ph'>{size} ad space — paste your ad network code here</div>"
+        f"</div>"
+    )
+
+
+HERO_ILLO = """<svg class="hero-illo" viewBox="0 0 440 330" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="illo-o" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7000"/><stop offset="1" stop-color="#ff9a3c"/></linearGradient>
+    <linearGradient id="illo-v" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#7c3aed"/></linearGradient>
+  </defs>
+  <rect x="30" y="52" width="250" height="168" rx="16" fill="var(--card2)" stroke="var(--border2)"/>
+  <rect x="46" y="68" width="218" height="136" rx="9" fill="var(--bg)"/>
+  <rect x="66" y="150" width="24" height="42" rx="4" fill="url(#illo-o)" opacity=".55"/>
+  <rect x="100" y="128" width="24" height="64" rx="4" fill="url(#illo-o)" opacity=".75"/>
+  <rect x="134" y="108" width="24" height="84" rx="4" fill="url(#illo-o)"/>
+  <polyline points="66,96 108,84 150,88 196,70 240,60" stroke="url(#illo-v)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="240" cy="60" r="4.5" fill="#a78bfa"/>
+  <rect x="104" y="220" width="102" height="12" rx="6" fill="var(--border2)"/>
+  <circle cx="348" cy="226" r="58" stroke="url(#illo-v)" stroke-width="3"/>
+  <ellipse cx="348" cy="226" rx="26" ry="58" stroke="url(#illo-v)" stroke-width="2" opacity=".7"/>
+  <path d="M292 210h112M292 242h112" stroke="url(#illo-v)" stroke-width="2" opacity=".7"/>
+  <rect x="268" y="34" width="140" height="58" rx="12" fill="var(--card2)" stroke="var(--border2)"/>
+  <circle cx="292" cy="63" r="11" fill="url(#illo-o)"/>
+  <rect x="312" y="50" width="82" height="8" rx="4" fill="var(--border2)"/>
+  <rect x="312" y="66" width="58" height="8" rx="4" fill="var(--border)" />
+  <rect x="60" y="252" width="120" height="44" rx="10" fill="var(--card2)" stroke="var(--border2)"/>
+  <circle cx="82" cy="274" r="9" fill="url(#illo-v)"/>
+  <rect x="98" y="264" width="66" height="7" rx="3.5" fill="var(--border2)"/>
+  <rect x="98" y="277" width="44" height="7" rx="3.5" fill="var(--border)"/>
+</svg>"""
+
+
 def index_page(catalog):
     cat_counts = {}
     for item in catalog:
-        cat_counts[item["c"]] = cat_counts[item["c"]] if item["c"] in cat_counts else 0
-    cat_counts = {}
-    for item in catalog:
         cat_counts[item["c"]] = cat_counts.get(item["c"], 0) + 1
+    live_by_cat = {}
+    for s, n, c, d in LIVE:
+        cs = CAT_SLUG_BY_NAME.get(c, "calculators")
+        live_by_cat.setdefault(cs, []).append((s, n))
     cat_cards = ""
     for slug, (name, _, _, _) in CAT_PAGES.items():
-        n = cat_counts.get(slug, 0) + len([1 for s, _, c, _ in LIVE if CAT_SLUG_BY_NAME.get(c) == slug])
+        n = cat_counts.get(slug, 0) + len(live_by_cat.get(slug, []))
+        subs = "".join(f"<a href='tools/{s}.html'>{nm}</a>" for s, nm in live_by_cat.get(slug, [])[:3])
         cat_cards += (f"<a class='cat-card' href='{slug}/'><span class='icon-box' style='color:{hue_of(slug)};background:{hue_of(slug)}22'>{svg_icon(slug)}</span>"
-                      f"<h3>{name}</h3><p>{n} tools<span class='cat-arrow'>{svg_icon('arrow-right')}</span></p></a>")
-    featured_slugs = ["percentage-calculator", "word-counter", "json-formatter", "password-generator",
-                      "unit-converter", "color-converter", "image-resizer", "loan-emi-calculator"]
+                      f"<h3>{name}</h3><p>{n} tools<span class='cat-arrow'>{svg_icon('arrow-right')}</span></p><div class='cat-links'>{subs}</div></a>")
+    popular_slugs = ["word-counter", "password-generator", "json-formatter", "case-converter"]
     live_by_slug = {s: (n, c, d) for s, n, c, d in LIVE}
+    popular_cards = "".join(
+        f"<a class='card pop-card' href='tools/{s}.html'><div class='card-head'>{svg_icon(CAT_SLUG_BY_NAME.get(live_by_slug[s][1], 'wrench'), 'card-ic', hue_of(CAT_SLUG_BY_NAME.get(live_by_slug[s][1], 'wrench')))}<h3>{live_by_slug[s][0]}</h3></div><p>{live_by_slug[s][2]}</p><span class='btn btn-sm'>Open Tool</span></a>"
+        for s in popular_slugs if s in live_by_slug
+    )
+    featured_slugs = ["percentage-calculator", "json-formatter", "qr-code-generator", "password-generator",
+                      "unit-converter", "color-converter", "image-resizer", "loan-emi-calculator"]
     featured_cards = "".join(
         f"<a class='card' href='tools/{s}.html'><div class='card-head'>{svg_icon(CAT_SLUG_BY_NAME.get(live_by_slug[s][1], 'wrench'), 'card-ic', hue_of(CAT_SLUG_BY_NAME.get(live_by_slug[s][1], 'wrench')))}<h3>{live_by_slug[s][0]}</h3></div><p>{live_by_slug[s][2]}</p><span class='tag'>LIVE</span></a>"
         for s in featured_slugs if s in live_by_slug
@@ -1297,34 +1357,45 @@ def index_page(catalog):
         for p in BLOG_POSTS
     )
     total = len(catalog) + len(LIVE)
-    return header("MSCALE Tools \u2014 Free Online Tools", "Free online calculators, text tools, developer tools and converters. Fast, private, no sign-up.") + f"""
+    return header("MSCALE Tools — Free Online Tools", "Discover better tools. Free online calculators, text tools, developer tools, converters and more. Fast, private, no sign-up.") + f"""
 <div class="hero hero-new">
-  <p class="hero-kicker">Free online tools</p>
-  <h1>All-in-one <em>tools platform</em></h1>
-  <p class="hero-sub">Fast, free and easy-to-use online tools for productivity, development, design and more. No sign-up \u2014 everything runs right in your browser.</p>
-  <form class="hero-search" onsubmit="event.preventDefault();var el=document.getElementById('tool-list');if(el)el.scrollIntoView({{behavior:'smooth'}});">
-    {svg_icon("search", "search-ic")}
-    <input id="search" placeholder="Search for tools (e.g. calculator, JSON, password\u2026)" />
-    <button class="btn" type="submit">Search</button>
-  </form>
-  <p id="count-note" style="font-size:13px"></p>
+  <div class="hero-copy">
+    <p class="hero-kicker">Software &bull; AI &bull; Digital Growth</p>
+    <h1>Discover better tools. <em>Work smarter.</em> Grow faster.</h1>
+    <p class="hero-sub">Practical software guides, free online tools and technology resources for businesses, creators and learners worldwide. Everything runs right in your browser.</p>
+    <form class="hero-search" action="tools/" method="get" role="search">
+      {svg_icon("search", "search-ic")}
+      <input id="search" name="q" placeholder="Search tools, articles and guides&hellip;" />
+      <button class="btn" type="submit">Search</button>
+    </form>
+    <div class="cta-row">
+      <a class="btn" href="tools/">Explore Free Tools</a>
+      <a class="btn ghost" href="blog/">Read the Blog</a>
+    </div>
+  </div>
+  <div class="hero-art">{HERO_ILLO}</div>
 </div>
+{ad_slot("home-hero")}
 <section class="features">
   <div class="feature"><span class="f-tile" style="color:#ff9a3c;background:rgba(255,154,60,.14)">{svg_icon("zap")}</span><div><b>Fast &amp; free</b><span>No sign-up, no limits</span></div></div>
   <div class="feature"><span class="f-tile" style="color:#34d399;background:rgba(52,211,153,.14)">{svg_icon("shield-check")}</span><div><b>100% private</b><span>Everything runs on your device</span></div></div>
   <div class="feature"><span class="f-tile" style="color:#60a5fa;background:rgba(96,165,250,.14)">{svg_icon("smartphone")}</span><div><b>Works anywhere</b><span>Desktop, tablet and mobile</span></div></div>
   <div class="feature"><span class="f-tile" style="color:#a78bfa;background:rgba(167,139,250,.14)">{svg_icon("converters")}</span><div><b>Always growing</b><span>New tools added regularly</span></div></div>
 </section>
-<h2 class="section">Popular tool categories</h2>
+<div class="sec-head"><h2 class="section">Popular Free Tools</h2><a class="sec-link" href="tools/">View all tools {svg_icon("arrow-right")}</a></div>
+<div class="grid">{popular_cards}</div>
+{ad_slot("home-mid", "970 × 210")}
+<div class="sec-head"><h2 class="section">Explore Categories</h2><a class="sec-link" href="tools/">View all categories {svg_icon("arrow-right")}</a></div>
 <div class="cat-grid">{cat_cards}</div>
-<h2 class="section" id="all">Featured tools</h2>
+<div class="sec-head"><h2 class="section">Featured tools</h2><a class="sec-link" href="tools/">Browse everything {svg_icon("arrow-right")}</a></div>
 <div class="grid">{featured_cards}</div>
-<h2 class="section">All live tools</h2>
+{ad_slot("home-pre-all")}
+<h2 class="section" id="all">All live tools</h2>
 <div class="grid" id="tool-list">{all_cards}</div>
+{ad_slot("home-pre-blog")}
 <h2 class="section">From the blog</h2>
 <div class="blog-grid">{blog_cards}</div>
 """ + footer("")
-
 
 
 CAT_ABOUT = {
