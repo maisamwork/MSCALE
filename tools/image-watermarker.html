@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Image Watermarker — Free Online Tool | MSCALE Tools</title>
+<meta name="description" content="Add text watermarks to images with position, size, opacity and color control. Runs entirely in your browser."/>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="Image Watermarker — Free Online Tool | MSCALE Tools"/>
+<meta property="og:description" content="Add text watermarks to images with position, size, opacity and color control. Runs entirely in your browser."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
+<script>document.documentElement.setAttribute("data-theme", (function(){try{return localStorage.getItem("mscale-theme")||"dark"}catch(e){return "dark"}})());</script>
+<link rel="stylesheet" href="../assets/style.css"/>
+<script src="../assets/live-tools.js" defer></script>
+<script src="../assets/app.js" defer></script>
+<script src="../assets/tools.js" defer></script>
+</head>
+<body>
+<header class="site"><div class="container">
+  <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+  <nav class="main" id="main-nav"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text</a><a href="../developer-tools/">Developer</a><a href="../converters/">Converters</a><a href="../pdf-tools/">PDF</a><a href="../image-tools/">Image</a><a href="../blog/">Blog</a><a class="nav-cta" href="../tools/">All tools</a></nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme"><svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  </div>
+</div></header>
+<main class="container"><div class="tool-wrap">
+<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html"><svg class="crumb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="../image-tools/">Image Tools</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>Image Watermarker</span>
+</nav>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Image Watermarker", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Add text watermarks to images with position, size, opacity and color control. Runs entirely in your browser.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><h1>Image Watermarker</h1></div><p>Add text watermarks to images with position, size, opacity and color control. Runs entirely in your browser.</p></div>
+
+<div class="panel">
+  <label>Choose an image</label>
+  <input type="file" id="wm-file" accept="image/*" onchange="wmLoad()">
+  <label>Watermark text</label>
+  <input id="wm-text" value="© Your Name" oninput="wmDraw()">
+  <div class="row">
+    <div><label>Position</label>
+      <select id="wm-pos" onchange="wmDraw()">
+        <option value="tl">Top left</option><option value="tc">Top center</option><option value="tr">Top right</option>
+        <option value="ml">Middle left</option><option value="mc">Middle center</option><option value="mr">Middle right</option>
+        <option value="bl">Bottom left</option><option value="bc">Bottom center</option><option value="br" selected>Bottom right</option>
+      </select></div>
+    <div><label>Size (%)</label><input type="number" id="wm-size" value="4" min="1" max="20" oninput="wmDraw()"></div>
+  </div>
+  <div class="row">
+    <div><label>Opacity: <span id="wm-opv">35</span>%</label>
+      <input type="range" id="wm-opacity" min="5" max="100" value="35" oninput="wmDraw()"></div>
+    <div><label>Color</label><input type="color" id="wm-color" value="#ffffff" oninput="wmDraw()"></div>
+  </div>
+  <canvas id="wm-canvas" style="max-width:100%;border-radius:var(--r-md)"></canvas>
+  <button class="btn" onclick="wmSave()">Download watermarked image</button>
+</div>
+<div class="article">
+<h2 class="section">What Is the Image Watermarker?</h2>
+<p>Publishing photos online means accepting that they will be copied. Adding a watermark — your name, brand or handle over the image — does not prevent copying, but it keeps attribution travelling with the picture and makes commercial reuse awkward. This Image Watermarker stamps text over your images directly in your browser, with full control over position, size, opacity and colour.</p>
+<p>Load an image, type the watermark text, and place it in any of nine positions or drag it precisely with coordinates. Adjust the font size, opacity and colour, watch the preview update live, then download the watermarked result. The original file is never altered, and the image is never uploaded anywhere.</p>
+<p>Photographers marking portfolios, shops marking product photos, and creators marking social content all need this weekly. Doing it locally means client work, unreleased shoots and private images stay on your device through the whole process.</p>
+<h2 class="section">How to Use the Image Watermarker</h2>
+<p>Select an image, type the watermark text, choose position, size, colour and opacity, then download. The live preview shows exactly how the stamp will look before you save.</p>
+<ol><li>Click the file field and choose the image to watermark.</li><li>Type the watermark text, such as your name, brand or website.</li><li>Pick a position from the nine-point grid, or fine-tune with X and Y offsets.</li><li>Adjust the font size and drag the opacity slider until it reads but does not dominate.</li><li>Choose a colour; white or black with moderate opacity suits most photos.</li><li>Check the preview, then click Download to save the watermarked image.</li></ol>
+<h2 class="section">How the Image Watermarker Works</h2>
+<p>Watermarking is a canvas composite operation. Your image is drawn onto a canvas element, the text is drawn over it in your chosen font, size, colour and opacity, and the combined result is encoded as a PNG or JPEG download. Because the text is rasterised into the pixels, it survives cropping, re-uploading and screenshotting — it becomes part of the image itself.</p>
+<p>Opacity is the central design decision. Text at full opacity protects aggressively but ruins the picture; text at ten percent disappears entirely. The practical range for visible-but-tasteful watermarking sits between thirty and sixty percent, and the live preview lets you judge on the actual image rather than imagining it. Position matters equally: corners are conventional and unobtrusive, while centred watermarks resist cropping but obscure the subject.</p>
+<p>A single watermark in one corner is easy to crop away, which is why serious protection uses larger text or multiple positions. This tool's nine-point grid lets you choose the balance between aesthetics and resistance for each image. Everything happens locally: the image is read by your browser, composited on your device, and saved as a direct download, so private and client photos never leave your machine.</p>
+<p>Opacity is the setting most people get wrong on the first pass. A watermark at full strength shouts over the image and ruins the very content you are protecting, while something near five percent disappears on bright screens. The reliable range for a visible-but-courteous watermark sits around twenty to forty percent, high enough to survive a screenshot crop and low enough that the photograph remains the subject. Preview at the size you will actually publish, because a watermark that reads well at full resolution can vanish entirely in a four-hundred-pixel thumbnail.</p>
+<p>Placement is a trade-off between visibility and vulnerability. Corners are the convention because they stay out of the subject's way, but they are also the first thing a lazy thief crops away. A centred, semi-transparent watermark cannot be cropped out without destroying the image, which is why stock libraries use it for previews. For your own published work, a corner mark at moderate opacity plus keeping originals at full resolution unpublished is a pragmatic balance.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>Photographer's portfolio</h3><p>A wedding photographer stamps their studio name at forty percent opacity in the bottom-right of every preview image sent to clients, keeping attribution when previews are shared onward.</p>
+<h3>Marketplace products</h3><p>A shop watermarks product photos with the store name before listing them, so scraped images still advertise the original seller when they appear elsewhere.</p>
+<h3>Social media content</h3><p>A creator adds their handle to infographics before posting, so re-shares on other platforms keep the attribution visible.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Watermarking at full opacity, which destroys the image's usefulness and pushes viewers to find unmarked copies.</li><li>Placing the mark where it will be cropped by platform thumbnails, such as the extreme edges on some networks.</li><li>Using tiny text that becomes invisible when the image is viewed at reduced size.</li><li>Watermarking the only copy of an image; always keep unmarked originals for future use.</li><li>Choosing a colour with no contrast against the image region, such as white text on a bright sky.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Start at forty percent opacity, bottom-right, and adjust from there per image.</li><li>Use your brand name or domain rather than a personal name alone, so the mark is actionable.</li><li>Keep unwatermarked originals in a separate folder; you will want them for prints and re-edits.</li><li>For stronger protection, use a larger mark or combine corner and centre placement on key images.</li><li>Match the watermark colour to the image: white for dark regions, black for bright, with opacity doing the blending.</li><li>Since processing is local, watermark client proofs and unreleased work without any upload risk.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>Are my images uploaded to a server?</h3><p>No. Watermarking runs on an HTML canvas in your browser. The image is read, stamped and saved entirely on your device.</p>
+<h3>Can I remove the watermark later?</h3><p>From the watermarked file, no — the text is baked into the pixels. This is why you should always keep the unwatermarked original.</p>
+<h3>Which formats can I save as?</h3><p>PNG and JPEG. Use PNG for graphics and text-heavy images, JPEG for photographs where file size matters.</p>
+<h3>Can I control exactly where the watermark sits?</h3><p>Yes. Choose one of nine preset positions or fine-tune the placement with X and Y pixel offsets while watching the live preview.</p>
+<h3>Does the tool add a visible logo or its own mark?</h3><p>No. Only your text is drawn, and the downloaded image carries nothing but your watermark.</p>
+<h3>Can I watermark many images at once?</h3><p>The tool processes one image at a time so you can position each mark correctly, but it is fast and unlimited for batch work.</p>
+<h3>Will watermarking reduce my image quality?</h3><p>Only slightly and only once. The output is re-encoded when the watermark is drawn, so use a high quality setting; your original file on disk is never modified either way.</p>
+</div>
+<h2 class='section'>Related tools</h2><div class='grid'><a class='card' href='../tools/image-resizer.html'><div class='card-head'><svg class="card-ic" style="color:#e879f9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><h3>Image Resizer</h3></div></a><a class='card' href='../tools/image-compressor.html'><div class='card-head'><svg class="card-ic" style="color:#e879f9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><h3>Image Compressor</h3></div></a><a class='card' href='../tools/image-cropper.html'><div class='card-head'><svg class="card-ic" style="color:#e879f9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><h3>Image Cropper</h3></div></a><a class='card' href='../tools/favicon-generator.html'><div class='card-head'><svg class="card-ic" style="color:#e879f9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><h3>Favicon Generator</h3></div></a></div>
+</div></main>
+<footer class="site"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads. 55 tools live, more shipping weekly.</p>
+      <a class="gh-link" href="https://github.com/maisamwork/MSCALE"><svg class="" style="color:#e6e9f0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>github.com/maisamwork/MSCALE</span></a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a>
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      <a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a>
+    </div>
+    <div>
+      <h4>Popular tools</h4>
+      <a href="../tools/percentage-calculator.html">Percentage Calculator</a><a href="../tools/word-counter.html">Word Counter</a><a href="../tools/json-formatter.html">JSON Formatter</a><a href="../tools/password-generator.html">Password Generator</a><a href="../tools/unit-converter.html">Unit Converter</a><a href="../tools/image-resizer.html">Image Resizer</a>
+      <h4 class="gap-top">Resources</h4>
+      <a href="../blog/">Blog</a>
+      <a href="../tools/">All tools</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser — your data never leaves your device.</p>
+</div></footer>
+</body>
+</html>

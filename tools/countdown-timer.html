@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Countdown Timer — Free Online Tool | MSCALE Tools</title>
+<meta name="description" content="Count down to any date and time with a live days, hours, minutes and seconds display and progress bar."/>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="Countdown Timer — Free Online Tool | MSCALE Tools"/>
+<meta property="og:description" content="Count down to any date and time with a live days, hours, minutes and seconds display and progress bar."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
+<script>document.documentElement.setAttribute("data-theme", (function(){try{return localStorage.getItem("mscale-theme")||"dark"}catch(e){return "dark"}})());</script>
+<link rel="stylesheet" href="../assets/style.css"/>
+<script src="../assets/live-tools.js" defer></script>
+<script src="../assets/app.js" defer></script>
+<script src="../assets/tools.js" defer></script>
+</head>
+<body>
+<header class="site"><div class="container">
+  <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+  <nav class="main" id="main-nav"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text</a><a href="../developer-tools/">Developer</a><a href="../converters/">Converters</a><a href="../pdf-tools/">PDF</a><a href="../image-tools/">Image</a><a href="../blog/">Blog</a><a class="nav-cta" href="../tools/">All tools</a></nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme"><svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  </div>
+</div></header>
+<main class="container"><div class="tool-wrap">
+<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html"><svg class="crumb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="../date-time-tools/">Date & Time Tools</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>Countdown Timer</span>
+</nav>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Countdown Timer", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Count down to any date and time with a live days, hours, minutes and seconds display and progress bar.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h1>Countdown Timer</h1></div><p>Count down to any date and time with a live days, hours, minutes and seconds display and progress bar.</p></div>
+
+<div class="panel">
+  <label>Event name (optional)</label>
+  <input id="cd-name" placeholder="Product launch">
+  <div class="row">
+    <div><label>Date</label><input type="date" id="cd-date"></div>
+    <div><label>Time</label><input type="time" id="cd-time" value="09:00"></div>
+  </div>
+  <button class="btn" onclick="cdStart()">Start countdown</button>
+  <div id="cd-units" class="cd-units"></div>
+  <div class="cd-bar"><div id="cd-fill"></div></div>
+  <div id="cd-msg" class="result"></div>
+</div>
+<div class="article">
+<h2 class="section">What Is the Countdown Timer?</h2>
+<p>A visible countdown changes how a deadline feels. Whether it is a product launch, an exam, a New Year celebration, a webinar start or a kitchen timer, watching the days, hours, minutes and seconds tick down creates urgency and focus in a way a calendar entry never does. This Countdown Timer counts down live to any date and time you choose, entirely in your browser.</p>
+<p>Pick the target date and time, optionally name the event, and the display updates every second with the exact remaining time, broken into days, hours, minutes and seconds. A progress bar shows how far you are through the total span, and when the moment arrives the display flips to a clear finished state.</p>
+<p>Because it runs locally, it is instant to load, works offline, and never sends your dates anywhere. Use it on a second screen during launches, share the page on a projector at events, or keep it open in a tab as a personal deadline reminder.</p>
+<h2 class="section">How to Use the Countdown Timer</h2>
+<p>Choose the target date and time, press start, and watch the live countdown. The progress bar tracks your position through the total span, and the display switches to finished when the moment passes.</p>
+<ol><li>Set the target date using the date field.</li><li>Set the target time using the time field.</li><li>Optionally type an event name to display above the countdown.</li><li>Click Start to begin the live countdown.</li><li>Watch the days, hours, minutes and seconds update every second.</li><li>Use Reset to clear and set a different target.</li></ol>
+<h2 class="section">How the Countdown Timer Works</h2>
+<p>The countdown computes the difference between the target timestamp and the current system time on every tick, then splits that difference into days, hours, minutes and seconds. Deriving each unit from the total remaining milliseconds guarantees the display is always internally consistent — the seconds roll to zero exactly as the minutes decrement, with no drift between units.</p>
+<p>The progress bar adds the context a raw number lacks. It compares the remaining time against the total span between when you started watching and the target, so a countdown to a launch three weeks out shows visible movement day by day, while a kitchen countdown sweeps smoothly. The proportional view is what makes the tool useful for motivation as much as measurement.</p>
+<p>Like the stopwatch, this timer is immune to background throttling because it reads timestamps rather than counting ticks; leave the tab and return to a correct count. Everything runs locally: your target date, event name and the ticking all live in your browser's memory, with no network calls, accounts or storage involved at any point.</p>
+<p>The progress bar is calibrated against the total distance you set, not against an arbitrary maximum. If you set a countdown for two days, the bar fills across those forty-eight hours; set one for ten minutes and it fills across those ten minutes. That makes the bar an honest at-a-glance indicator of how much of the window has elapsed, which is why it works equally well for a product launch, an exam date or a coffee steeping on the desk.</p>
+<p>Timezone handling is the detail that matters most for shared deadlines. The timer counts toward the exact moment you select in your browser's local timezone, so if a launch goes live at nine in the morning in one city and colleagues in another timezone copy the same wall-clock time, they will get different instants. For distributed teams, agree on the moment in UTC or share the countdown from the person who owns the deadline, and the displayed remaining time will agree everywhere.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>Product launch</h3><p>A team projects the countdown on an office screen for the final week before launch, with the event name displayed, keeping the whole team aligned on the remaining runway.</p>
+<h3>Exam preparation</h3><p>A student keeps a countdown to exam day open in a browser tab, using the days figure to pace revision across the remaining weeks.</p>
+<h3>Webinar start</h3><p>A host displays a countdown to the start time on the waiting-room screen, so attendees know exactly when the session begins.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Setting the target time without checking whether it is today or another day, which silently counts to the wrong moment.</li><li>Forgetting the date field defaults to today, so an afternoon deadline needs both fields set explicitly.</li><li>Reloading the page expecting the countdown to persist; the target lives in the page's memory for privacy, so re-set it after a reload.</li><li>Using it as an alarm, since the finished state is visual only and there is no sound.</li><li>Timezone confusion when the target is in another region; the countdown uses your device's local timezone.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Name the event so the countdown's purpose is clear when projected or shared on a screen.</li><li>Use the progress bar as a pacing tool for long spans, and the seconds for urgency in short ones.</li><li>For recurring deadlines, bookmark the page and re-set the target each cycle; it loads instantly.</li><li>Combine with the Online Stopwatch: count down to the start, then measure the event itself with laps.</li><li>Keep it on a second screen or projector during launches and events for shared awareness.</li><li>Since it runs locally and offline, it works anywhere, including restricted networks.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>Does the countdown persist if I reload the page?</h3><p>No. For privacy the target lives in the page's memory only, so reloads clear it. Re-set the date and time; it takes two seconds.</p>
+<h3>Will it stay accurate in a background tab?</h3><p>Yes. The remaining time is computed from system timestamps on every update, so background throttling cannot make it drift.</p>
+<h3>Does it play a sound when finished?</h3><p>No. The finished state is visual, which keeps the tool permission-free. Pair it with a system alarm if you need audio.</p>
+<h3>Which timezone does it use?</h3><p>Your device's local timezone. For targets in other regions, convert the moment to your local time before setting it.</p>
+<h3>Can I count down to a past date?</h3><p>The tool shows a finished state for past targets rather than counting upward; use the Date Difference Calculator for elapsed-time questions.</p>
+<h3>Is my target date sent anywhere?</h3><p>No. Everything runs locally in your browser with no network access, no accounts and no storage.</p>
+<h3>What happens when the countdown reaches zero?</h3><p>The display shows zeros, the progress bar completes, and a finished state is indicated so you can see at a glance that the deadline has passed rather than mistaking it for a timer that never started.</p>
+</div>
+<h2 class='section'>Related tools</h2><div class='grid'><a class='card' href='../tools/date-difference-calculator.html'><div class='card-head'><svg class="card-ic" style="color:#60a5fa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h3>Date Difference Calculator</h3></div></a><a class='card' href='../tools/stopwatch-online.html'><div class='card-head'><svg class="card-ic" style="color:#60a5fa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h3>Online Stopwatch</h3></div></a></div>
+</div></main>
+<footer class="site"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads. 55 tools live, more shipping weekly.</p>
+      <a class="gh-link" href="https://github.com/maisamwork/MSCALE"><svg class="" style="color:#e6e9f0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>github.com/maisamwork/MSCALE</span></a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a>
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      <a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a>
+    </div>
+    <div>
+      <h4>Popular tools</h4>
+      <a href="../tools/percentage-calculator.html">Percentage Calculator</a><a href="../tools/word-counter.html">Word Counter</a><a href="../tools/json-formatter.html">JSON Formatter</a><a href="../tools/password-generator.html">Password Generator</a><a href="../tools/unit-converter.html">Unit Converter</a><a href="../tools/image-resizer.html">Image Resizer</a>
+      <h4 class="gap-top">Resources</h4>
+      <a href="../blog/">Blog</a>
+      <a href="../tools/">All tools</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser — your data never leaves your device.</p>
+</div></footer>
+</body>
+</html>

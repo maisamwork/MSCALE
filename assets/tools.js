@@ -49,18 +49,46 @@ function emiCalc() {
 }
 
 /* ---------- Text ---------- */
+function wcDur(words, wpm) {
+  const m = words / wpm;
+  if (m < 1) return "< 1 min";
+  if (m < 60) return Math.ceil(m) + " min";
+  return (m / 60).toFixed(1) + " hr";
+}
+function wcPages(words, perPage) {
+  const p = words / perPage;
+  return p < 0.01 ? "0" : p.toFixed(p < 1 ? 2 : 1);
+}
+function wcRefTable() {
+  const rows = [100, 250, 500, 750, 1000, 1250, 1500, 1750, 2000, 2500, 3000, 4000, 5000];
+  let h = `<table class="wc-table"><thead><tr><th>Words</th><th>Pages (Letter, 250 w/p)</th><th>Pages (A4, 500 w/p)</th><th>Reading (230 wpm)</th><th>Speaking (130 wpm)</th></tr></thead><tbody>`;
+  for (const w of rows) {
+    h += `<tr><td><b>${w.toLocaleString()}</b></td><td>${wcPages(w, 250)}</td><td>${wcPages(w, 500)}</td><td>${wcDur(w, 230)}</td><td>${wcDur(w, 130)}</td></tr>`;
+  }
+  $("wc-table").innerHTML = h + "</tbody></table>";
+}
 function wordCount() {
   const t = $("wc-in").value;
   const words = t.trim() ? t.trim().split(/\s+/).length : 0;
   const sentences = (t.match(/[.!?]+(\s|$)/g) || []).length;
   const paras = t.trim() ? t.trim().split(/\n\s*\n/).filter(Boolean).length : 0;
+  const noSp = t.length ? t.replace(/\s/g, "").length : 0;
+  const uniq = new Set((t.toLowerCase().match(/[a-z0-9'\u2019-]+/g) || [])).size;
+  const avgLen = words ? (t.replace(/\s/g, "").replace(/[^\w'\u2019-]/g, "").length / words).toFixed(1) : "0";
   $("wc-stats").innerHTML =
     `<div class="stat"><b>${words}</b><span>Words</span></div>
      <div class="stat"><b>${t.length}</b><span>Characters</span></div>
-     <div class="stat"><b>${t.length ? t.replace(/\s/g, "").length : 0}</b><span>No spaces</span></div>
+     <div class="stat"><b>${noSp}</b><span>No spaces</span></div>
      <div class="stat"><b>${sentences}</b><span>Sentences</span></div>
      <div class="stat"><b>${paras}</b><span>Paragraphs</span></div>
-     <div class="stat"><b>${Math.ceil(words / 200)}</b><span>Min read</span></div>`;
+     <div class="stat"><b>${uniq}</b><span>Unique words</span></div>
+     <div class="stat"><b>${avgLen}</b><span>Avg word length</span></div>
+     <div class="stat"><b>${wcDur(words, 100)}</b><span>Read · slow (100 wpm)</span></div>
+     <div class="stat"><b>${wcDur(words, 230)}</b><span>Read · average (230 wpm)</span></div>
+     <div class="stat"><b>${wcDur(words, 300)}</b><span>Read · fast (300 wpm)</span></div>
+     <div class="stat"><b>${wcDur(words, 130)}</b><span>Speaking (130 wpm)</span></div>
+     <div class="stat"><b>${wcPages(words, 250)}</b><span>Pages · Letter (250 w/p)</span></div>`;
+  if (!$("wc-table").innerHTML) wcRefTable();
 }
 
 function convertCase(mode) {
@@ -901,3 +929,241 @@ function jsonToCsv() {
   dl.style.display = "inline-flex";
   out("j2c-out", "");
 }
+
+/* ===================== Batch 11: advanced tools ===================== */
+
+/* ---- QR Code Generator ---- */
+function qrGen() {
+  const box = document.getElementById("qr-box");
+  const txt = document.getElementById("qr-text").value;
+  if (!txt.trim()) { box.innerHTML = "<p class='error'>Enter some text or a URL first.</p>"; return; }
+  box.innerHTML = "";
+  const size = +document.getElementById("qr-size").value;
+  const ecc = document.getElementById("qr-ecc").value;
+  new QRCode(box, { text: txt, width: size, height: size, correctLevel: QRCode.CorrectLevel[ecc] });
+}
+function qrDownload() {
+  const c = document.querySelector("#qr-box canvas");
+  const img = document.querySelector("#qr-box img");
+  const url = c ? c.toDataURL("image/png") : (img ? img.src : null);
+  if (!url) return;
+  const a = document.createElement("a");
+  a.href = url; a.download = "qr-code.png"; a.click();
+}
+
+/* ---- Text Diff Checker (LCS on lines) ---- */
+function dEsc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+function diffRun() {
+  const a = document.getElementById("diff-a").value.split("\n");
+  const b = document.getElementById("diff-b").value.split("\n");
+  const n = a.length, m = b.length;
+  const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+  for (let i = n - 1; i >= 0; i--)
+    for (let j = m - 1; j >= 0; j--)
+      dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+  let i = 0, j = 0, html = "", adds = 0, dels = 0;
+  while (i < n && j < m) {
+    if (a[i] === b[j]) { html += `<div class="dln same">${dEsc(a[i]) || "&nbsp;"}</div>`; i++; j++; }
+    else if (dp[i + 1][j] >= dp[i][j + 1]) { html += `<div class="dln del">- ${dEsc(a[i])}</div>`; i++; dels++; }
+    else { html += `<div class="dln add">+ ${dEsc(b[j])}</div>`; j++; adds++; }
+  }
+  while (i < n) { html += `<div class="dln del">- ${dEsc(a[i])}</div>`; i++; dels++; }
+  while (j < m) { html += `<div class="dln add">+ ${dEsc(b[j])}</div>`; j++; adds++; }
+  const summary = `<div class="tool-note">${adds} addition${adds === 1 ? "" : "s"}, ${dels} removal${dels === 1 ? "" : "s"}, ${n + m - adds - dels} unchanged line${n + m - adds - dels === 1 ? "" : "s"}</div>`;
+  document.getElementById("diff-out").innerHTML = summary + html;
+}
+
+/* ---- Markdown Previewer ---- */
+function mdRender() {
+  const src = document.getElementById("md-in").value;
+  const lines = src.split("\n");
+  const inline = (s) => dEsc(s)
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" rel="noopener">$1</a>');
+  let html = "", inUl = false, inOl = false, inCode = false, codeBuf = [];
+  const closeLists = () => { if (inUl) { html += "</ul>"; inUl = false; } if (inOl) { html += "</ol>"; inOl = false; } };
+  for (const raw of lines) {
+    if (/^```/.test(raw)) {
+      if (inCode) { html += "<pre><code>" + dEsc(codeBuf.join("\n")) + "</code></pre>"; inCode = false; codeBuf = []; }
+      else { closeLists(); inCode = true; }
+      continue;
+    }
+    if (inCode) { codeBuf.push(raw); continue; }
+    const h = raw.match(/^(#{1,6})\s+(.*)$/);
+    if (h) { closeLists(); html += `<h${h[1].length}>${inline(h[2])}</h${h[1].length}>`; continue; }
+    if (/^\s*[-*+]\s+/.test(raw)) { if (inOl) { html += "</ol>"; inOl = false; } if (!inUl) { html += "<ul>"; inUl = true; } html += `<li>${inline(raw.replace(/^\s*[-*+]\s+/, ""))}</li>`; continue; }
+    if (/^\s*\d+[.)]\s+/.test(raw)) { if (inUl) { html += "</ul>"; inUl = false; } if (!inOl) { html += "<ol>"; inOl = true; } html += `<li>${inline(raw.replace(/^\s*\d+[.)]\s+/, ""))}</li>`; continue; }
+    if (/^\s*(---|\*\*\*|___)\s*$/.test(raw)) { closeLists(); html += "<hr>"; continue; }
+    if (/^\s*>\s?/.test(raw)) { closeLists(); html += `<blockquote>${inline(raw.replace(/^\s*>\s?/, ""))}</blockquote>`; continue; }
+    if (!raw.trim()) { closeLists(); continue; }
+    closeLists(); html += `<p>${inline(raw)}</p>`;
+  }
+  if (inCode) html += "<pre><code>" + dEsc(codeBuf.join("\n")) + "</code></pre>";
+  closeLists();
+  document.getElementById("md-out").innerHTML = html;
+  document.getElementById("md-html").value = html;
+}
+
+/* ---- Image Watermarker ---- */
+let wmImg = null;
+function wmLoad() {
+  const f = document.getElementById("wm-file").files[0];
+  if (!f) return;
+  const img = new Image();
+  img.onload = () => { wmImg = img; wmDraw(); };
+  img.src = URL.createObjectURL(f);
+}
+function wmDraw() {
+  const opv = document.getElementById("wm-opv");
+  if (opv) opv.textContent = document.getElementById("wm-opacity").value;
+  if (!wmImg) return;
+  const c = document.getElementById("wm-canvas");
+  const max = 1400;
+  const sc = Math.min(1, max / Math.max(wmImg.width, wmImg.height));
+  c.width = Math.round(wmImg.width * sc);
+  c.height = Math.round(wmImg.height * sc);
+  const x = c.getContext("2d");
+  x.drawImage(wmImg, 0, 0, c.width, c.height);
+  const txt = document.getElementById("wm-text").value || "\u00a9";
+  const pos = document.getElementById("wm-pos").value;
+  const fs = Math.max(10, c.width * (+document.getElementById("wm-size").value || 4) / 100);
+  const op = (+document.getElementById("wm-opacity").value || 35) / 100;
+  const col = document.getElementById("wm-color").value;
+  x.font = `600 ${fs}px system-ui, sans-serif`;
+  x.globalAlpha = op;
+  x.fillStyle = col;
+  const w = x.measureText(txt).width, pad = fs * 0.6;
+  const P = {
+    tl: [pad, pad + fs], tc: [(c.width - w) / 2, pad + fs], tr: [c.width - w - pad, pad + fs],
+    ml: [pad, c.height / 2], mc: [(c.width - w) / 2, c.height / 2], mr: [c.width - w - pad, c.height / 2],
+    bl: [pad, c.height - pad], bc: [(c.width - w) / 2, c.height - pad], br: [c.width - w - pad, c.height - pad]
+  };
+  const p = P[pos] || P.br;
+  x.fillText(txt, p[0], p[1]);
+  x.globalAlpha = 1;
+}
+function wmSave() {
+  const c = document.getElementById("wm-canvas");
+  if (!c.width) return;
+  c.toBlob((b) => dlBytes(b, "watermarked.png", "image/png"), "image/png");
+}
+
+/* ---- Favicon Generator ---- */
+function fvGen() {
+  const f = document.getElementById("fv-file").files[0];
+  if (!f) return;
+  const img = new Image();
+  img.onload = () => {
+    const sizes = [16, 32, 180, 512];
+    const row = document.getElementById("fv-previews");
+    let tags = "";
+    row.innerHTML = "";
+    sizes.forEach((s) => {
+      const c = document.createElement("canvas");
+      c.width = c.height = s;
+      c.getContext("2d").drawImage(img, 0, 0, s, s);
+      const url = c.toDataURL("image/png");
+      const name = s === 180 ? "apple-touch-icon.png" : `favicon-${s}x${s}.png`;
+      row.insertAdjacentHTML("beforeend",
+        `<div class="fav-item"><img src="${url}" width="${Math.min(64, s)}" height="${Math.min(64, s)}"><span>${s} px</span><a class="btn ghost" download="${name}" href="${url}">Download</a></div>`);
+      tags += `<link rel="icon" type="image/png" sizes="${s}x${s}" href="/${name}">\n`;
+    });
+    document.getElementById("fv-tags").value = tags.trim();
+  };
+  img.src = URL.createObjectURL(f);
+}
+
+/* ---- Base64 Image Encoder ---- */
+function b64Enc() {
+  const f = document.getElementById("b64-file").files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    const uri = r.result;
+    document.getElementById("b64-out").value = uri;
+    document.getElementById("b64-html").value = `<img src="${uri}" alt="">`;
+    document.getElementById("b64-css").value = `background-image: url(${uri});`;
+    out("b64-info", `<b>${escHtml(f.name)}</b> \u2014 ${(f.size / 1024).toFixed(1)} KB \u2192 ${(uri.length / 1024).toFixed(1)} KB encoded (+${Math.round((uri.length / f.size - 1) * 100)}%)`);
+  };
+  r.readAsDataURL(f);
+}
+
+/* ---- Online Stopwatch (timestamp-based, drift-free) ---- */
+let swAcc = 0, swRun = false, swT0 = 0, swLaps = [], swTimer = null;
+function swNow() { return swAcc + (swRun ? Date.now() - swT0 : 0); }
+function swFmt(ms) {
+  const h = Math.floor(ms / 3600000), m = Math.floor(ms % 3600000 / 60000), s = Math.floor(ms % 60000 / 1000), cs = Math.floor(ms % 1000 / 10);
+  const core = String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0") + "." + String(cs).padStart(2, "0");
+  return h > 0 ? h + ":" + core : core;
+}
+function swTick() { const el = document.getElementById("sw-display"); if (el) el.textContent = swFmt(swNow()); }
+function swStart() {
+  if (swRun) return;
+  swRun = true; swT0 = Date.now();
+  clearInterval(swTimer); swTimer = setInterval(swTick, 31);
+  document.getElementById("sw-start").textContent = "Resume";
+}
+function swPause() {
+  if (!swRun) return;
+  swAcc = swNow(); swRun = false;
+  clearInterval(swTimer);
+  document.getElementById("sw-start").textContent = "Start";
+}
+function swLap() {
+  const total = swNow();
+  if (!total) return;
+  const prev = swLaps.length ? swLaps[swLaps.length - 1].total : 0;
+  swLaps.push({ split: total - prev, total });
+  let h = `<table class="lap-table"><thead><tr><th>Lap</th><th>Split</th><th>Total</th></tr></thead><tbody>`;
+  swLaps.slice().reverse().forEach((l, idx) => {
+    h += `<tr><td>${swLaps.length - idx}</td><td>${swFmt(l.split)}</td><td>${swFmt(l.total)}</td></tr>`;
+  });
+  document.getElementById("sw-laps").innerHTML = h + "</tbody></table>";
+}
+function swReset() {
+  swAcc = 0; swRun = false; swLaps = [];
+  clearInterval(swTimer);
+  document.getElementById("sw-display").textContent = "00:00.00";
+  document.getElementById("sw-laps").innerHTML = "";
+  document.getElementById("sw-start").textContent = "Start";
+}
+
+/* ---- Countdown Timer ---- */
+let cdTarget = 0, cdTotal = 0, cdTimer = null;
+function cdStart() {
+  const d = document.getElementById("cd-date").value;
+  const tm = document.getElementById("cd-time").value || "00:00";
+  if (!d) { out("cd-msg", "<span class='error'>Pick a date first.</span>"); return; }
+  cdTarget = new Date(d + "T" + tm).getTime();
+  cdTotal = cdTarget - Date.now();
+  if (cdTotal <= 0) { out("cd-msg", "<span class='error'>That moment is already in the past \u2014 pick a future date and time.</span>"); return; }
+  clearInterval(cdTimer);
+  cdTimer = setInterval(cdTick, 250);
+  cdTick();
+}
+function cdTick() {
+  const left = cdTarget - Date.now();
+  const name = document.getElementById("cd-name").value;
+  const label = name ? `<div class="tool-note" style="text-align:center">${escHtml(name)}</div>` : "";
+  if (left <= 0) {
+    clearInterval(cdTimer);
+    document.getElementById("cd-units").innerHTML = label +
+      `<div class="cd-unit"><b>0</b><span>Days</span></div><div class="cd-unit"><b>0</b><span>Hours</span></div><div class="cd-unit"><b>0</b><span>Minutes</span></div><div class="cd-unit"><b>0</b><span>Seconds</span></div>`;
+    document.getElementById("cd-fill").style.width = "100%";
+    out("cd-msg", "<b>Time is up!</b> The countdown has finished.");
+    return;
+  }
+  const d = Math.floor(left / 86400000), h = Math.floor(left % 86400000 / 3600000),
+    m = Math.floor(left % 3600000 / 60000), s = Math.floor(left % 60000 / 1000);
+  document.getElementById("cd-units").innerHTML = label +
+    `<div class="cd-unit"><b>${d}</b><span>Days</span></div><div class="cd-unit"><b>${h}</b><span>Hours</span></div><div class="cd-unit"><b>${m}</b><span>Minutes</span></div><div class="cd-unit"><b>${s}</b><span>Seconds</span></div>`;
+  document.getElementById("cd-fill").style.width = ((1 - left / cdTotal) * 100).toFixed(2) + "%";
+}
+
+/* Render the word counter reference table on page load */
+(function () {
+  const el = document.getElementById("wc-table");
+  if (el && !el.innerHTML) wcRefTable();
+})();

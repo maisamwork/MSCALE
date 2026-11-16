@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Base64 Image Encoder — Free Online Tool | MSCALE Tools</title>
+<meta name="description" content="Convert images to Base64 data URIs with HTML img and CSS background snippets. Free and private."/>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="Base64 Image Encoder — Free Online Tool | MSCALE Tools"/>
+<meta property="og:description" content="Convert images to Base64 data URIs with HTML img and CSS background snippets. Free and private."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
+<script>document.documentElement.setAttribute("data-theme", (function(){try{return localStorage.getItem("mscale-theme")||"dark"}catch(e){return "dark"}})());</script>
+<link rel="stylesheet" href="../assets/style.css"/>
+<script src="../assets/live-tools.js" defer></script>
+<script src="../assets/app.js" defer></script>
+<script src="../assets/tools.js" defer></script>
+</head>
+<body>
+<header class="site"><div class="container">
+  <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+  <nav class="main" id="main-nav"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text</a><a href="../developer-tools/">Developer</a><a href="../converters/">Converters</a><a href="../pdf-tools/">PDF</a><a href="../image-tools/">Image</a><a href="../blog/">Blog</a><a class="nav-cta" href="../tools/">All tools</a></nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme"><svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  </div>
+</div></header>
+<main class="container"><div class="tool-wrap">
+<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html"><svg class="crumb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="../developer-tools/">Developer Tools</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>Base64 Image Encoder</span>
+</nav>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Base64 Image Encoder", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Convert images to Base64 data URIs with HTML img and CSS background snippets. Free and private.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>Base64 Image Encoder</h1></div><p>Convert images to Base64 data URIs with HTML img and CSS background snippets. Free and private.</p></div>
+
+<div class="panel">
+  <label>Image file</label>
+  <input type="file" id="b64-file" accept="image/*" onchange="b64Enc()">
+  <div id="b64-info" class="result"></div>
+  <label>Data URI</label>
+  <textarea id="b64-out" readonly style="min-height:120px"></textarea>
+  <div class="row">
+    <button class="btn ghost" onclick="copyText('b64-out')">Copy data URI</button>
+    <button class="btn ghost" onclick="copyText('b64-html')">Copy HTML img tag</button>
+    <button class="btn ghost" onclick="copyText('b64-css')">Copy CSS background</button>
+  </div>
+  <textarea id="b64-html" style="display:none"></textarea>
+  <textarea id="b64-css" style="display:none"></textarea>
+</div>
+<div class="article">
+<h2 class="section">What Is the Base64 Image Encoder?</h2>
+<p>A data URI embeds an image directly inside code as Base64 text, removing the need for a separate image file and a separate network request. Email templates, single-file HTML demos, CSS backgrounds and offline documents all use them. This Base64 Image Encoder converts any image into a ready-to-paste data URI in your browser, with the HTML, CSS and direct URI forms generated for you.</p>
+<p>Load an image, and the tool immediately shows the encoded string, its size, and copy-ready snippets: an HTML img tag, a CSS background-image rule, and the bare data URI. Nothing is uploaded — the file is read and encoded entirely on your device.</p>
+<p>The main decision with data URIs is size. Encoding suits small images: icons, logos, tiny illustrations. A large photo becomes a wall of text that bloats the document and defeats browser caching, so the tool shows the encoded size prominently, letting you judge whether embedding makes sense for your file.</p>
+<h2 class="section">How to Use the Base64 Image Encoder</h2>
+<p>Select an image and the tool encodes it instantly, showing the data URI size and copy-ready HTML and CSS snippets. Copy whichever form you need; large files show a size warning.</p>
+<ol><li>Click the file field and choose a small image: an icon, logo or badge.</li><li>Check the original and encoded sizes shown above the output.</li><li>Copy the HTML snippet to embed the image in a page.</li><li>Copy the CSS snippet to use it as a background image.</li><li>Or copy the bare data URI for use in any text format that accepts URLs.</li><li>Paste into your HTML, CSS, email template or document.</li></ol>
+<h2 class="section">How the Base64 Image Encoder Works</h2>
+<p>Base64 encoding converts binary image bytes into sixty-four safe ASCII characters, inflating the data by roughly a third. The result is prefixed with a MIME type declaration, forming a data URI like data:image/png;base64, followed by the encoded body. Browsers, email clients and CSS engines decode that text back into the original bytes and render it exactly as if it had been loaded from a file.</p>
+<p>The trade-off is requests versus bytes. Embedding removes an HTTP request, which speeds up small assets and makes single-file distribution possible: an HTML file with its icons embedded works offline, emails with embedded logos render without loading remote images, and CSS with embedded backgrounds ships as one artifact. But the added third in size means large images should stay as files, where caching and lazy loading work in your favour.</p>
+<p>The tool reads your file with the browser's FileReader API and encodes it locally, so nothing leaves your device — relevant because people often encode internal logos, unreleased brand assets and private graphics. The three output forms cover the common destinations: an img tag for HTML, a background-image rule for CSS, and the raw URI for everything else, each one click to copy.</p>
+<p>The decision to inline an image is a bandwidth trade-off, not a free win. Base64 encoding inflates a file by roughly a third, and the data cannot be cached separately from the document that contains it, so a large inlined hero image is re-downloaded with every page view. The sweet spot is small, rarely-changing graphics that appear on nearly every page, such as interface icons, logos under a few kilobytes, and placeholder patterns, where saving an HTTP request outweighs the size penalty. Large photographs almost always belong in separate cached files.</p>
+<p>Data URIs also sidestep some embedding restrictions that trip up shared HTML. Email clients that block external images will still render inlined ones, single-file HTML documents stay self-contained when moved between folders or machines, and CSS background images defined as data URIs cannot 404. Those properties make the encoder a standard step when preparing HTML email templates or portable demo files.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>Email signature logo</h3><p>A marketer embeds a small company logo as a data URI in an email template, so the logo renders even when the recipient's client blocks remote images.</p>
+<h3>Single-file demo</h3><p>A developer embeds two icons into a self-contained HTML demo, which then works offline, attaches to an email, and runs from a USB stick with no assets folder.</p>
+<h3>CSS background icon</h3><p>A designer embeds a small pattern into a stylesheet as a background-image data URI, removing one request from every page load.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Encoding large photographs, which bloats documents by a third and loses caching; embed only small assets.</li><li>Forgetting the MIME prefix when hand-building a URI; the bare Base64 without data:image/png;base64, will not render.</li><li>Pasting the HTML snippet into CSS or the CSS snippet into HTML; each output form belongs in its own context.</li><li>Encoding the same large image into many pages instead of referencing one cached file.</li><li>Assuming data URIs improve performance universally; for above-the-fold small icons yes, for everything else usually no.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Keep embedded images under a few kilobytes; the tool shows the encoded size so you can judge instantly.</li><li>Use PNG for icons and graphics, JPEG for small photographic embeds, and WebP where supported for the smallest URIs.</li><li>Prefer the provided copy-ready snippets over hand-assembling tags; the MIME prefix is easy to mistype.</li><li>For email templates, embed logos and check total size stays within your email platform's limits.</li><li>Test the embedded result offline to confirm no stray external references remain.</li><li>Since encoding is local, unreleased brand assets and internal graphics stay private.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>What is a data URI?</h3><p>A way to embed a file's contents directly inside a document as text, using Base64 encoding with a MIME prefix, so the browser renders it without fetching a separate file.</p>
+<h3>When should I embed an image instead of linking it?</h3><p>For small assets in contexts where requests are costly or impossible: email templates, single-file demos, offline documents and tiny CSS backgrounds.</p>
+<h3>Why is the encoded text bigger than my file?</h3><p>Base64 represents every three bytes as four characters, adding roughly thirty-three percent. That overhead is the price of embedding binary data as text.</p>
+<h3>Are my images uploaded anywhere?</h3><p>No. The file is read and encoded entirely in your browser, and the output is copied or stays on your device.</p>
+<h3>What size image is suitable?</h3><p>A few kilobytes is the sweet spot: icons, logos and small patterns. Large images should remain separate files for caching and performance.</p>
+<h3>Which output format should I copy?</h3><p>Use the HTML snippet for web pages, the CSS snippet for stylesheets, and the bare data URI anywhere a URL string is accepted.</p>
+</div>
+<h2 class='section'>Related tools</h2><div class='grid'><a class='card' href='../tools/json-formatter.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>JSON Formatter</h3></div></a><a class='card' href='../tools/base64-encoder-decoder.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>Base64 Encode / Decode</h3></div></a><a class='card' href='../tools/url-encoder-decoder.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>URL Encoder / Decoder</h3></div></a><a class='card' href='../tools/uuid-generator.html'><div class='card-head'><svg class="card-ic" style="color:#a78bfa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h3>UUID Generator</h3></div></a></div>
+</div></main>
+<footer class="site"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads. 55 tools live, more shipping weekly.</p>
+      <a class="gh-link" href="https://github.com/maisamwork/MSCALE"><svg class="" style="color:#e6e9f0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>github.com/maisamwork/MSCALE</span></a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a>
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      <a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a>
+    </div>
+    <div>
+      <h4>Popular tools</h4>
+      <a href="../tools/percentage-calculator.html">Percentage Calculator</a><a href="../tools/word-counter.html">Word Counter</a><a href="../tools/json-formatter.html">JSON Formatter</a><a href="../tools/password-generator.html">Password Generator</a><a href="../tools/unit-converter.html">Unit Converter</a><a href="../tools/image-resizer.html">Image Resizer</a>
+      <h4 class="gap-top">Resources</h4>
+      <a href="../blog/">Blog</a>
+      <a href="../tools/">All tools</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser — your data never leaves your device.</p>
+</div></footer>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Online Stopwatch — Free Online Tool | MSCALE Tools</title>
+<meta name="description" content="Free online stopwatch with lap times, splits, pause and resume. Accurate timestamp-based timing."/>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="Online Stopwatch — Free Online Tool | MSCALE Tools"/>
+<meta property="og:description" content="Free online stopwatch with lap times, splits, pause and resume. Accurate timestamp-based timing."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
+<script>document.documentElement.setAttribute("data-theme", (function(){try{return localStorage.getItem("mscale-theme")||"dark"}catch(e){return "dark"}})());</script>
+<link rel="stylesheet" href="../assets/style.css"/>
+<script src="../assets/live-tools.js" defer></script>
+<script src="../assets/app.js" defer></script>
+<script src="../assets/tools.js" defer></script>
+</head>
+<body>
+<header class="site"><div class="container">
+  <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+  <nav class="main" id="main-nav"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text</a><a href="../developer-tools/">Developer</a><a href="../converters/">Converters</a><a href="../pdf-tools/">PDF</a><a href="../image-tools/">Image</a><a href="../blog/">Blog</a><a class="nav-cta" href="../tools/">All tools</a></nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme"><svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  </div>
+</div></header>
+<main class="container"><div class="tool-wrap">
+<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html"><svg class="crumb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="../date-time-tools/">Date & Time Tools</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>Online Stopwatch</span>
+</nav>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Online Stopwatch", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Free online stopwatch with lap times, splits, pause and resume. Accurate timestamp-based timing.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h1>Online Stopwatch</h1></div><p>Free online stopwatch with lap times, splits, pause and resume. Accurate timestamp-based timing.</p></div>
+
+<div class="panel">
+  <div id="sw-display" class="big-time">00:00.00</div>
+  <div class="row">
+    <button class="btn" id="sw-start" onclick="swStart()">Start</button>
+    <button class="btn ghost" onclick="swLap()">Lap</button>
+    <button class="btn ghost" onclick="swPause()">Pause</button>
+    <button class="btn ghost" onclick="swReset()">Reset</button>
+  </div>
+  <div id="sw-laps"></div>
+</div>
+<div class="article">
+<h2 class="section">What Is the Online Stopwatch?</h2>
+<p>A stopwatch is the simplest measurement tool there is, and the browser version has one decisive advantage: it is already where you are. This Online Stopwatch times any interval with centisecond precision, supports pausing and resuming, records lap times with computed splits, and keeps running accurately even if you switch browser tabs.</p>
+<p>Click start to begin, lap to record each interval, pause to hold the count, and reset to clear. Every lap is listed with its split — the time since the previous lap — so you can see both cumulative time and per-lap performance at a glance.</p>
+<p>Uses are endless: timing presentations and meetings, boiling eggs and steeping tea, tracking workout intervals, timing study sessions, measuring how long tasks actually take, and settling household debates. It works on any device with a browser, needs no install or permission, and runs entirely locally.</p>
+<h2 class="section">How to Use the Online Stopwatch</h2>
+<p>Press start, use lap to record each interval, and pause or reset as needed. The display shows centiseconds, and the lap table lists every lap with its split time.</p>
+<ol><li>Click Start to begin timing; the display counts up from zero.</li><li>Click Lap at each milestone to record a split; laps appear in a table below.</li><li>Click Pause to stop the count temporarily.</li><li>Click Resume to continue from the paused time.</li><li>Click Reset to clear the timer and all recorded laps.</li><li>Read the lap table to compare splits between intervals.</li></ol>
+<h2 class="section">How the Online Stopwatch Works</h2>
+<p>Accuracy in a browser stopwatch comes from how time is measured. The tool never counts seconds with a repeating timer, which drifts; instead it stores a start timestamp and computes elapsed time from the system clock on every frame, so the display is always exact to the centisecond you see. Pausing records the elapsed total, and resuming subtracts the pause from subsequent calculations, so paused time never contaminates the measurement.</p>
+<p>Lap tracking is bookkeeping over that elapsed value. Each lap records the current total; the split is the difference from the previous lap's total. This gives you both views instantly: the cumulative time for the whole event and the per-interval time for comparing segments, which is what interval training, timed presentations and task measurement all need.</p>
+<p>Tab switching is handled because browsers throttle background tabs aggressively. Since the timing derives from timestamps rather than counted ticks, switching away and back shows the correct elapsed time rather than a frozen count. Everything runs locally with no network access, no permissions and no storage, so the stopwatch is instant to load and private by construction.</p>
+<p>Timestamp-based timing is why the stopwatch stays accurate even when the browser is busy. The displayed time is always computed from the difference between the current clock and the moment you pressed start, not by counting interval ticks, so background tabs, slow rendering or a briefly frozen page cannot make the recorded time drift. Lap times are captured the same way, each one anchored to real elapsed time rather than to when the interface happened to redraw.</p>
+<p>Lap versus split is worth keeping straight when you review the table. Each lap row shows both the split, which is the time for that segment alone, and the total elapsed at the moment you pressed the button. Runners use laps for per-kilometre pace, presenters use them to check segment lengths against a run sheet, and quality inspectors use them to time repeated process steps; in every case the split column is the number that answers the question how long did this one take.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>Presentation rehearsal</h3><p>A speaker rehearses a fifteen-minute talk, lapping at each section to confirm no segment overruns its slot, then adjusts the two sections whose splits came in long.</p>
+<h3>Kitchen timing</h3><p>A cook times a three-step recipe, lapping when each stage begins, so the next attempt reproduces the timing exactly instead of guessing.</p>
+<h3>Workout intervals</h3><p>A runner does forty-five second intervals with lap presses between each, then reads the splits to see which intervals slowed and by how much.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Trusting a stopwatch that counts with timer ticks, which drifts seconds over long spans; timestamp-based timing stays exact.</li><li>Forgetting to reset between measurements, accidentally lapping one event onto the previous total.</li><li>Pressing lap instead of pause to stop, which records a split but keeps the clock running.</li><li>Switching devices mid-measurement; the count is per-device and per-page-load.</li><li>Assuming the tab must stay visible; timing continues correctly in the background, but do not close or reload the page.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Use laps generously during long events; splits reveal patterns the total time hides.</li><li>Pause rather than reset for interruptions, so the event's true duration survives the pause.</li><li>Read splits, not just totals, when comparing repeated intervals like workouts or rehearsals.</li><li>Keep the page open for long measurements; timestamps keep it accurate, but a reload restarts from zero.</li><li>Use it for time auditing: lap your real tasks for an hour and compare perception with measurement.</li><li>Since it runs offline in the browser, it works on locked-down machines with no installs.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>Is the stopwatch accurate?</h3><p>Yes. It computes elapsed time from system timestamps rather than counting timer ticks, so it stays exact to the centisecond and does not drift, even across tab switches.</p>
+<h3>Does it keep running if I switch tabs?</h3><p>Yes. The elapsed time is derived from timestamps, so background throttling does not affect accuracy; just do not close or reload the page.</p>
+<h3>What is the difference between lap and pause?</h3><p>Lap records a split while the clock keeps running; pause halts the count entirely and resume continues from the same total.</p>
+<h3>How do I see per-interval times?</h3><p>The lap table shows each lap's split, the time since the previous lap, alongside the cumulative total for the whole measurement.</p>
+<h3>Can I export the lap times?</h3><p>You can select and copy the lap table text into a document or spreadsheet for record keeping.</p>
+<h3>Does it need an internet connection?</h3><p>No. Once the page is loaded, the stopwatch runs entirely offline on your device.</p>
+<h3>Does the stopwatch keep running if I switch tabs?</h3><p>Yes. Timing is based on real clock timestamps rather than display updates, so the elapsed time stays correct even while the tab is in the background.</p>
+<h3>Can I copy my lap times out of the tool?</h3><p>Yes. After stopping, select the lap table and copy it, or take the totals from the display; the values are plain text you can paste into a spreadsheet.</p>
+</div>
+<h2 class='section'>Related tools</h2><div class='grid'><a class='card' href='../tools/date-difference-calculator.html'><div class='card-head'><svg class="card-ic" style="color:#60a5fa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h3>Date Difference Calculator</h3></div></a><a class='card' href='../tools/countdown-timer.html'><div class='card-head'><svg class="card-ic" style="color:#60a5fa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h3>Countdown Timer</h3></div></a></div>
+</div></main>
+<footer class="site"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads. 55 tools live, more shipping weekly.</p>
+      <a class="gh-link" href="https://github.com/maisamwork/MSCALE"><svg class="" style="color:#e6e9f0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>github.com/maisamwork/MSCALE</span></a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a>
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      <a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a>
+    </div>
+    <div>
+      <h4>Popular tools</h4>
+      <a href="../tools/percentage-calculator.html">Percentage Calculator</a><a href="../tools/word-counter.html">Word Counter</a><a href="../tools/json-formatter.html">JSON Formatter</a><a href="../tools/password-generator.html">Password Generator</a><a href="../tools/unit-converter.html">Unit Converter</a><a href="../tools/image-resizer.html">Image Resizer</a>
+      <h4 class="gap-top">Resources</h4>
+      <a href="../blog/">Blog</a>
+      <a href="../tools/">All tools</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser — your data never leaves your device.</p>
+</div></footer>
+</body>
+</html>

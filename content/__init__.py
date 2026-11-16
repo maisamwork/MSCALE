@@ -1,10 +1,10 @@
 import importlib
 
 CONTENT = {}
-for mod in ["c01", "c02", "c03", "c04", "c05", "c06", "c07", "c08", "c09", "c10"]:
+for mod in ["c01", "c02", "c03", "c04", "c05", "c06", "c07", "c08", "c09", "c10", "c11"]:
     CONTENT.update(getattr(importlib.import_module(f".{mod}", __name__), "CONTENT"))
 
-for mod in ["x1", "x2", "x3", "x4", "x5", "x6", "x7"]:
+for mod in ["x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"]:
     for slug, x in getattr(importlib.import_module(f".{mod}", __name__), "X").items():
         c = CONTENT.setdefault(slug, {})
         if "deep" in x:

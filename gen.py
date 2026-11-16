@@ -115,20 +115,28 @@ LIVE = [
     ("compound-interest-calculator", "Compound Interest Calculator", "Finance & Business", "Future value with contributions and compounding"),
     ("gst-vat-calculator", "GST / VAT Calculator", "Finance & Business", "Add or remove sales tax from any amount"),
     ("invoice-generator", "Invoice Generator", "Finance & Business", "Professional invoices with line items, tax and print to PDF"),
+    ("qr-code-generator", "QR Code Generator", "Developer Tools", "Generate QR codes for links, text and Wi-Fi with size and error-correction control"),
+    ("text-diff-checker", "Text Diff Checker", "Text Tools", "Compare two texts line by line with additions and removals highlighted"),
+    ("markdown-previewer", "Markdown Previewer", "Developer Tools", "Render markdown live with copy-ready HTML output"),
+    ("image-watermarker", "Image Watermarker", "Image Tools", "Stamp text watermarks with position, size and opacity control"),
+    ("favicon-generator", "Favicon Generator", "Image Tools", "Create the full favicon size set from any logo, with link tags"),
+    ("base64-image-encoder", "Base64 Image Encoder", "Developer Tools", "Convert images to data URIs with HTML and CSS snippets"),
+    ("stopwatch-online", "Online Stopwatch", "Date & Time Tools", "Precise stopwatch with laps, splits and pause/resume"),
+    ("countdown-timer", "Countdown Timer", "Date & Time Tools", "Live countdown to any date with progress bar"),
 ]
 
 CAT_PAGES = {
     "calculators": ("Calculators", "\U0001F9EE", ["percentage-calculator", "bmi-calculator", "age-calculator", "loan-emi-calculator", "discount-calculator", "tip-calculator"], "Calculators"),
-    "text-tools": ("Text Tools", "\U0001F4DD", ["word-counter", "case-converter", "remove-duplicate-lines", "reverse-text", "find-and-replace", "text-sorter", "lorem-ipsum-generator", "word-frequency-counter"], "Text Tools"),
-    "developer-tools": ("Developer Tools", "\U0001F4BB", ["json-formatter", "base64-encoder-decoder", "url-encoder-decoder", "uuid-generator", "hash-generator", "jwt-decoder", "regex-tester", "csv-to-json-converter", "html-encoder-decoder", "json-to-csv-converter"], "Developer Tools"),
+    "text-tools": ("Text Tools", "\U0001F4DD", ["word-counter", "case-converter", "remove-duplicate-lines", "reverse-text", "find-and-replace", "text-sorter", "lorem-ipsum-generator", "word-frequency-counter", "text-diff-checker"], "Text Tools"),
+    "developer-tools": ("Developer Tools", "\U0001F4BB", ["json-formatter", "base64-encoder-decoder", "url-encoder-decoder", "uuid-generator", "hash-generator", "jwt-decoder", "regex-tester", "csv-to-json-converter", "html-encoder-decoder", "json-to-csv-converter", "qr-code-generator", "markdown-previewer", "base64-image-encoder"], "Developer Tools"),
     "converters": ("Converters", "\U0001F504", ["unit-converter", "timestamp-converter", "number-base-converter", "roman-numeral-converter"], "Converters (Units & Numbers)"),
     "security": ("Security Tools", "\U0001F512", ["password-generator"], "Security & Encoding"),
     "color-tools": ("Color Tools", "\U0001F3A8", ["color-converter", "palette-generator"], "Color & Design Tools"),
     "random-generators": ("Random Generators", "\U0001F3B2", ["random-number-generator", "dice-roller", "coin-flipper"], "Random & Fun Generators"),
     "pdf-tools": ("PDF Tools", "\U0001F4C4", ["pdf-merge", "pdf-split"], "PDF Tools"),
-    "image-tools": ("Image Tools", "\U0001F5BC\uFE0F", ["image-resizer", "image-compressor", "image-cropper"], "Image Tools"),
+    "image-tools": ("Image Tools", "\U0001F5BC\uFE0F", ["image-resizer", "image-compressor", "image-cropper", "image-watermarker", "favicon-generator"], "Image Tools"),
     "seo-web-tools": ("SEO & Web Tools", "\U0001F4C8", ["meta-tag-generator", "keyword-density-checker", "xml-sitemap-generator", "slug-generator"], "SEO & Web Tools"),
-    "date-time-tools": ("Date & Time Tools", "\U0001F550", ["date-difference-calculator"], "Date & Time Tools"),
+    "date-time-tools": ("Date & Time Tools", "\U0001F550", ["date-difference-calculator", "stopwatch-online", "countdown-timer"], "Date & Time Tools"),
     "finance-tools": ("Finance & Business", "\U0001F4B0", ["compound-interest-calculator", "gst-vat-calculator", "invoice-generator"], "Finance & Business"),
 }
 
@@ -230,6 +238,115 @@ def footer(depth):
 
 
 TOOL_BODIES = {
+
+"qr-code-generator": """
+<div class="panel">
+  <label>Text or URL to encode</label>
+  <textarea id="qr-text" placeholder="https://example.com"></textarea>
+  <div class="row">
+    <div><label>Size</label>
+      <select id="qr-size"><option value="200">200 px</option><option value="300" selected>300 px</option><option value="400">400 px</option><option value="500">500 px</option></select></div>
+    <div><label>Error correction</label>
+      <select id="qr-ecc"><option value="L">L \u2014 smallest</option><option value="M" selected>M \u2014 balanced</option><option value="Q">Q \u2014 robust</option><option value="H">H \u2014 most robust</option></select></div>
+  </div>
+  <button class="btn" onclick="qrGen()">Generate QR Code</button>
+  <div id="qr-box" class="qr-box"></div>
+  <button class="btn ghost" onclick="qrDownload()">Download PNG</button>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>""",
+"text-diff-checker": """
+<div class="panel">
+  <div class="row">
+    <div style="flex:1;min-width:240px"><label>Original text</label>
+      <textarea id="diff-a" style="min-height:170px" placeholder="Paste the original version\u2026"></textarea></div>
+    <div style="flex:1;min-width:240px"><label>Changed text</label>
+      <textarea id="diff-b" style="min-height:170px" placeholder="Paste the changed version\u2026"></textarea></div>
+  </div>
+  <button class="btn" onclick="diffRun()">Compare texts</button>
+  <div id="diff-out" class="diff-out"></div>
+</div>""",
+"markdown-previewer": """
+<div class="panel">
+  <div class="row">
+    <div style="flex:1;min-width:240px"><label>Markdown input</label>
+      <textarea id="md-in" oninput="mdRender()" style="min-height:280px" placeholder="# Heading&#10;&#10;Some **bold** and *italic* text with a [link](https://example.com)."></textarea></div>
+    <div style="flex:1;min-width:240px"><label>Live preview</label>
+      <div id="md-out" class="md-out"></div></div>
+  </div>
+  <button class="btn ghost" onclick="copyText('md-html')">Copy generated HTML</button>
+  <textarea id="md-html" style="display:none"></textarea>
+</div>""",
+"image-watermarker": """
+<div class="panel">
+  <label>Choose an image</label>
+  <input type="file" id="wm-file" accept="image/*" onchange="wmLoad()">
+  <label>Watermark text</label>
+  <input id="wm-text" value="\u00a9 Your Name" oninput="wmDraw()">
+  <div class="row">
+    <div><label>Position</label>
+      <select id="wm-pos" onchange="wmDraw()">
+        <option value="tl">Top left</option><option value="tc">Top center</option><option value="tr">Top right</option>
+        <option value="ml">Middle left</option><option value="mc">Middle center</option><option value="mr">Middle right</option>
+        <option value="bl">Bottom left</option><option value="bc">Bottom center</option><option value="br" selected>Bottom right</option>
+      </select></div>
+    <div><label>Size (%)</label><input type="number" id="wm-size" value="4" min="1" max="20" oninput="wmDraw()"></div>
+  </div>
+  <div class="row">
+    <div><label>Opacity: <span id="wm-opv">35</span>%</label>
+      <input type="range" id="wm-opacity" min="5" max="100" value="35" oninput="wmDraw()"></div>
+    <div><label>Color</label><input type="color" id="wm-color" value="#ffffff" oninput="wmDraw()"></div>
+  </div>
+  <canvas id="wm-canvas" style="max-width:100%;border-radius:var(--r-md)"></canvas>
+  <button class="btn" onclick="wmSave()">Download watermarked image</button>
+</div>""",
+"favicon-generator": """
+<div class="panel">
+  <label>Logo image (PNG, JPG, SVG or WebP)</label>
+  <input type="file" id="fv-file" accept="image/*" onchange="fvGen()">
+  <div id="fv-previews" class="fav-row"></div>
+  <label>Link tags for your &lt;head&gt;</label>
+  <textarea id="fv-tags" readonly style="min-height:130px"></textarea>
+  <button class="btn ghost" onclick="copyText('fv-tags')">Copy link tags</button>
+</div>""",
+"base64-image-encoder": """
+<div class="panel">
+  <label>Image file</label>
+  <input type="file" id="b64-file" accept="image/*" onchange="b64Enc()">
+  <div id="b64-info" class="result"></div>
+  <label>Data URI</label>
+  <textarea id="b64-out" readonly style="min-height:120px"></textarea>
+  <div class="row">
+    <button class="btn ghost" onclick="copyText('b64-out')">Copy data URI</button>
+    <button class="btn ghost" onclick="copyText('b64-html')">Copy HTML img tag</button>
+    <button class="btn ghost" onclick="copyText('b64-css')">Copy CSS background</button>
+  </div>
+  <textarea id="b64-html" style="display:none"></textarea>
+  <textarea id="b64-css" style="display:none"></textarea>
+</div>""",
+"stopwatch-online": """
+<div class="panel">
+  <div id="sw-display" class="big-time">00:00.00</div>
+  <div class="row">
+    <button class="btn" id="sw-start" onclick="swStart()">Start</button>
+    <button class="btn ghost" onclick="swLap()">Lap</button>
+    <button class="btn ghost" onclick="swPause()">Pause</button>
+    <button class="btn ghost" onclick="swReset()">Reset</button>
+  </div>
+  <div id="sw-laps"></div>
+</div>""",
+"countdown-timer": """
+<div class="panel">
+  <label>Event name (optional)</label>
+  <input id="cd-name" placeholder="Product launch">
+  <div class="row">
+    <div><label>Date</label><input type="date" id="cd-date"></div>
+    <div><label>Time</label><input type="time" id="cd-time" value="09:00"></div>
+  </div>
+  <button class="btn" onclick="cdStart()">Start countdown</button>
+  <div id="cd-units" class="cd-units"></div>
+  <div class="cd-bar"><div id="cd-fill"></div></div>
+  <div id="cd-msg" class="result"></div>
+</div>""",
 "json-to-csv-converter": """
 <div class="panel">
   <label>JSON array of objects</label>
@@ -412,6 +529,8 @@ TOOL_BODIES = {
   <label>Type or paste text</label>
   <textarea id="wc-in" oninput="wordCount()" placeholder="Start typing…"></textarea>
   <div id="wc-stats" class="stat-row"></div>
+  <p class="tool-note">Reference table — pages and time estimates for common document lengths (Letter ≈ 250 words/page, A4 ≈ 500 words/page):</p>
+  <div id="wc-table" class="wc-table-wrap"></div>
 </div>""",
 "case-converter": """
 <div class="panel">
@@ -751,6 +870,14 @@ TOOL_BODIES = {
 
 
 TOOL_DESC = {
+    "qr-code-generator": "Generate QR codes for URLs, text and Wi-Fi credentials with size and error-correction control. Download as PNG, free and private.",
+    "text-diff-checker": "Compare two texts line by line and see every addition and removal highlighted. Private diff checking in your browser.",
+    "markdown-previewer": "Render Markdown live as you type with a clean preview and copy-ready HTML output. Free, no signup.",
+    "image-watermarker": "Add text watermarks to images with position, size, opacity and color control. Runs entirely in your browser.",
+    "favicon-generator": "Create the complete favicon size set (16 to 512 px) from any logo, with ready-to-paste link tags.",
+    "base64-image-encoder": "Convert images to Base64 data URIs with HTML img and CSS background snippets. Free and private.",
+    "stopwatch-online": "Free online stopwatch with lap times, splits, pause and resume. Accurate timestamp-based timing.",
+    "countdown-timer": "Count down to any date and time with a live days, hours, minutes and seconds display and progress bar.",
     "json-to-csv-converter": "Convert a JSON array of objects into a clean CSV for Excel or Google Sheets. Quote-aware, private and free, right in your browser.",
     "pdf-merge": "Merge two or more PDF files into one document in your browser. Private, free and no upload — files never leave your device.",
     "pdf-split": "Extract specific pages or page ranges from a PDF into a new file. Runs entirely in your browser with full quality preserved.",
