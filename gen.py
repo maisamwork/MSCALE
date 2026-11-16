@@ -934,21 +934,240 @@ def index_page(catalog):
 """ + footer("")
 
 
+
+CAT_ABOUT = {
+    "calculators": (
+        "Calculators are the most-used category on MSCALE because they answer everyday questions in seconds. "
+        "Whether you are checking a percentage increase on a price tag, working out a loan repayment, or splitting "
+        "a restaurant bill, the tools in this section give you an instant answer without ads getting in the way or "
+        "an account being required. Each calculator has been built with a single job in mind, so the interface stays "
+        "clean and the result appears the moment you finish typing.",
+        "Every calculator here runs entirely inside your browser. The numbers you enter are never transmitted to a "
+        "server, stored in a database, or shared with third parties, which makes the tools safe to use for salary "
+        "figures, loan amounts and other personal information. They also work on phones and tablets, so you can run "
+        "a quick calculation while standing in a shop or reviewing a contract.",
+        [
+            "Check percentage change between two prices before negotiating a deal",
+            "Estimate monthly EMI payments before speaking to a lender",
+            "Work out discounts and sale prices during shopping seasons",
+            "Calculate BMI and simple health metrics in seconds",
+            "Compute compound interest to compare savings options",
+        ],
+    ),
+    "text-tools": (
+        "Text tools solve the small annoyances that interrupt writing every day: a paragraph pasted with inconsistent "
+        "capitalisation, a list full of duplicate lines, or a document that must hit an exact word count. The tools in "
+        "this category handle those jobs instantly. Paste your text, click once, and copy the cleaned result back — "
+        "no formatting is lost and nothing is uploaded anywhere.",
+        "Writers, students, marketers and developers all rely on these utilities. A content writer can verify that an "
+        "article meets a 1,000-word requirement, a student can normalise the case of copied notes, and a developer can "
+        "strip whitespace or sort lines before committing a config file. Because processing happens locally in your "
+        "browser, even confidential drafts and private notes are safe to paste.",
+        [
+            "Count words, characters, sentences and reading time for essays and articles",
+            "Convert text between UPPERCASE, lowercase, Title Case and Sentence case",
+            "Remove duplicate lines and empty lines from lists and logs",
+            "Sort lines alphabetically or reverse them",
+            "Find and replace text across a whole document at once",
+        ],
+    ),
+    "developer-tools": (
+        "Developer tools on MSCALE are built for speed: format a broken JSON payload, decode a JWT to inspect its "
+        "claims, convert CSV to JSON for a test fixture, or encode a string to Base64 for an API call. Each tool "
+        "opens instantly, works offline once loaded, and shows clear errors when input is malformed instead of "
+        "silently returning wrong results.",
+        "Nothing you paste leaves your machine. That matters when you are working with tokens, internal API responses "
+        "or customer data that must never be sent to an unknown server. The tools use the same parsing rules as modern "
+        "browsers and runtimes, so formatted output matches what your application expects, and pretty-printed JSON is "
+        "ready to paste straight into your editor.",
+        [
+            "Pretty-print and validate JSON from APIs and log files",
+            "Decode JWTs to inspect header and payload claims",
+            "Convert CSV data to JSON for tests and mock endpoints",
+            "Encode and decode Base64, URL-encode and HTML-escape strings",
+            "Generate UUIDs and inspect timestamps for debugging",
+        ],
+    ),
+    "converters": (
+        "Unit conversion is a daily necessity: a recipe in ounces, a laptop spec in inches, a file size in megabytes, "
+        "or a timestamp in a log file that needs to become a readable date. The converters in this category handle "
+        "those switches instantly and show precise results with sensible rounding, so you never have to search for a "
+        "conversion formula again.",
+        "All conversion logic runs locally using exact conversion factors, and results update as you type. The tools "
+        "cover length, weight, temperature, data storage, number systems and time, and each one includes the most "
+        "commonly needed targets by default instead of hiding them behind dropdowns. This makes them fast enough to "
+        "use mid-conversation or while writing a report.",
+        [
+            "Convert length and distance between metric and imperial units",
+            "Switch weight units for cooking, shipping and fitness",
+            "Translate file sizes between bytes, KB, MB and GB",
+            "Convert binary, decimal, hex and octal number systems",
+            "Turn Unix timestamps into human-readable dates and back",
+        ],
+    ),
+    "security": (
+        "Security tools are the ones you hope you never need but should use weekly. The password generator creates "
+        "long, random passwords using your browser's cryptographically secure random number generator, and the hash "
+        "utilities let you verify file integrity without installing anything. Because generation happens on your own "
+        "device, no password or hash input is ever transmitted, logged or stored.",
+        "A strong password is long, unique and unpredictable — this category helps with all three. Generate a distinct "
+        "password for every account, check that hash utilities produce the exact digest format your system expects, "
+        "and avoid the common mistakes that make passwords crackable, such as dictionary words, personal dates and "
+        "short lengths. The tools explain their output so you can make informed choices rather than clicking blindly.",
+        [
+            "Generate strong random passwords with custom length and character sets",
+            "Create memorable passphrases for accounts you type often",
+            "Compute MD5, SHA-1 and SHA-256 hashes to verify downloads",
+            "Learn which password habits put accounts at risk",
+            "Keep credentials private — everything runs on your device",
+        ],
+    ),
+    "color-tools": (
+        "Color tools turn a vague idea — \"that shade from the screenshot\" — into exact values you can hand to a "
+        "designer or paste into CSS. Convert between HEX, RGB and HSL, build matching palettes, and grab tints and "
+        "shades of a brand color in one click. Values are shown in every format simultaneously, so nothing is lost "
+        "moving between design tools and code.",
+        "Consistent color is what separates an amateur interface from a professional one. These tools help you keep "
+        "hex codes consistent across a website, generate accessible darker variants for hover states, and translate "
+        "a color picked from an image into the HSL values a design system expects. Everything updates live as you "
+        "type or pick, and your color never leaves the browser.",
+        [
+            "Convert HEX to RGB and HSL and back again",
+            "Build tints and shades for hover states and dark themes",
+            "Generate matching palettes from a single brand color",
+            "Copy CSS-ready values with one click",
+            "Preview colors against light and dark backgrounds",
+        ],
+    ),
+    "random-generators": (
+        "Random generators handle the moments when a decision needs to be left to chance: picking a raffle winner, "
+        "rolling dice for a board game, flipping a coin, or drawing a random number for a giveaway. The tools use "
+        "your browser's random engine, so results are fair and cannot be predicted or influenced by anyone — "
+        "including us.",
+        "Fairness matters when randomness decides something people care about. These generators produce fresh results "
+        "on every click, display them clearly, and never remember previous draws. Teachers use them to pick students, "
+        "streamers use them for giveaways, and developers use them for quick test values. Because everything runs "
+        "locally, the tools keep working even with no internet connection after the page loads.",
+        [
+            "Flip a coin for quick yes-or-no decisions",
+            "Roll one or more dice with any number of sides",
+            "Draw random numbers in any range for giveaways",
+            "Pick a random item from a list of names or options",
+            "Generate test data and sample values for development",
+        ],
+    ),
+    "pdf-tools": (
+        "PDF tools remove the friction from working with documents: merge several files into one before emailing them, "
+        "split a long PDF into single chapters, or compress a scan so it fits an attachment limit. The tools in this "
+        "category process files directly in your browser using modern PDF libraries, which means your documents are "
+        "never uploaded to a server.",
+        "That local processing is the key difference from most online PDF sites. Contracts, invoices, ID scans and "
+        "medical documents stay on your device from start to finish. The workflow is deliberately simple — drop a "
+        "file, choose an action, download the result — and output quality is preserved so text stays selectable and "
+        "searchable after merging or splitting.",
+        [
+            "Merge multiple PDFs into a single ordered document",
+            "Split a PDF by page ranges for sharing chapters",
+            "Compress large scans to meet email attachment limits",
+            "Keep text selectable — no rasterising or quality loss",
+            "Process private documents without uploading them anywhere",
+        ],
+    ),
+    "image-tools": (
+        "Image tools cover the three jobs people need most often: resizing, converting and compressing. Resize a photo "
+        "to exact dimensions for a profile picture, convert between PNG, JPG and WebP for a website, or shrink a large "
+        "image so a page loads fast. All processing happens in your browser using canvas technology — files are never "
+        "uploaded.",
+        "Because the work happens locally, even large photos process in seconds and private images never leave your "
+        "device. The tools expose the settings that matter — dimensions, format and quality — without burying them in "
+        "menus, and they preserve aspect ratio by default so nothing comes out stretched. Results download instantly "
+        "with sensible file names.",
+        [
+            "Resize images to exact pixel dimensions for profiles and thumbnails",
+            "Convert between PNG, JPG and WebP formats",
+            "Compress photos to reduce page weight and load faster",
+            "Crop images to standard aspect ratios",
+            "Optimise images without uploading them to any server",
+        ],
+    ),
+    "seo-web-tools": (
+        "SEO and web tools help you understand how a page looks to search engines and visitors before you publish it. "
+        "Preview and validate meta titles and descriptions, check keyword density in a draft, and inspect the tags "
+        "that control how snippets appear in search results. Catching these details early is far easier than "
+        "discovering them after a page has been indexed.",
+        "Search visibility is built from hundreds of small signals, but a handful of them matter most: a clear title "
+        "tag, an accurate meta description, sensible heading structure and focused content. The tools in this category "
+        "check exactly those elements and explain what good looks like, so you can fix issues yourself without an SEO "
+        "audit. Everything analyses text you paste — no crawling, no account, no data collection.",
+        [
+            "Preview and validate meta titles and descriptions",
+            "Check keyword density and stuffing in draft content",
+            "Analyse heading structure for clarity and hierarchy",
+            "Inspect how snippets appear in search results",
+            "Audit pages before publishing, not after indexing",
+        ],
+    ),
+    "date-time-tools": (
+        "Date and time tools settle the questions that cause real mistakes: how many days between two dates, what a "
+        "Unix timestamp means, what time it is for a colleague in another timezone, or how old someone is in exact "
+        "years, months and days. The answers update instantly and account for leap years automatically.",
+        "These tools are used for deadlines, contracts, travel planning and server logs. A countdown to a project due "
+        "date, an age calculation for a form, or a timestamp conversion while debugging an API all take seconds. "
+        "Because the calculations run in your browser with your local timezone respected by default, the results match "
+        "what your calendar and your systems actually show.",
+        [
+            "Calculate the difference between two dates in days, months and years",
+            "Convert Unix timestamps to readable dates and back",
+            "Work out exact age in years, months and days",
+            "Count down to deadlines, launches and events",
+            "Check current time across timezones for scheduling",
+        ],
+    ),
+    "finance-tools": (
+        "Finance calculators turn vague money questions into concrete numbers: what a loan actually costs per month, "
+        "how much interest compounds over five years, or what a salary works out to after tax. The tools in this "
+        "category use standard financial formulas and show a clear breakdown, so you can compare options instead of "
+        "guessing.",
+        "The calculators are built for quick decision-making — comparing two loan offers, checking whether a "
+        "subscription is worth it, or estimating savings growth. Inputs are plain numbers with no sign-up and no data "
+        "collection, and results include the totals that matter: monthly payment, total interest and overall cost. "
+        "They are estimates for planning, not financial advice, but they give you a solid number to work from.",
+        [
+            "Calculate loan EMI with interest breakdown",
+            "Project compound interest on savings over time",
+            "Work out take-home pay from gross salary",
+            "Compare costs before accepting a credit offer",
+            "Plan budgets with clear monthly totals",
+        ],
+    ),
+}
+
 def category_page(slug, name, icon, live_slugs, catalog_cat):
     live_names_by_slug = {s: (n, d) for s, n, _, d in LIVE}
+    hue = hue_of(slug)
+    tile = f"<span class='icon-box' style='color:{hue};background:{hue}22'>{svg_icon(slug)}</span>"
     live_cards = "".join(
-        f"<a class='card' href='../tools/{s}.html'><div class='card-head'>{svg_icon(slug, 'card-ic', hue_of(slug))}<h3>{live_names_by_slug[s][0]}</h3></div>"
+        f"<a class='card' data-name='{esc(live_names_by_slug[s][0].lower())}' href='../tools/{s}.html'><div class='card-head'>{tile}<h3>{live_names_by_slug[s][0]}</h3></div>"
         f"<p>{live_names_by_slug[s][1]}</p><span class='tag'>LIVE</span></a>"
         for s in live_slugs
     )
-    coming = [i["n"] for i in CATALOG if i["c"] == slug]
     live_names = {live_names_by_slug[s][0].lower() for s in live_slugs}
-    coming = [n for n in coming if n.lower() not in live_names][:80]
+    coming = [(i["n"], i.get("s", "")) for i in CATALOG if i["c"] == slug and i["n"].lower() not in live_names][:120]
     coming_cards = "".join(
-        f"<div class='card soon'><div class='card-head'>{svg_icon(slug, 'card-ic')}<h3>{esc(n)}</h3></div><span class='tag'>coming soon</span></div>"
-        for n in coming
+        f"<div class='card soon' data-name='{esc(n.lower())}'><div class='card-head'>{tile}<h3>{esc(n)}</h3></div>"
+        f"<p>{esc(d)}</p><span class='tag'>coming soon</span></div>"
+        for n, d in coming
     )
     intro = INTROS.get(slug, "")
+    a1, a2, bullets = CAT_ABOUT.get(slug, ("", "", []))
+    about_html = ""
+    if a1:
+        lis = "".join(f"<li>{esc(b)}</li>" for b in bullets)
+        about_html = (
+            f"<section class='about-sec'><h2 class='section'>About {esc(name)}</h2>"
+            f"<p>{a1}</p><p>{a2}</p><ul>{lis}</ul></section>"
+        )
+    n_live, n_coming = len(live_slugs), len(coming)
     crumb = f"""<nav class="breadcrumb" aria-label="Breadcrumb">
 <a href="../index.html">{svg_icon("wrench", "crumb-ic")}Home</a>
 <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
@@ -962,15 +1181,51 @@ def category_page(slug, name, icon, live_slugs, catalog_cat):
             {"@type": "ListItem", "position": 2, "name": name, "item": f"https://maisamwork.github.io/MSCALE/{slug}/"},
         ],
     })
+    filter_js = """
+(function () {
+  var input = document.getElementById('cat-search');
+  if (!input) return;
+  var cards = [].slice.call(document.querySelectorAll('.grid .card'));
+  var note = document.getElementById('cat-count');
+  input.addEventListener('input', function () {
+    var q = input.value.trim().toLowerCase(), n = 0;
+    cards.forEach(function (c) {
+      var hit = !q || (c.getAttribute('data-name') || '').indexOf(q) > -1;
+      c.style.display = hit ? '' : 'none';
+      if (hit) n++;
+    });
+    [].slice.call(document.querySelectorAll('.cat-sec')).forEach(function (s) {
+      var vis = [].slice.call(s.querySelectorAll('.card')).some(function (c) { return c.style.display !== 'none'; });
+      s.style.display = vis ? '' : 'none';
+    });
+    if (note) note.textContent = q ? ('Showing ' + n + ' of ' + cards.length + ' tools') : '';
+  });
+})();
+"""
     return (
         header(f"{name} — Free Online | MSCALE Tools", f"Free online {name.lower()} — fast, private, no sign-up.", "../")
         + f"""{crumb}
 <script type="application/ld+json">{jsonld}</script>
-<div class="tool-head"><div class="tool-title">{svg_icon(slug, "tool-ic big")}<h1>{name}</h1></div><p>{intro}</p></div>
-<h2 class="section">Live now</h2>
-<div class="grid">{live_cards}</div>
-<h2 class="section">Coming soon</h2>
-<div class="grid">{coming_cards}</div>"""
+<div class="cat-hero">
+  <span class="icon-box cat-hero-ic" style="color:{hue};background:{hue}22">{svg_icon(slug)}</span>
+  <div>
+    <h1>{name}</h1>
+    <p>{intro}</p>
+    <p class="cat-stats"><b>{n_live} live tools</b> · {n_coming}+ more coming · 100% free · no sign-up</p>
+  </div>
+</div>
+<div class="cat-search-wrap">
+  {svg_icon("search", "search-ic")}
+  <input id="cat-search" placeholder="Search in {name.lower()} (e.g. 'password', 'convert')…" />
+</div>
+<p id="cat-count"></p>
+<section class="cat-sec"><h2 class="section">Most popular {name.lower()}</h2>
+<div class="grid">{live_cards}</div></section>
+<section class="cat-sec"><h2 class="section">All {name.lower()} tools</h2>
+<div class="grid">{coming_cards}</div></section>
+{about_html}
+<p style="margin-top:26px"><a class="btn ghost" href="../tools/">Browse all 1,800+ tools{svg_icon("arrow-right")}</a></p>
+<script>{filter_js}</script>"""
         + footer("../")
     )
 

@@ -86,7 +86,7 @@ function escHtml2(s) {
 }
 
 function toolCardHtml(t, catName, hue) {
-  var head = '<div class="card-head">' + window.ICONS[t.catSlug].replace("<svg ", '<svg style="color:' + hue + '" ') + "<h3>" + escHtml2(t.name) + "</h3></div>";
+  var head = '<div class="card-head">' + window.ICONS[t.catSlug].replace("<svg ", '<svg class="card-ic" style="color:' + hue + '" ') + "<h3>" + escHtml2(t.name) + "</h3></div>";
   var desc = "<p>" + escHtml2(t.desc || "") + "</p>";
   var badge = '<span class="badge" style="color:' + hue + ';background:' + hue + '22">' + escHtml2(catName) + "</span>";
   var status = t.live
