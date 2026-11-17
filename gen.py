@@ -29,6 +29,7 @@ ICONS = {
     "finance-tools": '<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
     "zap": '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
     "gauge": '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+    "braces": '<path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/>',
     "smartphone": '<rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/>',
     "book-open": '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
     "shield-check": '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',    "menu": '<line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>',
@@ -703,17 +704,34 @@ TOOL_BODIES = {
   <div id="rev-out" class="result mono"></div>
 </div>""",
 "json-formatter": """
-<div class="panel">
-  <label>JSON</label>
-  <textarea id="json-in" placeholder='{"name":"MSCALE","tools":100}'></textarea>
-  <div>
-    <button class="btn" onclick="jsonFormat(2)">Beautify (2)</button>
-    <button class="btn ghost" onclick="jsonFormat(4)">Beautify (4)</button>
-    <button class="btn ghost" onclick="jsonFormat(0)">Minify</button>
+<div class="panel jf-pro">
+  <div class="jf-toolbar">
+    <span class="jf-tb-label">[[ic braces]] JSON editor</span>
+    <span class="jf-tb-spacer"></span>
+    <button class="btn ghost sm" onclick="jf2Sample()">Sample</button>
+    <button class="btn ghost sm" onclick="jf2Paste()">Paste</button>
+    <button class="btn ghost sm danger" onclick="jf2Clear()">Clear</button>
   </div>
-  <div id="json-err" class="error"></div>
-  <div id="json-out" class="result mono"></div>
+  <textarea id="json-in" oninput="jf2Live()" placeholder='{&quot;name&quot;:&quot;MSCALE&quot;,&quot;tools&quot;:100,&quot;live&quot;:true}'></textarea>
+  <div class="jf-actions">
+    <button class="btn" onclick="jf2Format(2)">Beautify (2)</button>
+    <button class="btn ghost" onclick="jf2Format(4)">Beautify (4)</button>
+    <button class="btn ghost" onclick="jf2Minify()">Minify</button>
+    <button class="btn ghost" onclick="jf2Sort()">Sort keys A&ndash;Z</button>
+  </div>
+  <div id="json-err" class="error jf-err"></div>
+  <div id="jf-stats" class="jf-stats"></div>
+  <div class="jf-tabs">
+    <button class="jf-tab active" id="jf-tab-out" onclick="jf2Tab('out')">Formatted</button>
+    <button class="jf-tab" id="jf-tab-tree" onclick="jf2Tab('tree')">Tree view</button>
+    <span class="jf-tb-spacer"></span>
+    <button class="btn ghost sm" onclick="jf2Copy(this)">Copy</button>
+    <button class="btn ghost sm" onclick="jf2Download()">Download .json</button>
+  </div>
+  <div id="json-out" class="result mono jf-out"></div>
+  <div id="jf-tree" class="jf-tree" style="display:none"></div>
 </div>""",
+
 "base64-encoder-decoder": """
 <div class="panel">
   <label>Text or Base64</label>

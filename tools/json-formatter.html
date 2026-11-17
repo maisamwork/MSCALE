@@ -41,16 +41,32 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "JSON Formatter", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Beautify, validate and minify JSON online. Format JSON with 2 or 4 spaces.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>JSON Formatter</h1></div><p>Beautify, validate and minify JSON online. Format JSON with 2 or 4 spaces.</p></div>
 
-<div class="panel">
-  <label>JSON</label>
-  <textarea id="json-in" placeholder='{"name":"MSCALE","tools":100}'></textarea>
-  <div>
-    <button class="btn" onclick="jsonFormat(2)">Beautify (2)</button>
-    <button class="btn ghost" onclick="jsonFormat(4)">Beautify (4)</button>
-    <button class="btn ghost" onclick="jsonFormat(0)">Minify</button>
+<div class="panel jf-pro">
+  <div class="jf-toolbar">
+    <span class="jf-tb-label"><svg class="ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></svg> JSON editor</span>
+    <span class="jf-tb-spacer"></span>
+    <button class="btn ghost sm" onclick="jf2Sample()">Sample</button>
+    <button class="btn ghost sm" onclick="jf2Paste()">Paste</button>
+    <button class="btn ghost sm danger" onclick="jf2Clear()">Clear</button>
   </div>
-  <div id="json-err" class="error"></div>
-  <div id="json-out" class="result mono"></div>
+  <textarea id="json-in" oninput="jf2Live()" placeholder='{&quot;name&quot;:&quot;MSCALE&quot;,&quot;tools&quot;:100,&quot;live&quot;:true}'></textarea>
+  <div class="jf-actions">
+    <button class="btn" onclick="jf2Format(2)">Beautify (2)</button>
+    <button class="btn ghost" onclick="jf2Format(4)">Beautify (4)</button>
+    <button class="btn ghost" onclick="jf2Minify()">Minify</button>
+    <button class="btn ghost" onclick="jf2Sort()">Sort keys A&ndash;Z</button>
+  </div>
+  <div id="json-err" class="error jf-err"></div>
+  <div id="jf-stats" class="jf-stats"></div>
+  <div class="jf-tabs">
+    <button class="jf-tab active" id="jf-tab-out" onclick="jf2Tab('out')">Formatted</button>
+    <button class="jf-tab" id="jf-tab-tree" onclick="jf2Tab('tree')">Tree view</button>
+    <span class="jf-tb-spacer"></span>
+    <button class="btn ghost sm" onclick="jf2Copy(this)">Copy</button>
+    <button class="btn ghost sm" onclick="jf2Download()">Download .json</button>
+  </div>
+  <div id="json-out" class="result mono jf-out"></div>
+  <div id="jf-tree" class="jf-tree" style="display:none"></div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

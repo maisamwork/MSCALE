@@ -223,16 +223,183 @@ function reverseText(mode) {
 }
 
 /* ---------- Developer ---------- */
-function jsonFormat(space) {
-  try {
-    const parsed = JSON.parse($("json-in").value);
-    $("json-err").textContent = "";
-    out("json-out", JSON.stringify(parsed, null, space), "mono");
-  } catch (e) {
-    $("json-err").textContent = "Invalid JSON: " + e.message;
-    $("json-out").textContent = "";
+let JF2_LAST = null, JF2_TEXT = "";
+function jf2Parse(t) {
+  try { return { ok: true, val: JSON.parse(t) }; }
+  catch (e) { return { ok: false, err: e.message }; }
+}
+function jf2Pos(t, msg) {
+  const m = msg.match(/position (\d+)/);
+  if (!m) return "";
+  const pos = +m[1];
+  const before = t.slice(0, pos);
+  const line = (before.match(/\n/g) || []).length + 1;
+  const col = pos - before.lastIndexOf("\n");
+  return ` at line ${line}, column ${col}`;
+}
+function jf2SortVal(v) {
+  if (Array.isArray(v)) return v.map(jf2SortVal);
+  if (v && typeof v === "object") {
+    const o = {};
+    for (const k of Object.keys(v).sort()) o[k] = jf2SortVal(v[k]);
+    return o;
+  }
+  return v;
+}
+function jf2Hi(json) {
+  return escHtml(json).replace(
+    /("(\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|\bnull\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,
+    (m) => {
+      let cls = "jf-num";
+      if (/^"/.test(m)) cls = /:$/.test(m) ? "jf-key" : "jf-str";
+      else if (/true|false/.test(m)) cls = "jf-bool";
+      else if (/null/.test(m)) cls = "jf-null";
+      return `<span class="${cls}">${m}</span>`;
+    }
+  );
+}
+function jf2Depth(v) {
+  if (Array.isArray(v)) return 1 + Math.max(0, ...v.map(jf2Depth));
+  if (v && typeof v === "object") return 1 + Math.max(0, ...Object.values(v).map(jf2Depth));
+  return 0;
+}
+function jf2Count(v, st) {
+  st.nodes++;
+  if (Array.isArray(v)) { st.arrays++; v.forEach(x => jf2Count(x, st)); }
+  else if (v && typeof v === "object") { st.objects++; st.keys += Object.keys(v).length; Object.values(v).forEach(x => jf2Count(x, st)); }
+}
+function jf2Stats(val, raw) {
+  const st = { nodes: 0, objects: 0, arrays: 0, keys: 0 };
+  const depth = jf2Depth(val);
+  jf2Count(val, st);
+  const kb = (n) => n < 1024 ? n + " B" : (n / 1024).toFixed(1) + " KB";
+  $("jf-stats").innerHTML = `
+    <div class="jf-chip"><b>${kb(new Blob([raw]).size)}</b><span>Input size</span></div>
+    <div class="jf-chip"><b>${kb(new Blob([JF2_TEXT]).size)}</b><span>Output size</span></div>
+    <div class="jf-chip"><b>${st.keys.toLocaleString()}</b><span>Keys</span></div>
+    <div class="jf-chip"><b>${st.objects.toLocaleString()}</b><span>Objects</span></div>
+    <div class="jf-chip"><b>${st.arrays.toLocaleString()}</b><span>Arrays</span></div>
+    <div class="jf-chip"><b>${depth}</b><span>Max depth</span></div>`;
+}
+function jf2TreeHtml(v, key) {
+  const lbl = key === null ? "" : `<span class="jf-key">${escHtml(String(key))}</span>: `;
+  if (v === null) return `<li>${lbl}<span class="jf-null">null</span></li>`;
+  if (typeof v === "string") return `<li>${lbl}<span class="jf-str">"${escHtml(v)}"</span></li>`;
+  if (typeof v === "number" || typeof v === "boolean") return `<li>${lbl}<span class="${typeof v === "number" ? "jf-num" : "jf-bool"}">${v}</span></li>`;
+  const isArr = Array.isArray(v);
+  const entries = isArr ? v.map((x, i) => [i, x]) : Object.entries(v);
+  const items = entries.map(([k, x]) => jf2TreeHtml(x, isArr ? null : k)).join("");
+  const badge = isArr ? `[${entries.length}]` : `{${entries.length}}`;
+  return `<li><details open><summary>${lbl}<span class="jf-badge">${badge}</span></summary><ul>${items}</ul></details></li>`;
+}
+function jf2RenderOut() {
+  if (JF2_LAST === null) return;
+  const pretty = JSON.stringify(JF2_LAST, null, 2);
+  $("json-out").innerHTML = jf2Hi(pretty);
+  $("jf-tree").innerHTML = "<ul>" + jf2TreeHtml(JF2_LAST, null) + "</ul>";
+}
+function jf2Show(r, raw) {
+  if (!r.ok) {
+    $("json-err").innerHTML = `<b>Invalid JSON:</b> ${escHtml(r.err)}${jf2Pos(raw, r.err)}`;
+    $("json-out").textContent = ""; $("jf-tree").innerHTML = ""; $("jf-stats").innerHTML = "";
+    JF2_LAST = null; JF2_TEXT = "";
+    return;
+  }
+  $("json-err").textContent = "";
+  JF2_LAST = r.val;
+  jf2RenderText();
+  jf2Stats(r.val, raw);
+  jf2RenderOut();
+}
+function jf2RenderText() {
+  if (JF2_LAST === null) return;
+  JF2_TEXT = JSON.stringify(JF2_LAST, null, 2);
+}
+function jf2Format(space) {
+  const raw = $("json-in").value;
+  if (!raw.trim()) { $("json-err").textContent = "Paste some JSON first."; return; }
+  const r = jf2Parse(raw);
+  if (!r.ok) { jf2Show(r, raw); return; }
+  JF2_LAST = r.val;
+  $("json-err").textContent = "";
+  JF2_TEXT = JSON.stringify(r.val, null, space || 0);
+  jf2Stats(r.val, raw);
+  $("json-out").innerHTML = jf2Hi(JF2_TEXT);
+  $("jf-tree").innerHTML = "<ul>" + jf2TreeHtml(r.val, null) + "</ul>";
+}
+function jf2Minify() {
+  const raw = $("json-in").value;
+  if (!raw.trim()) { $("json-err").textContent = "Paste some JSON first."; return; }
+  const r = jf2Parse(raw);
+  if (!r.ok) { jf2Show(r, raw); return; }
+  JF2_LAST = r.val;
+  $("json-err").textContent = "";
+  JF2_TEXT = JSON.stringify(r.val);
+  jf2Stats(r.val, raw);
+  $("json-out").innerHTML = jf2Hi(JF2_TEXT);
+  $("jf-tree").innerHTML = "<ul>" + jf2TreeHtml(r.val, null) + "</ul>";
+}
+function jf2Sort() {
+  const raw = $("json-in").value;
+  if (!raw.trim()) { $("json-err").textContent = "Paste some JSON first."; return; }
+  const r = jf2Parse(raw);
+  if (!r.ok) { jf2Show(r, raw); return; }
+  const sorted = jf2SortVal(r.val);
+  JF2_LAST = sorted;
+  $("json-err").textContent = "";
+  $("json-in").value = JSON.stringify(sorted, null, 2);
+  JF2_TEXT = JSON.stringify(sorted, null, 2);
+  jf2Stats(sorted, $("json-in").value);
+  $("json-out").innerHTML = jf2Hi(JF2_TEXT);
+  $("jf-tree").innerHTML = "<ul>" + jf2TreeHtml(sorted, null) + "</ul>";
+}
+function jf2Tab(which) {
+  $("jf-tab-out").classList.toggle("active", which === "out");
+  $("jf-tab-tree").classList.toggle("active", which === "tree");
+  $("json-out").style.display = which === "out" ? "block" : "none";
+  $("jf-tree").style.display = which === "tree" ? "block" : "none";
+}
+function jf2Live() {
+  const raw = $("json-in").value;
+  if (!raw.trim()) { $("json-err").textContent = ""; $("jf-stats").innerHTML = ""; return; }
+  const r = jf2Parse(raw);
+  if (!r.ok) return;
+  $("json-err").textContent = "";
+  JF2_LAST = r.val;
+  jf2RenderText();
+  jf2Stats(r.val, raw);
+  jf2RenderOut();
+}
+function jf2Copy(btn) {
+  if (!JF2_TEXT) return;
+  (navigator.clipboard ? navigator.clipboard.writeText(JF2_TEXT) : Promise.reject()).then(() => {
+    btn.textContent = "Copied!"; setTimeout(() => { btn.textContent = "Copy"; }, 1200);
+  }).catch(() => {});
+}
+function jf2Download() {
+  if (JF2_LAST === null) return;
+  const blob = new Blob([JF2_TEXT || JSON.stringify(JF2_LAST, null, 2)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "formatted.json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+function jf2Clear() {
+  $("json-in").value = ""; $("json-err").textContent = ""; $("json-out").textContent = "";
+  $("jf-tree").innerHTML = ""; $("jf-stats").innerHTML = "";
+  JF2_LAST = null; JF2_TEXT = "";
+}
+function jf2Sample() {
+  $("json-in").value = JSON.stringify({ site: "MSCALE Tools", live: 176, categories: 12, tags: ["free", "no-signup", "browser-based"], featured: { name: "Password Generator Pro", modes: ["random", "memorable", "pin"], min_length: 4, max_length: 64, offline: true }, stats: { pages: 194, uptime: "99.9%", price: null } }, null, 2);
+  jf2Format(2);
+}
+function jf2Paste() {
+  if (navigator.clipboard && navigator.clipboard.readText) {
+    navigator.clipboard.readText().then(t => { $("json-in").value = t; jf2Live(); }).catch(() => {});
   }
 }
+if ($("json-in")) jf2Live();
 
 function b64(op) {
   const t = $("b64-in").value;
