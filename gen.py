@@ -1030,6 +1030,19 @@ TOOL_DESC = {
     "palette-generator": "Generate tints and shades from any hex color. Click a swatch to copy.",
 }
 
+# ---- MEGA expansion: 101 new tools (engines live in assets/tools.js) ----
+from content import MEGA as _MEGA
+for _s, _m in _MEGA.items():
+    LIVE.append((_s, _m["name"], _m["cat"], _m["short"]))
+    TOOL_BODIES[_s] = _m["body"]
+    TOOL_DESC[_s] = _m["desc"]
+_MEGA_CATS = {}
+for _s, _m in _MEGA.items():
+    _MEGA_CATS.setdefault(_m["cat"], []).append(_s)
+for _k, _v in CAT_PAGES.items():
+    if _v[0] in _MEGA_CATS:
+        CAT_PAGES[_k] = (_v[0], _v[1], _v[2] + _MEGA_CATS[_v[0]], _v[3])
+
 def article_wordcount(c):
     texts = list(c["intro"]) + [c["how"][0]] + list(c["steps"]) + list(c["works"])
     texts += [f"{t} {b}" for t, b in c["examples"]]

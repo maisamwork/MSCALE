@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Day of Week Finder — Free Online Tool | MSCALE Tools</title>
+<meta name="description" content="Find the weekday of any date, past or future. Free, instant and entirely in your browser — nothing is uploaded."/>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"/>
+<meta property="og:title" content="Day of Week Finder — Free Online Tool | MSCALE Tools"/>
+<meta property="og:description" content="Find the weekday of any date, past or future. Free, instant and entirely in your browser — nothing is uploaded."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MSCALE Tools"/>
+<meta name="twitter:card" content="summary"/>
+<script>document.documentElement.setAttribute("data-theme", (function(){try{return localStorage.getItem("mscale-theme")||"dark"}catch(e){return "dark"}})());</script>
+<link rel="stylesheet" href="../assets/style.css"/>
+<script src="../assets/live-tools.js" defer></script>
+<script src="../assets/app.js" defer></script>
+<script src="../assets/tools.js" defer></script>
+</head>
+<body>
+<header class="site"><div class="container">
+  <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+  <nav class="main" id="main-nav"><a href="../calculators/">Calculators</a><a href="../text-tools/">Text</a><a href="../developer-tools/">Developer</a><a href="../converters/">Converters</a><a href="../pdf-tools/">PDF</a><a href="../image-tools/">Image</a><a href="../blog/">Blog</a><a class="nav-cta" href="../tools/">All tools</a></nav>
+  <div class="nav-actions">
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme"><svg class="ic-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg><svg class="ic-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/></svg></button>
+  </div>
+</div></header>
+<main class="container"><div class="tool-wrap">
+<nav class="breadcrumb" aria-label="Breadcrumb">
+<a href="../index.html"><svg class="crumb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>Home</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<a href="../date-time-tools/">Date & Time Tools</a>
+<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+<span>Day of Week Finder</span>
+</nav>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Day of Week Finder", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Find the weekday of any date, past or future. Free, instant and entirely in your browser \u2014 nothing is uploaded.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+<div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h1>Day of Week Finder</h1></div><p>Find the weekday of any date, past or future. Free, instant and entirely in your browser — nothing is uploaded.</p></div>
+<div class="panel"><div class="row"><div><label for="dw-date">Date</label><input type="text" id="dw-date" class="dt-input" readonly placeholder="Pick a date"/></div></div><button class="btn" onclick="dtDow()">Find weekday</button><div id="dw-out" class="result" aria-live="polite"></div></div>
+<div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
+<div class="article">
+<h2 class="section">What Is the Day of Week Finder?</h2>
+<p>What day was the moon landing? What day does your birthday fall on next year? What day is that invoice due? The weekday of a date is the fact everyone needs and nobody can compute mentally beyond this week. This tool names the weekday for any date in the Gregorian calendar, plus the day of year for context. The tool on this page does that one job cleanly: open it, give it your input, and the result appears immediately — free, with no sign-up, no ads inside the work area and nothing uploaded to any server.</p>
+<p>Date arithmetic is deceptively hard to do in your head because the calendar is irregular: months run 28 to 31 days, weeks drift across month boundaries, leap years arrive every four years except most century years, and time zones lurk behind every 'what day will that be' question. The Day of Week Finder handles that irregularity with the browser's own calendar engine, so the answer respects real months, real leap years and real week rules.</p>
+<p>All calculations use the standard Gregorian calendar rules implemented in every browser: leap years divisible by 4 but not by 100 unless also by 400, ISO-8601 week numbering where week 1 contains the first Thursday of the year, and correct month lengths everywhere. The results therefore match official calendars and libraries like date-fns or Python's datetime — not approximations of them.</p>
+<h2 class="section">How to Use the Day of Week Finder</h2>
+<p>Using the day of week finder is a single pass. Give the tool your input — paste text, pick a value or press the action button, depending on what the tool takes — and the result appears instantly in the output area. Copy it with the copy button, adjust the input, and run it again as many times as you like; nothing is cached or locked in. If the result looks odd, re-read the input for hidden characters or a wrong unit — the tool applies its rule exactly, so surprises almost always live in the input, not the logic. Everything happens on your device, so the page keeps working offline once it has loaded.</p>
+<ol><li>Open the tool and give it your input — paste, type or pick, exactly as the interface prompts.</li><li>Set any options the tool offers (a value to find, a count, a format) before running the action.</li><li>Press the action button or simply edit the input — the result updates immediately either way.</li><li>Read the whole output, not just the headline; the detail lines are where edge cases show up.</li><li>Copy the result to your clipboard, or download it where the tool offers that.</li><li>If the input changes later, come back and re-run — the tool is stateless, so results are always reproducible.</li></ol>
+<h2 class="section">How the Day of Week Finder Works</h2>
+<p>Under the hood the day of week finder is a small, explicit function: it takes your input, applies one well-defined rule — find the weekday of any date, past or future — and writes the output. There is no hidden preprocessing, no 'smart' guessing and no server-side model deciding what you meant; the behavior you see is the behavior the code specifies.</p>
+<p>The processing is deterministic and local. JavaScript runs the same steps on the same input every time, at double-precision where numbers are involved, and the page never contacts a server — which is why results are instant, repeatable and private.</p>
+<p>The interface follows a strict input-to-output flow with the result clearly separated from the input, so you can compare the two side by side, verify the transformation line by line, and copy the output without ever touching the original.</p>
+<h2 class="section">Examples and Practical Use Cases</h2>
+<h3>Checking a birthday's weekday next year</h3><p>Pick next year's date, press Find, and the weekday appears instantly — enough to know whether the party is a Friday or needs a Saturday shift.</p>
+<h3>A quick sanity check</h3><p>However you use the day of week finder, it is worth running one input whose answer you already know. If the tool reproduces your known answer, you can trust it for the inputs you do not know — that two-minute habit catches misread options and paste errors before they reach a document.</p>
+<h3>Where this earns its keep</h3><p>In practice this shows up in checking deadlines and due days, history and trivia questions and planning around weekdays. The common thread is that the task is easy once, tedious twice and error-prone by the tenth time — exactly the profile of work that should be delegated to a small, reliable tool.</p>
+<h2 class="section">Common Mistakes to Avoid</h2>
+<ul><li>Mixing up date formats. 03/04 means March 4 in the US and April 3 nearly everywhere else — enter dates through the calendar picker rather than typing digits, and read results in the full unambiguous form the tool prints.</li><li>Ignoring that a 'day' can mean different things. Calendar days count every day; business days skip weekends; working days may also skip holidays. Decide which one your deadline, contract or payroll actually means before quoting a number.</li><li>The Gregorian calendar is used for all dates, including years before its historical adoption — historical purists should remember older dates used Julian reckoning.</li><li>Assuming the tool 'knows' your intent. It applies the stated rule literally — if you meant something slightly different, adjust the options or the input rather than expecting inference.</li><li>Skipping the copy step and retyping results by hand. Manual transcription is where good tool output goes to die; use the clipboard.</li></ul>
+<h2 class="section">Tips, Benefits and Limitations</h2>
+<ul><li>Keep the day of week finder open in a second tab while you work — round-tripping between your document and the tool takes seconds.</li><li>Prepare your input before you start: clean input in, clean output out.</li><li>If the tool offers options, set them deliberately once and reuse the same settings across a project for consistency.</li><li>For recurring work, note the exact input and settings you used so any result can be reproduced later.</li><li>Use the copy button rather than selecting text by hand — it grabs the exact output with no stray whitespace.</li><li>Bookmark the page if the task recurs weekly; the tool loads instantly and works offline after the first visit.</li></ul>
+<h2 class="section">Frequently Asked Questions</h2>
+<h3>Does the tool account for leap years?</h3><p>Yes — it uses the browser's calendar engine, which applies the full Gregorian rule (divisible by 4, except centuries unless divisible by 400). February 29 is handled correctly in every direction.</p>
+<h3>Are time zones a problem?</h3><p>For pure date arithmetic, no: the tool works on calendar dates, which are the same everywhere. Only when a deadline is tied to a specific clock time in a specific zone does the zone need separate attention.</p>
+<h3>Is the tool free?</h3><p>Yes — completely free, with no account, no usage cap and no restrictions on commercial use of the results.</p>
+<h3>What happens to my input after I close the page?</h3><p>Nothing persists. The tool holds your input only in the current page's memory; closing or refreshing the tab clears everything.</p>
+</div>
+<h2 class='section'>Related tools</h2><div class='grid'><a class='card' href='../tools/date-difference-calculator.html'><div class='card-head'><svg class="card-ic" style="color:#60a5fa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h3>Date Difference Calculator</h3></div></a><a class='card' href='../tools/stopwatch-online.html'><div class='card-head'><svg class="card-ic" style="color:#60a5fa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h3>Online Stopwatch</h3></div></a><a class='card' href='../tools/countdown-timer.html'><div class='card-head'><svg class="card-ic" style="color:#60a5fa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h3>Countdown Timer</h3></div></a><a class='card' href='../tools/pomodoro-timer.html'><div class='card-head'><svg class="card-ic" style="color:#60a5fa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h3>Pomodoro Timer</h3></div></a></div>
+</div></main>
+<footer class="site"><div class="container">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a class="brand" href="../index.html"><span class="brand-tile"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></span>MSCALE<span>Tools</span></a>
+      <p>Free online tools that run entirely in your browser — fast, private, no sign-up, no uploads. 164 tools live, more shipping weekly.</p>
+      <a class="gh-link" href="https://github.com/maisamwork/MSCALE"><svg class="" style="color:#e6e9f0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>github.com/maisamwork/MSCALE</span></a>
+    </div>
+    <div>
+      <h4>Categories</h4>
+      <a href="../calculators/">Calculators</a><a href="../text-tools/">Text Tools</a><a href="../developer-tools/">Developer Tools</a><a href="../converters/">Converters</a><a href="../security/">Security Tools</a><a href="../color-tools/">Color Tools</a>
+    </div>
+    <div>
+      <h4>&nbsp;</h4>
+      <a href="../random-generators/">Random Generators</a><a href="../pdf-tools/">PDF Tools</a><a href="../image-tools/">Image Tools</a><a href="../seo-web-tools/">SEO & Web Tools</a><a href="../date-time-tools/">Date & Time Tools</a><a href="../finance-tools/">Finance & Business</a>
+    </div>
+    <div>
+      <h4>Popular tools</h4>
+      <a href="../tools/percentage-calculator.html">Percentage Calculator</a><a href="../tools/word-counter.html">Word Counter</a><a href="../tools/json-formatter.html">JSON Formatter</a><a href="../tools/password-generator.html">Password Generator</a><a href="../tools/unit-converter.html">Unit Converter</a><a href="../tools/image-resizer.html">Image Resizer</a>
+      <h4 class="gap-top">Resources</h4>
+      <a href="../blog/">Blog</a>
+      <a href="../tools/">All tools</a>
+    </div>
+  </div>
+  <p class="copyright">&copy; 2026 MSCALE Tools. Every tool runs client-side in your browser — your data never leaves your device.</p>
+</div></footer>
+</body>
+</html>

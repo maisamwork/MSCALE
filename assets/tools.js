@@ -1246,8 +1246,11 @@ function attachTimePicker(dispId, hiddenId, def) {
   sync();
 }
 function initPickers() {
-  ["cd-date", "inv-date", "inv-due", "age-dob", "dd2-a", "dd2-b"].forEach(attachDatePicker);
+  ["cd-date", "inv-date", "inv-due", "age-dob", "dd2-a", "dd2-b", "rd-a", "rd-b", "ad-date", "dw-date", "wn-date", "bd-a", "bd-b"].forEach(function (id) { if ($(id)) attachDatePicker(id); });
   attachTimePicker("cd-time", "cd-time-val", "09:00");
+  if ($("hr-s")) attachTimePicker("hr-s", "hr-sv", "09:00");
+  if ($("hr-e")) attachTimePicker("hr-e", "hr-ev", "17:30");
+  if ($("mt-time")) attachTimePicker("mt-time", "mt-tv", "09:00");
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initPickers);
 else initPickers();
@@ -1526,4 +1529,509 @@ function urlParse() {
   if (document.getElementById("gr-prev")) grDraw();
   if (document.getElementById("bs-box")) bsDraw();
   if (document.getElementById("ty-words")) tyNew();
+})();
+
+/* ================= MEGA engines (converters, calculators, text, color, random, date) ================= */
+function _n(id) { var el = $(id); if (!el) return null; var v = parseFloat(el.value); return isNaN(v) ? null : v; }
+function _v(id) { var el = $(id); return el ? el.value.trim() : ""; }
+function nfmt(v, d) {
+  if (v === null || v === undefined || !isFinite(v)) return "\u2014";
+  if (d === undefined) d = 2;
+  var a = Math.abs(v);
+  if (a !== 0 && (a < 0.001 || a >= 1e12)) return v.toExponential(4);
+  return v.toLocaleString(undefined, { maximumFractionDigits: d });
+}
+function dISO(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function pISO(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+function gcdJS(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = b; b = a % b; a = t; } return a; }
+
+/* ---------- Unit converter engine (window.UC_CONF) ---------- */
+function ucConv(v, k, f) {
+  if (k === "c2f") return v * 9 / 5 + 32;
+  if (k === "f2c") return (v - 32) * 5 / 9;
+  if (k === "c2k") return v + 273.15;
+  if (k === "f2k") return (v - 32) * 5 / 9 + 273.15;
+  return v * f;
+}
+function ucInvV(v, k, f) {
+  if (k === "c2f") return (v - 32) * 5 / 9;
+  if (k === "f2c") return v * 9 / 5 + 32;
+  if (k === "c2k") return v - 273.15;
+  if (k === "f2k") return (v - 273.15) * 9 / 5 + 32;
+  return v / f;
+}
+function ucRun() {
+  var c = window.UC_CONF; if (!c) return;
+  var a = $("uc-in"), b = $("uc-out"); if (!a || !b) return;
+  var v = parseFloat(a.value);
+  if (isNaN(v)) { b.value = ""; ucTable(); return; }
+  b.value = c.d === "b" ? nfmt(ucInvV(v, c.k, c.f), 6) : nfmt(ucConv(v, c.k, c.f), 6);
+  ucTable();
+}
+function ucTable() {
+  var c = window.UC_CONF; if (!c) return;
+  var t = $("uc-table"); if (!t) return;
+  var vals = [1, 2, 5, 10, 25, 50, 100, 250, 500, 1000];
+  var la = c.d === "a" ? c.fl : c.tl, lb = c.d === "a" ? c.tl : c.fl;
+  var h = "<tr><th>" + escHtml(la) + "</th><th>" + escHtml(lb) + "</th></tr>";
+  for (var i = 0; i < vals.length; i++) {
+    var x = vals[i];
+    var y = c.d === "a" ? ucConv(x, c.k, c.f) : ucInvV(x, c.k, c.f);
+    h += "<tr><td>" + nfmt(x, 2) + "</td><td><b>" + nfmt(y, 4) + "</b></td></tr>";
+  }
+  t.innerHTML = h;
+}
+function ucSwap() {
+  var c = window.UC_CONF; if (!c) return;
+  var fl = $("uc-fl"), tl = $("uc-tl"); if (!fl || !tl) return;
+  var tmp = fl.textContent; fl.textContent = tl.textContent; tl.textContent = tmp;
+  c.d = c.d === "a" ? "b" : "a";
+  var a = $("uc-in"), b = $("uc-out");
+  if (b.value !== "" && !isNaN(parseFloat(b.value.replace(/,/g, "")))) a.value = b.value.replace(/,/g, "");
+  ucRun();
+}
+function ucCopy() { var b = $("uc-out"); if (b && b.value) copyText(b.value, $("uc-copy")); }
+
+/* ---------- Calculator engine (22 tools) ---------- */
+function si() { var p = _n("si-p"), r = _n("si-r"), t = _n("si-t");
+  if (p === null || r === null || t === null) { out("si-out", "Fill in all three fields."); return; }
+  var i = p * r * t / 100;
+  out("si-out", "Interest: <b>" + nfmt(i) + "</b><br>Total amount: <b>" + nfmt(p + i) + "</b><br>Interest per year: " + nfmt(t ? i / t : 0)); }
+function avg() { var raw = _v("avg-n"); if (!raw) { out("avg-out", "Enter some numbers first."); return; }
+  var parts = raw.split(/[\n,;]+/).map(parseFloat).filter(function (x) { return !isNaN(x); });
+  if (!parts.length) { out("avg-out", "No valid numbers found.", "err"); return; }
+  var s = 0; for (var i = 0; i < parts.length; i++) s += parts[i];
+  out("avg-out", "Average: <b>" + nfmt(s / parts.length, 4) + "</b><br>Sum: " + nfmt(s, 4) + " &nbsp;\u00b7&nbsp; Count: " + parts.length + " &nbsp;\u00b7&nbsp; Min: " + nfmt(Math.min.apply(null, parts), 4) + " &nbsp;\u00b7&nbsp; Max: " + nfmt(Math.max.apply(null, parts), 4)); }
+function sqrt() { var v = _n("sqrt-n"); if (v === null) { out("sqrt-out", "Enter a number."); return; }
+  if (v < 0) { out("sqrt-out", "Negative numbers have no real square root (they need complex numbers).", "err"); return; }
+  var r = Math.sqrt(v);
+  out("sqrt-out", "\u221a" + nfmt(v, 6) + " = <b>" + nfmt(r, 6) + "</b><br>Check: " + nfmt(r, 6) + " \u00d7 " + nfmt(r, 6) + " = " + nfmt(r * r, 6)); }
+function pow() { var b = _n("pw-b"), e = _n("pw-e"); if (b === null || e === null) { out("pow-out", "Enter both base and exponent."); return; }
+  var r = Math.pow(b, e);
+  if (!isFinite(r)) { out("pow-out", "Result is too large to represent.", "err"); return; }
+  out("pow-out", nfmt(b, 6) + "<sup>" + nfmt(e, 6) + "</sup> = <b>" + nfmt(r, 6) + "</b>" + (e < 0 ? "<br><span class=\"dim\">Negative exponent: one over the positive power.</span>" : "")); }
+function cirA() { var r = _n("cir-r"); if (r === null) { out("cirA-out", "Enter a radius."); return; }
+  out("cirA-out", "Area = \u03c0 \u00d7 r\u00b2 = <b>" + nfmt(Math.PI * r * r, 4) + "</b> square units<br>(diameter " + nfmt(2 * r, 4) + ", circumference " + nfmt(2 * Math.PI * r, 4) + ")"); }
+function cirC() { var r = _n("ccm-r"); if (r === null) { out("cirC-out", "Enter a radius."); return; }
+  out("cirC-out", "Circumference = 2\u03c0r = <b>" + nfmt(2 * Math.PI * r, 4) + "</b> units<br>(area " + nfmt(Math.PI * r * r, 4) + ")"); }
+function triA() { var b = _n("tri-b"), h = _n("tri-h"); if (b === null || h === null) { out("triA-out", "Enter base and height."); return; }
+  out("triA-out", "Area = \u00bd \u00d7 " + nfmt(b) + " \u00d7 " + nfmt(h) + " = <b>" + nfmt(0.5 * b * h, 4) + "</b> square units"); }
+function rectA() { var w = _n("rec-w"), h = _n("rec-h"); if (w === null || h === null) { out("rectA-out", "Enter width and height."); return; }
+  out("rectA-out", "Area = <b>" + nfmt(w * h, 4) + "</b> square units<br>Perimeter = " + nfmt(2 * (w + h), 4) + " units"); }
+function facCalc() { var n = _n("fac-n"); if (n === null || n < 0 || Math.floor(n) !== n) { out("facCalc-out", "Enter a whole number \u2265 0.", "err"); return; }
+  if (n > 170) { out("facCalc-out", "170! is the largest factorial JavaScript can represent \u2014 try a smaller n.", "err"); return; }
+  var r = 1; for (var i = 2; i <= n; i++) r *= i;
+  out("facCalc-out", n + "! = <b>" + nfmt(r, 6) + "</b>" + (n > 20 ? "<br><span class=\"dim\">(" + r.toExponential(6).split("e")[0] + " \u00d7 10^" + r.toExponential(6).split("e")[1] + ")</span>" : "")); }
+function gcdCalc() { var a = _n("gcd-a"), b = _n("gcd-b"); if (a === null || b === null || !a || !b) { out("gcdCalc-out", "Enter two non-zero whole numbers.", "err"); return; }
+  a = Math.round(Math.abs(a)); b = Math.round(Math.abs(b));
+  var g = gcdJS(a, b), l = (a / g) * b;
+  out("gcdCalc-out", "GCD(" + a + ", " + b + ") = <b>" + g + "</b><br>LCM(" + a + ", " + b + ") = <b>" + nfmt(l, 0) + "</b>"); }
+function primeCalc() { var v = _n("pr-n"); if (v === null || Math.floor(v) !== v || v < 2) { out("primeCalc-out", "Enter a whole number \u2265 2.", "err"); return; }
+  var f = 0; for (var i = 2; i * i <= v; i++) { if (v % i === 0) { f = i; break; } }
+  if (f) out("primeCalc-out", nfmt(v, 0) + " is <b>not prime</b> \u2014 it equals " + f + " \u00d7 " + (v / f));
+  else out("primeCalc-out", nfmt(v, 0) + " is <b>prime</b> \u2014 divisible only by 1 and itself."); }
+function n2wCalc() { var v = _n("n2w-n"); if (v === null || Math.floor(v) !== v) { out("n2wCalc-out", "Enter a whole number.", "err"); return; }
+  out("n2wCalc-out", "<b>" + escHtml(n2wWords(v)) + "</b>" + (v < 0 ? "<br><span class=\"dim\">(negative \u2014 keep the minus in the written form)</span>" : "")); }
+function n2wWords(num) {
+  var ones = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
+  var tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+  function u1000(n) { var s = ""; if (n >= 100) { s += ones[Math.floor(n / 100)] + " hundred"; n %= 100; if (n) s += " and "; }
+    if (n >= 20) { s += tens[Math.floor(n / 10)]; if (n % 10) s += "-" + ones[n % 10]; } else if (n > 0) s += ones[n]; return s; }
+  if (num === 0) return "zero";
+  var neg = num < 0; num = Math.abs(num);
+  var groups = [[1e12, "trillion"], [1e9, "billion"], [1e6, "million"], [1e3, "thousand"]];
+  var s = "";
+  for (var i = 0; i < groups.length; i++) { if (num >= groups[i][0]) { var q = Math.floor(num / groups[i][0]); s += u1000(q) + " " + groups[i][1]; num %= groups[i][0]; if (num) s += s ? " " : ""; } }
+  if (num) s += (s ? " " : "") + u1000(num);
+  return (neg ? "minus " : "") + s;
+}
+function quadCalc() { var a = _n("quad-a"), b = _n("quad-b"), c = _n("quad-c");
+  if (a === null || b === null || c === null) { out("quadCalc-out", "Fill in a, b and c.", "err"); return; }
+  if (a === 0) { out("quadCalc-out", "a = 0 makes this linear: root x = " + nfmt(-c / b, 6)); return; }
+  var d = b * b - 4 * a * c;
+  if (d > 0) { var r1 = (-b + Math.sqrt(d)) / (2 * a), r2 = (-b - Math.sqrt(d)) / (2 * a);
+    out("quadCalc-out", "Discriminant: " + nfmt(d, 4) + " &gt; 0 \u2192 two real roots<br><b>x\u2081 = " + nfmt(r1, 6) + "</b> &nbsp;\u00b7&nbsp; <b>x\u2082 = " + nfmt(r2, 6) + "</b>"); }
+  else if (d === 0) out("quadCalc-out", "Discriminant = 0 \u2192 one repeated root<br><b>x = " + nfmt(-b / (2 * a), 6) + "</b>");
+  else out("quadCalc-out", "Discriminant " + nfmt(d, 4) + " &lt; 0 \u2192 no real roots (complex: " + nfmt(-b / (2 * a), 4) + " \u00b1 " + nfmt(Math.sqrt(-d) / (2 * a), 4) + "i)"); }
+function arCalc() { var w = _n("ar-w"), h = _n("ar-h"), nw = _n("ar-nw");
+  if (w === null || h === null || !w || !h) { out("arCalc-out", "Enter the original width and height.", "err"); return; }
+  if (nw === null) { var nh = null; out("arCalc-out", "Ratio is " + gcdJS(Math.round(w), Math.round(h)) + ":" + (Math.round(h) / gcdJS(Math.round(w), Math.round(h))) + " \u2014 enter a new width or height to scale."); return; }
+  var r = h / w;
+  out("arCalc-out", "At " + nfmt(nw, 2) + " wide the height is <b>" + Math.round(nw * r) + " px</b><br>Ratio: " + (w / gcdJS(Math.round(w), Math.round(h))).toFixed(0) + ":" + (h / gcdJS(Math.round(w), Math.round(h))).toFixed(0)); }
+function pmCalc() { var rev = _n("pm-rev"), cost = _n("pm-cost");
+  if (rev === null || cost === null || !rev) { out("pmCalc-out", "Enter revenue and cost.", "err"); return; }
+  var p = rev - cost;
+  out("pmCalc-out", "Profit: <b>" + nfmt(p) + "</b><br>Margin: <b>" + nfmt(p / rev * 100) + "%</b> of price<br>Markup: " + nfmt(cost ? p / cost * 100 : 0) + "% on cost"); }
+function logCalc() { var x = _n("log-x"), b = _n("log-b");
+  if (x === null || b === null || x <= 0 || b <= 0 || b === 1) { out("logCalc-out", "Enter a positive number and a positive base \u2260 1.", "err"); return; }
+  out("logCalc-out", "log<sub>" + nfmt(b, 4) + "</sub>(" + nfmt(x, 6) + ") = <b>" + nfmt(Math.log(x) / Math.log(b), 6) + "</b>"); }
+function hrsCalc() { var s = _v("hr-sv"), e = _v("hr-ev");
+  if (!s || !e) { out("hrsCalc-out", "Pick both a start and an end time.", "err"); return; }
+  var sp = s.split(":"), ep = e.split(":");
+  var mins = (+ep[0] * 60 + +ep[1]) - (+sp[0] * 60 + +sp[1]);
+  if (mins < 0) mins += 1440;
+  var br = _n("hr-br") || 0; mins -= br; if (mins < 0) mins = 0;
+  out("hrsCalc-out", "<b>" + Math.floor(mins / 60) + "h " + String(mins % 60).padStart(2, "0") + "m</b> &nbsp;=&nbsp; " + (mins / 60).toFixed(2) + " decimal hours" + (br ? " <span class=\"dim\">(after a " + br + " min break)</span>" : "")); }
+function fuelCalc() { var d = _n("fc-d"), e = _n("fc-e"), p = _n("fc-p");
+  if (d === null || e === null || p === null) { out("fuelCalc-out", "Fill in distance, consumption and price.", "err"); return; }
+  var l = d * e / 100;
+  out("fuelCalc-out", "Fuel used: <b>" + nfmt(l) + " L</b><br>Trip cost: <b>" + nfmt(l * p) + "</b><br>Cost per km: " + nfmt(p * e / 100, 3)); }
+function cbrtCalc() { var v = _n("cbrt-n"); if (v === null) { out("cbrtCalc-out", "Enter a number."); return; }
+  var r = Math.cbrt(v);
+  out("cbrtCalc-out", "\u221b" + nfmt(v, 6) + " = <b>" + nfmt(r, 6) + "</b><br>Check: " + nfmt(r, 6) + "\u00b3 = " + nfmt(r * r * r, 6)); }
+function pctChCalc() { var o = _n("pc-old"), n2 = _n("pc-new");
+  if (o === null || n2 === null || o === 0) { out("pctChCalc-out", "Enter both values (old value can't be zero).", "err"); return; }
+  var ch = (n2 - o) / o * 100;
+  out("pctChCalc-out", "Change: <b>" + (ch >= 0 ? "+" : "") + nfmt(ch) + "%</b><br>Difference: " + nfmt(n2 - o) + " &nbsp;\u00b7&nbsp; " + (ch >= 0 ? "increase" : "decrease")); }
+function hypCalc() { var a = _n("hy-a"), b = _n("hy-b"); if (a === null || b === null) { out("hypCalc-out", "Enter both sides.", "err"); return; }
+  var c = Math.sqrt(a * a + b * b);
+  out("hypCalc-out", "Hypotenuse c = <b>" + nfmt(c, 6) + "</b><br>Check: " + nfmt(a) + "\u00b2 + " + nfmt(b) + "\u00b2 = " + nfmt(a * a + b * b, 4)); }
+function ratioCalc() { var a = _n("rs-a"), b = _n("rs-b"); if (a === null || b === null || !a || !b) { out("ratioCalc-out", "Enter two non-zero numbers.", "err"); return; }
+  var g = gcdJS(Math.round(a), Math.round(b));
+  out("ratioCalc-out", "<b>" + Math.round(a / g) + " : " + Math.round(b / g) + "</b><br>Decimal: " + (a / b).toFixed(4) + " &nbsp;\u00b7&nbsp; Simplified by GCD " + g); }
+
+/* ---------- Text engine (window.TX_CONF) ---------- */
+var TX_ACC = { "\u00e1":"a","\u00e0":"a","\u00e2":"a","\u00e4":"a","\u00e3":"a","\u00e5":"a","\u00e9":"e","\u00e8":"e","\u00ea":"e","\u00eb":"e","\u00ed":"i","\u00ec":"i","\u00ee":"i","\u00ef":"i","\u00f3":"o","\u00f2":"o","\u00f4":"o","\u00f6":"o","\u00f5":"o","\u00fa":"u","\u00f9":"u","\u00fb":"u","\u00fc":"u","\u00f1":"n","\u00e7":"c","\u00fd":"y","\u0161":"s","\u017e":"z" };
+function txRun() {
+  var c = window.TX_CONF; if (!c) return;
+  var t = $("tx-in").value; if ($("tx-in") === null) return;
+  var r = "", i, lines, m;
+  switch (c.op) {
+    case "spaces":
+      r = t.replace(/[ \t]+/g, " ").split("\n").map(function (l) { return l.trim(); }).join("\n").replace(/\n{3,}/g, "\n\n");
+      break;
+    case "linebreaks":
+      r = t.split(/\n+/).map(function (l) { return l.trim(); }).filter(Boolean).join(" ");
+      break;
+    case "specialchars":
+      r = t.replace(/[\u00c0-\u024f]/g, function (ch) { var lo = ch.toLowerCase(); var rep = TX_ACC[lo]; if (rep) return ch === lo ? rep : rep.toUpperCase(); return ch; })
+           .replace(/[^A-Za-z0-9\s]/g, "");
+      break;
+    case "prefixsuffix":
+      var pre = _v("tx-pre"), suf = _v("tx-suf");
+      r = t.split("\n").filter(function (l) { return l.trim() !== ""; }).map(function (l) { return pre + l + suf; }).join("\n");
+      break;
+    case "emails":
+      m = t.match(/[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}/g) || [];
+      var seen = {}; var outl = [];
+      for (i = 0; i < m.length; i++) { var k = m[i].toLowerCase(); if (!seen[k]) { seen[k] = 1; outl.push(m[i]); } }
+      r = outl.length ? outl.join("\n") : "No email addresses found.";
+      break;
+    case "numbers":
+      m = t.match(/-?\d+(?:\.\d+)?/g) || [];
+      r = m.length ? m.join("\n") : "No numbers found.";
+      break;
+    case "urls":
+      m = t.match(/https?:\/\/[^\s<>"')\]]+/g) || [];
+      m = m.map(function (u) { return u.replace(/[.,;:!]+$/, ""); });
+      var su = {}; var ou = [];
+      for (i = 0; i < m.length; i++) { if (!su[m[i]]) { su[m[i]] = 1; ou.push(m[i]); } }
+      r = ou.length ? ou.join("\n") : "No URLs found.";
+      break;
+    case "occurrences":
+      var f = _v("tx-find");
+      if (!f) { r = "Type the text to count in the field above."; break; }
+      var cnt = 0, idx = 0, hay = t.toLowerCase(), needle = f.toLowerCase();
+      while ((idx = hay.indexOf(needle, idx)) !== -1) { cnt++; idx += needle.length; }
+      r = "\u201c" + f + "\u201d appears " + cnt + (cnt === 1 ? " time" : " times") + " in " + t.trim().split(/\s+/).filter(Boolean).length + " words of text.";
+      break;
+    case "columns":
+      var d = _v("tx-delim") || ",";
+      r = t.split("\n").filter(function (l) { return l.trim() !== ""; }).map(function (l) { return l.split(d).map(function (x2) { return x2.trim(); }).join("\t"); }).join("\n");
+      break;
+    case "join":
+      var sep = ($("tx-sep") && $("tx-sep").value) || ", ";
+      r = t.split("\n").filter(function (l) { return l.trim() !== ""; }).join(sep);
+      break;
+    case "linenumbers":
+      lines = t.split("\n");
+      r = lines.map(function (l, j) { return (j + 1) + ". " + l; }).join("\n");
+      break;
+    case "truncate":
+      var len = _n("tx-len"); if (len === null || len < 1) { r = "Set a maximum character length first."; break; }
+      r = t.length > len ? t.slice(0, Math.max(0, len - 1)) + "\u2026" : t;
+      break;
+    case "swapcase":
+      r = t.replace(/[A-Za-z]/g, function (ch) { return ch === ch.toUpperCase() ? ch.toLowerCase() : ch.toUpperCase(); });
+      break;
+    case "altcase":
+      var up = true;
+      r = t.replace(/[A-Za-z]/g, function (ch) { var o = up ? ch.toUpperCase() : ch.toLowerCase(); up = !up; return o; });
+      break;
+    case "removenumbers":
+      r = t.replace(/\d/g, "");
+      break;
+    default: r = t;
+  }
+  $("tx-out").value = r;
+}
+function txCopyOut() { var o = $("tx-out"); if (o && o.value) copyText(o.value); }
+function txClear() { if ($("tx-in")) $("tx-in").value = ""; if ($("tx-out")) $("tx-out").value = ""; }
+
+/* ---------- Color engine ---------- */
+function cxParseHex(s) {
+  s = (s || "").trim().replace(/^#/, "");
+  if (/^[0-9a-fA-F]{3}$/.test(s)) s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+  if (!/^[0-9a-fA-F]{6}$/.test(s)) return null;
+  return { r: parseInt(s.slice(0, 2), 16), g: parseInt(s.slice(2, 4), 16), b: parseInt(s.slice(4, 6), 16), hex: "#" + s.toLowerCase() };
+}
+function cxToHex(r, g, b) {
+  function h2(x) { return Math.round(Math.max(0, Math.min(255, x))).toString(16).padStart(2, "0"); }
+  return "#" + h2(r) + h2(g) + h2(b);
+}
+function cxRgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  var mx = Math.max(r, g, b), mn = Math.min(r, g, b), h = 0, s = 0, l = (mx + mn) / 2;
+  if (mx !== mn) {
+    var d = mx - mn;
+    s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+    if (mx === r) h = ((g - b) / d + (g < b ? 6 : 0));
+    else if (mx === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+  }
+  return { h: Math.round(h), s: Math.round(s * 100), l: Math.round(l * 100) };
+}
+function cxLum(r, g, b) {
+  function ch(c) { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+  return 0.2126 * ch(r) + 0.7152 * ch(g) + 0.0722 * ch(b);
+}
+function cxMix(hex, target, amt) {
+  var c = cxParseHex(hex); if (!c) return null;
+  return cxToHex(c.r + (target.r - c.r) * amt, c.g + (target.g - c.g) * amt, c.b + (target.b - c.b) * amt);
+}
+function cxCopyVal(v, el) { copyText(v, el); }
+function cxShades() {
+  var hex = _v("sh-in"); var box = $("sh-out"); if (!box) return;
+  var c = cxParseHex(hex);
+  if (!c) { box.innerHTML = '<span class="dim">Enter a valid hex color like #e05e00.</span>'; return; }
+  var white = { r: 255, g: 255, b: 255 }, black = { r: 0, g: 0, b: 0 };
+  var h = "";
+  for (var i = 5; i >= 1; i--) { var hx = cxMix(hex, white, i / 6); h += '<div class="shade-cell" style="background:' + hx + '" onclick="cxCopyVal(\'' + hx + '\', this)" title="' + hx + ' \u2014 click to copy"><span>' + hx + '</span></div>'; }
+  h += '<div class="shade-cell base" style="background:' + c.hex + '" onclick="cxCopyVal(\'' + c.hex + '\', this)" title="' + c.hex + ' \u2014 click to copy"><span>' + c.hex + '</span></div>';
+  for (i = 1; i <= 5; i++) { var hd = cxMix(hex, black, i / 6); h += '<div class="shade-cell" style="background:' + hd + '" onclick="cxCopyVal(\'' + hd + '\', this)" title="' + hd + ' \u2014 click to copy"><span>' + hd + '</span></div>'; }
+  box.innerHTML = h;
+}
+function cxComp() {
+  var hex = _v("cp-in"); var o = $("cp-out"), p = $("cp-prev");
+  var c = cxParseHex(hex);
+  if (!c) { if (o) o.innerHTML = '<span class="dim">Enter a valid hex color.</span>'; return; }
+  var hsl = cxRgbToHsl(c.r, c.g, c.b);
+  function hslHex(h2, s, l) {
+    s /= 100; l /= 100;
+    function f(n) { var k = (n + h2 / 30) % 12; var a = s * Math.min(l, 1 - l); return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); }
+    return cxToHex(f(0) * 255, f(8) * 255, f(4) * 255);
+  }
+  var comp = hslHex((hsl.h + 180) % 360, hsl.s, hsl.l);
+  var sp1 = hslHex((hsl.h + 150) % 360, hsl.s, hsl.l);
+  var sp2 = hslHex((hsl.h + 210) % 360, hsl.s, hsl.l);
+  o.innerHTML = "Complement: <b>" + comp + "</b> &nbsp;\u00b7&nbsp; Split: " + sp1 + " and " + sp2;
+  p.innerHTML = '<div class="shade-cell" style="background:' + c.hex + '" onclick="cxCopyVal(\'' + c.hex + '\', this)" title="' + c.hex + '"><span>' + c.hex + '</span></div>'
+    + '<div class="shade-cell" style="background:' + comp + '" onclick="cxCopyVal(\'' + comp + '\', this)" title="' + comp + '"><span>' + comp + '</span></div>'
+    + '<div class="shade-cell" style="background:' + sp1 + '" onclick="cxCopyVal(\'' + sp1 + '\', this)" title="' + sp1 + '"><span>' + sp1 + '</span></div>'
+    + '<div class="shade-cell" style="background:' + sp2 + '" onclick="cxCopyVal(\'' + sp2 + '\', this)" title="' + sp2 + '"><span>' + sp2 + '</span></div>';
+}
+function cxContrast() {
+  var fg = cxParseHex(_v("ct-fg")), bg = cxParseHex(_v("ct-bg"));
+  var o = $("ct-out"), p = $("ct-prev");
+  if (!fg || !bg) { if (o) o.innerHTML = '<span class="dim">Enter two valid hex colors.</span>'; return; }
+  var l1 = cxLum(fg.r, fg.g, fg.b), l2 = cxLum(bg.r, bg.g, bg.b);
+  var ratio = (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05);
+  function pass(v, th) { return v >= th ? '<span class="pass">Pass</span>' : '<span class="fail">Fail</span>'; }
+  o.innerHTML = "Contrast ratio: <b>" + ratio.toFixed(2) + ":1</b><br>"
+    + "AA normal text (4.5:1): " + pass(ratio, 4.5) + " &nbsp;\u00b7&nbsp; AA large text (3:1): " + pass(ratio, 3)
+    + "<br>AAA normal (7:1): " + pass(ratio, 7) + " &nbsp;\u00b7&nbsp; AAA large (4.5:1): " + pass(ratio, 4.5);
+  p.style.color = fg.hex; p.style.background = bg.hex;
+}
+function cxRandom() {
+  var hx = cxToHex(Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256));
+  var c = cxParseHex(hx), hsl = cxRgbToHsl(c.r, c.g, c.b);
+  out("rn-out", "<b>" + hx + "</b> &nbsp;\u00b7&nbsp; rgb(" + c.r + ", " + c.g + ", " + c.b + ") &nbsp;\u00b7&nbsp; hsl(" + hsl.h + ", " + hsl.s + "%, " + hsl.l + "%)");
+  $("rn-prev").style.background = hx;
+}
+function cxInvert() {
+  var c = cxParseHex(_v("iv-in")); var o = $("iv-out"), p = $("iv-prev");
+  if (!c) { if (o) o.innerHTML = '<span class="dim">Enter a valid hex color.</span>'; return; }
+  var inv = cxToHex(255 - c.r, 255 - c.g, 255 - c.b);
+  o.innerHTML = "Inverted: <b>" + inv + "</b> &nbsp;\u00b7&nbsp; rgb(" + (255 - c.r) + ", " + (255 - c.g) + ", " + (255 - c.b) + ")";
+  p.innerHTML = '<div class="shade-cell" style="background:' + c.hex + '" title="' + c.hex + '"><span>' + c.hex + '</span></div>'
+    + '<div class="shade-cell" style="background:' + inv + '" onclick="cxCopyVal(\'' + inv + '\', this)" title="' + inv + '"><span>' + inv + '</span></div>';
+}
+function cxGray() {
+  var c = cxParseHex(_v("gs-in")); var o = $("gs-out"), p = $("gs-prev");
+  if (!c) { if (o) o.innerHTML = '<span class="dim">Enter a valid hex color.</span>'; return; }
+  var y = Math.round(0.299 * c.r + 0.587 * c.g + 0.114 * c.b);
+  var g = cxToHex(y, y, y);
+  o.innerHTML = "Grayscale: <b>" + g + "</b> &nbsp;\u00b7&nbsp; luminance level " + y + "/255";
+  p.innerHTML = '<div class="shade-cell" style="background:' + c.hex + '" title="' + c.hex + '"><span>' + c.hex + '</span></div>'
+    + '<div class="shade-cell" style="background:' + g + '" onclick="cxCopyVal(\'' + g + '\', this)" title="' + g + '"><span>' + g + '</span></div>';
+}
+function cxHex() {
+  var c = cxParseHex(_v("cx-in")); var o = $("cx-out"), p = $("cx-prev");
+  if (!c) { if (o) o.innerHTML = '<span class="dim">Enter a valid hex color.</span>'; return; }
+  if (p) p.style.background = c.hex;
+  if (o) o.innerHTML = "RGB: <b>rgb(" + c.r + ", " + c.g + ", " + c.b + ")</b><br>Channels: R " + c.r + " &nbsp;\u00b7&nbsp; G " + c.g + " &nbsp;\u00b7&nbsp; B " + c.b;
+}
+function cxRgb() { var r = _n("cr-r"), g = _n("cr-g"), b = _n("cr-b"); var o = $("cr-out"), p = $("cr-prev");
+  if (r === null || g === null || b === null) { if (o) o.innerHTML = '<span class="dim">Enter all three channels.</span>'; return; }
+  var hx = cxToHex(r, g, b); if (p) p.style.background = hx;
+  if (o) o.innerHTML = "HEX: <b>" + hx + "</b>"; }
+function cxHexHsl() { var c = cxParseHex(_v("ch-in")); var o = $("ch-out"), p = $("ch-prev");
+  if (!c) { if (o) o.innerHTML = '<span class="dim">Enter a valid hex color.</span>'; return; }
+  var hsl = cxRgbToHsl(c.r, c.g, c.b); if (p) p.style.background = c.hex;
+  if (o) o.innerHTML = "HSL: <b>hsl(" + hsl.h + ", " + hsl.s + "%, " + hsl.l + "%)</b><br>Hue " + hsl.h + "\u00b0 &nbsp;\u00b7&nbsp; Saturation " + hsl.s + "% &nbsp;\u00b7&nbsp; Lightness " + hsl.l + "%"; }
+function cxRgbHsl() { var r = _n("rh-r"), g = _n("rh-g"), b = _n("rh-b"); var o = $("rh-out"), p = $("rh-prev");
+  if (r === null || g === null || b === null) { if (o) o.innerHTML = '<span class="dim">Enter all three channels.</span>'; return; }
+  var hsl = cxRgbToHsl(r, g, b); if (p) p.style.background = cxToHex(r, g, b);
+  if (o) o.innerHTML = "HSL: <b>hsl(" + hsl.h + ", " + hsl.s + "%, " + hsl.l + "%)</b>"; }
+function cxCopy(kind) {
+  if (kind === "rgb") { var c = cxParseHex(_v("cx-in")); if (c) copyText("rgb(" + c.r + ", " + c.g + ", " + c.b + ")"); }
+  else if (kind === "hex") { var r = _n("cr-r"), g = _n("cr-g"), b = _n("cr-b"); if (r !== null && g !== null && b !== null) copyText(cxToHex(r, g, b)); }
+  else if (kind === "hsl") { var t = $("ch-out") || $("rh-out"); if (t) { var m = t.innerHTML.match(/hsl\([^)]+\)/); if (m) copyText(m[0]); } }
+  else if (kind === "all") { var t2 = $("rn-out"); if (t2) copyText(t2.textContent); }
+}
+
+/* ---------- Random engine ---------- */
+var RN_WORDS = "time,year,people,way,day,man,thing,woman,life,child,world,school,state,family,student,group,country,problem,hand,part,place,case,week,company,system,program,question,work,government,number,night,point,home,water,room,mother,area,money,story,fact,month,lot,right,study,book,eye,job,word,business,issue,side,kind,head,house,service,friend,father,power,hour,game,line,end,member,law,car,city,name,team,minute,idea,body,back,parent,face,others,level,office,door,health,person,art,war,history,party,result,change,morning,reason,research,girl,guy,moment,air,teacher,force,education".split(",");
+var RN_COUNTRIES = ["Argentina|South America","Australia|Oceania","Austria|Europe","Belgium|Europe","Brazil|South America","Canada|North America","Chile|South America","China|Asia","Colombia|South America","Croatia|Europe","Czechia|Europe","Denmark|Europe","Egypt|Africa","Estonia|Europe","Finland|Europe","France|Europe","Germany|Europe","Greece|Europe","Hungary|Europe","Iceland|Europe","India|Asia","Indonesia|Asia","Ireland|Europe","Israel|Asia","Italy|Europe","Japan|Asia","Kenya|Africa","Latvia|Europe","Lithuania|Europe","Malaysia|Asia","Mexico|North America","Morocco|Africa","Netherlands|Europe","New Zealand|Oceania","Nigeria|Africa","Norway|Europe","Peru|South America","Philippines|Asia","Poland|Europe","Portugal|Europe","Romania|Europe","Saudi Arabia|Asia","Singapore|Asia","Slovakia|Europe","Slovenia|Europe","South Africa|Africa","South Korea|Asia","Spain|Europe","Sweden|Europe","Switzerland|Europe","Thailand|Asia","Turkey|Asia","Ukraine|Europe","United Arab Emirates|Asia","United Kingdom|Europe","United States|North America","Uruguay|South America","Vietnam|Asia"];
+var RN_QUOTES = [["Simplicity is the ultimate sophistication.","Leonardo da Vinci"],["The best way to predict the future is to invent it.","Alan Kay"],["Well begun is half done.","Aristotle"],["Make it work, make it right, make it fast.","Kent Beck"],["Quality is not an act, it is a habit.","Aristotle"],["What we know is a drop, what we don't know is an ocean.","Isaac Newton"],["The details are not the details. They make the design.","Charles Eames"],["Talk is cheap. Show me the code.","Linus Torvalds"],["Perfection is achieved when there is nothing left to take away.","Antoine de Saint-Exup\u00e9ry"],["The scariest moment is always just before you start.","Stephen King"],["First, solve the problem. Then, write the code.","John Johnson"],["Everything should be made as simple as possible, but not simpler.","Albert Einstein"],["Practice does not make perfect. Only perfect practice makes perfect.","Vince Lombardi"],["Small deeds done are better than great deeds planned.","Peter Marshall"],["If I had nine hours to chop a tree, I'd spend the first six sharpening my axe.","Abraham Lincoln"],["It always seems impossible until it is done.","Nelson Mandela"]];
+function rnLetter() { var n = Math.min(50, Math.max(1, _n("rl-n") || 5)); var up = ($("rl-case") && $("rl-case").value === "U");
+  var s = []; for (var i = 0; i < n; i++) { var ch = String.fromCharCode(97 + Math.floor(Math.random() * 26)); s.push(up ? ch.toUpperCase() : ch); }
+  out("rl-out", "<b>" + s.join(" &nbsp; ") + "</b>"); }
+function rnWord() { var n = Math.min(20, Math.max(1, _n("rw-n") || 3)); var s = [];
+  for (var i = 0; i < n; i++) s.push(RN_WORDS[Math.floor(Math.random() * RN_WORDS.length)]);
+  out("rw-out", "<b>" + s.join(" &nbsp;\u00b7&nbsp; ") + "</b>"); }
+function rnDate() { var a = _v("rd-a"), b = _v("rd-b");
+  if (!a || !b) { out("rd-out", "Pick both a start and an end date.", "err"); return; }
+  var t1 = pISO(a).getTime(), t2 = pISO(b).getTime();
+  if (t2 < t1) { var tmp = t1; t1 = t2; t2 = tmp; }
+  var d = new Date(t1 + Math.floor(Math.random() * (t2 - t1 + 86400000)));
+  var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  out("rd-out", "<b>" + dISO(d) + "</b><br>" + days[d.getDay()] + ", " + d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })); }
+function rnShuffle() { var t = $("ls-in"); if (!t) return;
+  var arr = t.value.split("\n").filter(function (l) { return l.trim() !== ""; });
+  if (!arr.length) { $("ls-out").value = "Enter some list items first."; return; }
+  for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp; }
+  $("ls-out").value = arr.join("\n"); }
+function rnPick() { var t = $("np-in"); if (!t) return;
+  var arr = t.value.split("\n").filter(function (l) { return l.trim() !== ""; });
+  var k = Math.max(1, _n("np-n") || 1);
+  if (!arr.length) { out("np-out", "Enter some names first.", "err"); return; }
+  if (k > arr.length) k = arr.length;
+  var pool = arr.slice();
+  var win = [];
+  for (var i = 0; i < k; i++) { var j = Math.floor(Math.random() * pool.length); win.push(pool[j]); pool.splice(j, 1); }
+  out("np-out", "<b>" + escHtml(win.join(" \u00b7 ")) + "</b>" + (k > 1 ? "<br><span class=\"dim\">" + k + " winners from " + arr.length + " entries</span>" : "")); }
+function rnYesNo() { out("yn-out", Math.random() < 0.5 ? "YES" : "NO", "huge-res"); }
+function rnTeams() { var t = $("ts-in"); if (!t) return;
+  var arr = t.value.split("\n").filter(function (l) { return l.trim() !== ""; });
+  var k = Math.max(2, _n("ts-n") || 2);
+  if (arr.length < k) { out("ts-out", "You need at least as many names as teams.", "err"); return; }
+  for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp; }
+  var teams = []; for (i = 0; i < k; i++) teams.push([]);
+  for (i = 0; i < arr.length; i++) teams[i % k].push(arr[i]);
+  var h = "";
+  for (i = 0; i < k; i++) h += "<div class=\"team-box\"><b>Team " + (i + 1) + "</b><br>" + escHtml(teams[i].join(", ")) + "</div>";
+  out("ts-out", h); }
+function rnLottery() { var n = Math.max(1, Math.min(20, _n("lt-n") || 6)); var mx = Math.max(2, _n("lt-max") || 59);
+  if (n > mx) { out("lt-out", "You can't draw " + n + " unique numbers from a range of " + mx + ".", "err"); return; }
+  var pool = []; for (var i = 1; i <= mx; i++) pool.push(i);
+  var pick = [];
+  for (i = 0; i < n; i++) { var j = Math.floor(Math.random() * pool.length); pick.push(pool[j]); pool.splice(j, 1); }
+  pick.sort(function (a, b) { return a - b; });
+  out("lt-out", "<b>" + pick.join(" \u00b7 ") + "</b>"); }
+function rnCountry() { var p = RN_COUNTRIES[Math.floor(Math.random() * RN_COUNTRIES.length)].split("|");
+  out("co-out", "<b>" + p[0] + "</b><br><span class=\"dim\">" + p[1] + "</span>"); }
+function rnQuote() { var q = RN_QUOTES[Math.floor(Math.random() * RN_QUOTES.length)];
+  out("qt-out", "\u201c" + q[0] + "\u201d<br><span class=\"dim\">\u2014 " + q[1] + "</span>"); }
+
+/* ---------- Date engine ---------- */
+function dtAddDays() { var d = _v("ad-date"), n = _n("ad-n");
+  if (!d || n === null) { out("ad-out", "Pick a date and enter a number of days.", "err"); return; }
+  var r = pISO(d); r.setDate(r.getDate() + n);
+  var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  out("ad-out", "<b>" + dISO(r) + "</b><br>" + days[r.getDay()] + ", " + r.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })); }
+function dtDow() { var d = _v("dw-date");
+  if (!d) { out("dw-out", "Pick a date first.", "err"); return; }
+  var r = pISO(d); var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  var start = new Date(r.getFullYear(), 0, 1);
+  var doy = Math.floor((r - start) / 86400000) + 1;
+  out("dw-out", "<b>" + days[r.getDay()] + "</b><br>" + r.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) + " &nbsp;\u00b7&nbsp; day " + doy + " of " + r.getFullYear()); }
+function dtWeekNum() { var d = _v("wn-date");
+  if (!d) { out("wn-out", "Pick a date first.", "err"); return; }
+  var r = pISO(d);
+  var t = new Date(Date.UTC(r.getFullYear(), r.getMonth(), r.getDate()));
+  var day = (t.getUTCDay() + 6) % 7;
+  t.setUTCDate(t.getUTCDate() - day + 3);
+  var firstThu = new Date(Date.UTC(t.getUTCFullYear(), 0, 4));
+  var fd = (firstThu.getUTCDay() + 6) % 7;
+  firstThu.setUTCDate(firstThu.getUTCDate() - fd + 3);
+  var wk = 1 + Math.round((t - firstThu) / (7 * 86400000));
+  out("wn-out", "<b>Week " + wk + "</b> of " + t.getUTCFullYear() + "<br><span class=\"dim\">ISO-8601 numbering (weeks start Monday; week 1 holds the first Thursday)</span>"); }
+function dtLeap() { var y = _n("lp-y");
+  if (y === null || Math.floor(y) !== y) { out("lp-out", "Enter a whole year.", "err"); return; }
+  var isL = (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
+  var why = isL ? ((y % 400 === 0 && y % 100 === 0) ? "divisible by 400, so the century exception does not apply" : "divisible by 4 and not by 100") : ((y % 100 === 0) ? "a century year not divisible by 400" : "not divisible by 4");
+  var next = [];
+  var yy = y;
+  while (next.length < 5) { yy++; if ((yy % 4 === 0 && yy % 100 !== 0) || yy % 400 === 0) next.push(yy); }
+  out("lp-out", y + " is <b>" + (isL ? "a leap year" : "not a leap year") + "</b> \u2014 " + why + ".<br>February " + y + ": " + (isL ? 29 : 28) + " days<br>Next leap years: " + next.join(", ")); }
+function dtS2Hms() { var s = _n("s2-sec");
+  if (s === null || s < 0) { out("s2-out", "Enter a number of seconds (0 or more).", "err"); return; }
+  s = Math.round(s);
+  var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  out("s2-out", "<b>" + h + ":" + String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0") + "</b><br>" + nfmt(h, 0) + " hours &nbsp;\u00b7&nbsp; " + m + " minutes &nbsp;\u00b7&nbsp; " + sec + " seconds"); }
+function dtHms2S() { var h = _n("h2-h"), m = _n("h2-m"), s = _n("h2-s");
+  if (h === null || m === null || s === null) { out("h2-out", "Enter all three fields (0 is fine).", "err"); return; }
+  out("h2-out", "<b>" + nfmt(h * 3600 + m * 60 + s, 0) + "</b> seconds"); }
+function dtMilitary() { var t = _v("mt-tv");
+  if (!t) { out("mt-out", "Pick a time first.", "err"); return; }
+  var p = t.split(":"), h = +p[0], m = +p[1];
+  var ap = h >= 12 ? "PM" : "AM";
+  var h12 = h % 12; if (h12 === 0) h12 = 12;
+  out("mt-out", "<b>" + t + "</b> in 24-hour time = <b>" + h12 + ":" + String(m).padStart(2, "0") + " " + ap + "</b> in 12-hour time"); }
+function dtMilRev() { var t = _v("mt24");
+  var o = $("mt-out2"); if (!o) return;
+  var m = t.match(/^\s*(\d{1,2}):(\d{2})\s*$/);
+  if (!m) { o.innerHTML = '<span class="dim">Enter 24-hour time as HH:MM, e.g. 21:15.</span>'; return; }
+  var h = +m[1], mi = +m[2];
+  if (h > 23 || mi > 59) { o.innerHTML = '<span class="dim">Hours 0\u201323, minutes 0\u201359.</span>'; return; }
+  var ap = h >= 12 ? "PM" : "AM";
+  var h12 = h % 12; if (h12 === 0) h12 = 12;
+  o.innerHTML = "<b>" + t + "</b> = <b>" + h12 + ":" + String(mi).padStart(2, "0") + " " + ap + "</b>"; }
+function dtBizDays() { var a = _v("bd-a"), b = _v("bd-b");
+  if (!a || !b) { out("bd-out", "Pick both dates.", "err"); return; }
+  var d1 = pISO(a), d2 = pISO(b);
+  if (d2 < d1) { var tmp = d1; d1 = d2; d2 = tmp; }
+  var biz = 0, cal = Math.round((d2 - d1) / 86400000);
+  var cur = new Date(d1);
+  for (var i = 0; i < cal; i++) { var dow = cur.getDay(); if (dow !== 0 && dow !== 6) biz++; cur.setDate(cur.getDate() + 1); }
+  out("bd-out", "<b>" + biz + " business days</b> (Mon\u2013Fri) between " + a + " and " + b + "<br>Calendar span: " + cal + " days &nbsp;\u00b7&nbsp; Weekend days: " + (cal - biz)); }
+
+/* ---------- MEGA init ---------- */
+(function () {
+  if ($("uc-in") && window.UC_CONF) {
+    $("uc-in").addEventListener("input", ucRun);
+    if ($("uc-swap")) $("uc-swap").addEventListener("click", ucSwap);
+    if ($("uc-copy")) $("uc-copy").addEventListener("click", ucCopy);
+    ucRun();
+  }
+  if ($("cx-in")) cxHex();
+  if ($("cr-r")) cxRgb();
+  if ($("ch-in")) cxHexHsl();
+  if ($("rh-r")) cxRgbHsl();
+  if ($("sh-in")) cxShades();
+  if ($("cp-in")) cxComp();
+  if ($("ct-fg")) cxContrast();
+  if ($("iv-in")) cxInvert();
+  if ($("gs-in")) cxGray();
+  var today = new Date();
+  function setD(id, d) { var el = $(id); if (el && !el.value) el.value = dISO(d); }
+  setD("rd-a", new Date(today.getFullYear(), 0, 1));
+  setD("rd-b", new Date(today.getFullYear(), 11, 31));
+  setD("ad-date", today);
+  setD("dw-date", today);
+  setD("wn-date", today);
+  setD("bd-a", new Date(today.getFullYear(), today.getMonth(), 1));
+  setD("bd-b", today);
 })();
