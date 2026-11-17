@@ -1304,6 +1304,18 @@ ul.refs a { color: var(--accent2); }
 .lr2-stats:empty { display: none; }
 .lr2-out { max-height: 380px; overflow: auto; white-space: pre-wrap; }
 .lr2-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ===== Typing Speed Test (advanced) ===== */
+.ty2-bar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 14px; }
+.ty2-durs { display: flex; gap: 6px; }
+.ty2-dur { background: var(--card2, rgba(255,255,255,.04)); border: 1px solid var(--line); color: var(--soft); border-radius: 10px; padding: 7px 14px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all .15s; }
+.ty2-dur.active { border-color: var(--accent); color: var(--accent); background: rgba(255,122,0,.08); }
+.ty2-timer { font-size: 26px; font-weight: 800; font-variant-numeric: tabular-nums; margin-left: auto; }
+.ty2-timer.ty2-low { color: #ef4444; }
+.ty2-words { max-height: 150px; overflow: hidden; }
+.ty2-live { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; min-height: 30px; }
+.ty2-live .stat { background: var(--card2, rgba(255,255,255,.04)); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; }
+.ty2-done { font-size: 15px; font-weight: 700; color: var(--accent); }
 </style>
 </head>
 <body>

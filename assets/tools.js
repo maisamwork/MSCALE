@@ -2146,43 +2146,102 @@ function ttsStop() { if ("speechSynthesis" in window) speechSynthesis.cancel(); 
 
 /* ---- Typing Speed Test ---- */
 const TY_WORDS = "the of and to in is you that it he was for on are as with his they at be this have from or one had by word but not what all were we when your can said there use an each which she do how their if will up other about out many then them these so some her would make like him into time has look two more write go see number no way could people my than first water been call who oil its now find long down day did get come made may part".split(" ");
-let tyList = [], tyIdx = 0, tyStart = 0, tyDone = false, tyErrChars = 0, tyTyped = 0;
+let tyList = [], tyIdx = 0, tyStart = 0, tyDone = false, tyErrWords = 0, tyTypedWords = 0, tyCorrectWords = 0;
+let ty2Sec = 30, ty2Tick = null, ty2End = 0;
 function tyRender() {
   document.getElementById("ty-words").innerHTML = tyList
     .map((w, i) => `<span class="ty-w${i < tyIdx ? " ty-done" : i === tyIdx ? " ty-act" : ""}">${w}</span>`)
     .join(" ");
 }
-function tyNew() {
-  tyList = Array.from({ length: 25 }, () => TY_WORDS[Math.floor(Math.random() * TY_WORDS.length)]);
-  tyIdx = 0; tyStart = 0; tyDone = false; tyErrChars = 0; tyTyped = 0;
+function ty2Dur(sec, btn) {
+  ty2Sec = sec;
+  document.querySelectorAll(".ty2-dur").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  ty2New();
+}
+function ty2Best() {
+  try { return parseInt(localStorage.getItem("mscale-tybest-" + ty2Sec)) || 0; } catch (e) { return 0; }
+}
+function ty2BestShow() {
+  const b = ty2Best();
+  document.getElementById("ty2-best").textContent = b ? `Your best at ${ty2Sec}s: ${b} WPM` : "";
+}
+function ty2TimerDisp() {
+  const left = ty2End ? Math.max(0, (ty2End - Date.now()) / 1000) : ty2Sec;
+  document.getElementById("ty2-timer").textContent = tyDone ? "0.0" : left.toFixed(1);
+  document.getElementById("ty2-timer").classList.toggle("ty2-low", ty2End > 0 && left < 5 && !tyDone);
+}
+function ty2New() {
+  tyList = Array.from({ length: 200 }, () => TY_WORDS[Math.floor(Math.random() * TY_WORDS.length)]);
+  tyIdx = 0; tyStart = 0; tyDone = false; tyErrWords = 0; tyTypedWords = 0; tyCorrectWords = 0;
+  clearInterval(ty2Tick);
+  ty2End = 0;
   tyRender();
   document.getElementById("ty-in").value = "";
   document.getElementById("ty-stats").innerHTML = "";
+  document.getElementById("ty2-live").innerHTML = "";
+  ty2TimerDisp();
+  ty2BestShow();
+}
+function ty2Live() {
+  const mins = tyStart ? (Date.now() - tyStart) / 60000 : 0;
+  const wpm = mins > 0 ? Math.round(tyCorrectWords / 5 / mins) : 0;
+  const acc = tyTypedWords ? Math.round(100 * tyCorrectWords / tyTypedWords) : 100;
+  document.getElementById("ty2-live").innerHTML =
+    `<div class="stat"><b>${wpm}</b><span>WPM</span></div>
+     <div class="stat"><b>${acc}%</b><span>Accuracy</span></div>
+     <div class="stat"><b>${tyIdx}</b><span>Words</span></div>`;
 }
 function tyInput() {
   const inp = document.getElementById("ty-in");
   if (tyDone) return;
-  if (!tyStart) tyStart = Date.now();
+  if (!tyStart) {
+    tyStart = Date.now();
+    ty2End = tyStart + ty2Sec * 1000;
+    ty2Tick = setInterval(() => {
+      ty2TimerDisp();
+      ty2Live();
+      if (Date.now() >= ty2End) ty2Finish();
+    }, 100);
+  }
   const v = inp.value;
   if (v.endsWith(" ")) {
     const word = v.trim();
-    tyTyped += word.length + 1;
-    if (word !== tyList[tyIdx]) tyErrChars += word.length + 1;
+    if (!word) { inp.value = ""; return; }
+    tyTypedWords++;
+    if (word === tyList[tyIdx]) tyCorrectWords++;
+    else tyErrWords++;
     tyIdx++;
     inp.value = "";
-    if (tyIdx >= tyList.length) { tyDone = true; tyRender(); tyFinish(); return; }
+    if (tyIdx >= tyList.length) { ty2Finish(); return; }
   }
   tyRender();
+  ty2Live();
 }
-function tyFinish() {
-  const mins = (Date.now() - tyStart) / 60000;
-  const correct = Math.max(0, tyTyped - tyErrChars);
-  const wpm = mins > 0 ? Math.round(correct / 5 / mins) : 0;
-  const acc = tyTyped ? Math.round(100 * correct / tyTyped) : 0;
+function ty2Finish() {
+  if (tyDone) return;
+  tyDone = true;
+  clearInterval(ty2Tick);
+  ty2TimerDisp();
+  const secs = tyStart ? (Math.min(Date.now(), ty2End) - tyStart) / 1000 : 0;
+  const mins = secs / 60;
+  const wpm = mins > 0 ? Math.round(tyCorrectWords / 5 / mins) : 0;
+  const acc = tyTypedWords ? Math.round(100 * tyCorrectWords / tyTypedWords) : 0;
+  let bestNote = "";
+  try {
+    const key = "mscale-tybest-" + ty2Sec;
+    const best = parseInt(localStorage.getItem(key)) || 0;
+    if (wpm > best) { localStorage.setItem(key, String(wpm)); bestNote = " \u00b7 New personal best!"; }
+  } catch (e) {}
   document.getElementById("ty-stats").innerHTML =
     `<div class="stat"><b>${wpm}</b><span>Words per minute</span></div>
      <div class="stat"><b>${acc}%</b><span>Accuracy</span></div>
-     <div class="stat"><b>${((Date.now() - tyStart) / 1000).toFixed(1)}s</b><span>Time</span></div>`;
+     <div class="stat"><b>${tyCorrectWords}</b><span>Correct words</span></div>
+     <div class="stat"><b>${tyErrWords}</b><span>Wrong words</span></div>
+     <div class="stat"><b>${secs.toFixed(1)}s</b><span>Time</span></div>
+     <div class="stat"><b>${(tyCorrectWords / Math.max(1, secs)).toFixed(1)}</b><span>WPM raw (words/sec)</span></div>`;
+  document.getElementById("ty2-live").innerHTML = `<p class="ty2-done">${wpm > 0 ? `Done \u2014 ${wpm} WPM at ${acc}% accuracy${bestNote}` : "Time's up \u2014 type a few words next time!"}</p>`;
+  ty2BestShow();
 }
 
 /* ---- Pomodoro Timer ---- */
@@ -2262,7 +2321,7 @@ function urlParse() {
 (function () {
   if (document.getElementById("gr-prev")) grDraw();
   if (document.getElementById("bs-box")) bsDraw();
-  if (document.getElementById("ty-words")) tyNew();
+  if (document.getElementById("ty-words")) ty2New();
 })();
 
 /* ================= MEGA engines (converters, calculators, text, color, random, date) ================= */

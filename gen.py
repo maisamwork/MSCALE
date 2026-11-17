@@ -329,12 +329,23 @@ TOOL_BODIES = {
   <div id="tts-msg" class="result"></div>
 </div>""",
 "typing-speed-test": """
-<div class="panel">
-  <div id="ty-words" class="ty-words"></div>
-  <input id="ty-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Click here and start typing\u2026" oninput="tyInput()">
+<div class="panel ty2">
+  <div class="ty2-bar">
+    <div class="ty2-durs">
+      <button class="ty2-dur" data-sec="15" onclick="ty2Dur(15, this)">15s</button>
+      <button class="ty2-dur active" data-sec="30" onclick="ty2Dur(30, this)">30s</button>
+      <button class="ty2-dur" data-sec="60" onclick="ty2Dur(60, this)">60s</button>
+    </div>
+    <div class="ty2-timer" id="ty2-timer">30.0</div>
+    <button class="btn ghost sm" onclick="ty2New()">[[ic zap]] Restart</button>
+  </div>
+  <div id="ty-words" class="ty-words ty2-words"></div>
+  <input id="ty-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Click here and start typing&hellip;" oninput="tyInput()">
+  <div id="ty2-live" class="ty2-live"></div>
   <div id="ty-stats" class="stat-row"></div>
-  <button class="btn ghost" onclick="tyNew()">Restart</button>
+  <p class="tool-note" id="ty2-best"></p>
 </div>""",
+
 "pomodoro-timer": """
 <div class="panel">
   <div id="po-mode" class="tool-note" style="text-align:center">Focus session</div>

@@ -41,11 +41,21 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Typing Speed Test", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Measure your typing speed and accuracy with a fresh random word stream, character-level feedback and instant WPM scoring.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg><h1>Typing Speed Test</h1></div><p>Measure your typing speed and accuracy with a fresh random word stream, character-level feedback and instant WPM scoring.</p></div>
 
-<div class="panel">
-  <div id="ty-words" class="ty-words"></div>
-  <input id="ty-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Click here and start typing…" oninput="tyInput()">
+<div class="panel ty2">
+  <div class="ty2-bar">
+    <div class="ty2-durs">
+      <button class="ty2-dur" data-sec="15" onclick="ty2Dur(15, this)">15s</button>
+      <button class="ty2-dur active" data-sec="30" onclick="ty2Dur(30, this)">30s</button>
+      <button class="ty2-dur" data-sec="60" onclick="ty2Dur(60, this)">60s</button>
+    </div>
+    <div class="ty2-timer" id="ty2-timer">30.0</div>
+    <button class="btn ghost sm" onclick="ty2New()"><svg class="ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Restart</button>
+  </div>
+  <div id="ty-words" class="ty-words ty2-words"></div>
+  <input id="ty-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Click here and start typing&hellip;" oninput="tyInput()">
+  <div id="ty2-live" class="ty2-live"></div>
   <div id="ty-stats" class="stat-row"></div>
-  <button class="btn ghost" onclick="tyNew()">Restart</button>
+  <p class="tool-note" id="ty2-best"></p>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
