@@ -147,15 +147,38 @@ function initToolsPage() {
     grid.innerHTML = slice.map(function (t) {
       return toolCardHtml(t, catName[t.cat] || t.cat, hueFor[t.cat] || hueOf(t.cat));
     }).join("");
-    document.getElementById("tools-count").textContent =
-      "Showing " + slice.length + " of " + list.length + " tools" +
-      (state.cat !== "all" ? " in " + (catName[state.cat] || state.cat) : "");
+    var counting = document.getElementById("tools-count");
+    if (counting) {
+      var filteredActive = state.q || state.cat !== "all";
+      counting.innerHTML = filteredActive
+        ? 'Showing <b>' + slice.length + '</b> of <b>' + list.length + '</b> tools' + (state.cat !== "all" ? " in " + escHtml2(catName[state.cat] || state.cat) : "")
+        : 'Showing all <b>' + list.length + '</b> tools';
+    }
     var more = document.getElementById("tools-more");
     more.style.display = list.length > state.shown ? "inline-block" : "none";
   }
 
   var input = document.getElementById("tools-search");
-  if (input) input.addEventListener("input", function () { state.q = input.value; render(); });
+  if (input) input.addEventListener("input", function () { state.q = input.value; syncSearchUi(); render(); });
+  function syncSearchUi() {
+    var clear = document.getElementById("tools-clear");
+    var kbd = document.querySelector(".search-kbd");
+    if (clear) clear.classList.toggle("show", !!input.value);
+    if (kbd) kbd.style.display = input.value ? "none" : "";
+  }
+  var clearBtn = document.getElementById("tools-clear");
+  if (clearBtn) clearBtn.addEventListener("click", function () {
+    input.value = ""; state.q = ""; syncSearchUi(); render(); input.focus();
+  });
+  document.addEventListener("keydown", function (e) {
+    var tag = (e.target.tagName || "").toLowerCase();
+    var typing = tag === "input" || tag === "textarea" || tag === "select";
+    if ((e.key === "/" && !typing) || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k")) {
+      e.preventDefault();
+      input.focus();
+      input.select();
+    }
+  });
   var sort = document.getElementById("tools-sort");
   if (sort) sort.addEventListener("change", function () { state.sort = sort.value; render(); });
   var side = document.getElementById("tools-side");

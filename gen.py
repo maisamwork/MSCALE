@@ -13,6 +13,8 @@ BRAND = 'MSCALE<span>Tools</span>'
 ICONS = {
     "wrench": '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
     "search": '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+    "x": '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    "arrow-down-up": '<path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="m21 8-4-4-4 4"/><path d="M17 4v16"/>',
     "calculators": '<rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/>',
     "text-tools": '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>',
     "developer-tools": '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
@@ -1472,20 +1474,28 @@ def tools_index_html(catalog):
 </div>
 <div class="cat-chips" id="cat-chips">
   <span class="chips-label">Browse by category</span>
-  <button class="chip active" data-cat="all">All</button>
-  {"".join(f"<button class='chip' data-cat='{slug}'><span class='side-dot' style='background:{hue_of(slug)}'></span>{cat_name[slug]}</button>" for slug in CAT_PAGES)}
+  <button class="chip active" data-cat="all"><span class="chip-ic" style="color:var(--accent)">{svg_icon("wrench")}</span>All</button>
+  {"".join(f"<button class='chip' data-cat='{slug}'><span class='chip-ic' style='color:{hue_of(slug)}'>{svg_icon(slug)}</span>{cat_name[slug]}</button>" for slug in CAT_PAGES)}
 </div>
 {ad_slot("tools-top")}
 <div class="tools-layout">
   <aside class="tools-side" id="tools-side">{side}</aside>
   <div class="tools-main">
     <div class="tools-controls">
-      <div class="search-wrap">{svg_icon("search", "search-ic")}<input id="tools-search" placeholder="Search tools (e.g. 'word count', 'password')" /></div>
-      <select id="tools-sort" aria-label="Sort tools">
-        <option value="pop">Popular</option>
-        <option value="az">A to Z</option>
-        <option value="za">Z to A</option>
-      </select>
+      <div class="search-wrap big-search">
+        {svg_icon("search", "search-ic")}
+        <input id="tools-search" placeholder="Search {total_live + total_catalog:,} tools (e.g. 'word counter', 'password')" />
+        <button id="tools-clear" class="search-clear" type="button" aria-label="Clear search">{svg_icon("x")}</button>
+        <kbd class="search-kbd" aria-hidden="true">/</kbd>
+      </div>
+      <div class="sort-wrap">
+        {svg_icon("arrow-down-up", "sort-ic")}
+        <select id="tools-sort" aria-label="Sort tools">
+          <option value="pop">Popular first</option>
+          <option value="az">A to Z</option>
+          <option value="za">Z to A</option>
+        </select>
+      </div>
     </div>
     <p id="tools-count" class="tools-count"></p>
     <div class="grid" id="tools-grid"></div>
