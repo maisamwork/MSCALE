@@ -8,15 +8,92 @@ function out(id, html, cls) {
 }
 
 /* ---------- Calculators ---------- */
-function pctCalc() {
-  const x = parseFloat($("pct-x").value), y = parseFloat($("pct-y").value);
-  if (isNaN(x) || isNaN(y)) return;
-  $("pct-out").innerHTML =
-    `<b>${x}%</b> of <b>${y}</b> = <b>${+(x / 100 * y).toFixed(6)}</b><br>` +
-    `<b>${x}</b> is <b>${y === 0 ? "∞" : +(x / y * 100).toFixed(4)}%</b> of <b>${y}</b><br>` +
-    `Change from <b>${x}</b> to <b>${y}</b>: <b>${x === 0 ? "∞" : +((y - x) / Math.abs(x) * 100).toFixed(4)}%</b>`;
-  $("pct-out").className = "result";
+let PCT2_MODE = "of", PCT2_ADD = true;
+function pct2N(id) { const v = parseFloat($(id).value); return isNaN(v) ? null : v; }
+function pct2F(n, d) { return (+n).toLocaleString(undefined, { maximumFractionDigits: d === undefined ? 4 : d }); }
+function pct2Mode(m, btn) {
+  PCT2_MODE = m;
+  document.querySelectorAll(".pct2-pane").forEach(p => { p.style.display = "none"; });
+  $("pct2-p-" + m).style.display = "block";
+  if (btn) {
+    document.querySelectorAll(".pct2-tabs .pg-tab").forEach(t => t.classList.remove("active"));
+    btn.classList.add("active");
+  }
+  pct2Run();
 }
+function pct2Dir(add, btn) {
+  PCT2_ADD = add;
+  $("pct2-add").classList.toggle("active", add);
+  $("pct2-sub").classList.toggle("active", !add);
+  pct2Run();
+}
+function pct2Big(main, sub) {
+  $("pct2-big").innerHTML = main + (sub ? `<span class="pct2-big-sub">${sub}</span>` : "");
+}
+function pct2Steps(lines) {
+  $("pct2-steps").innerHTML = lines.map(l => `<div class="pct2-step">${l}</div>`).join("");
+}
+function pct2Run() {
+  const ex = $("pct2-extra");
+  if (PCT2_MODE === "of") {
+    const p = pct2N("pct2-of-p"), n = pct2N("pct2-of-n");
+    if (p === null || n === null) { pct2Big("\u2014", "Fill in both values"); ex.innerHTML = ""; return; }
+    const r = p / 100 * n;
+    pct2Big(pct2F(r), `${pct2F(p)}% of ${pct2F(n)}`);
+    pct2Steps([
+      `<b>Formula:</b> result = (percent \u00f7 100) \u00d7 number`,
+      `= (${pct2F(p)} \u00f7 100) \u00d7 ${pct2F(n)} = ${pct2F(p / 100)} \u00d7 ${pct2F(n)} = <b>${pct2F(r)}</b>`
+    ]);
+    ex.innerHTML = `<span class="pct2-chip">${pct2F(n)} \u2212 ${pct2F(r)} = ${pct2F(n - r)} (remaining)</span><span class="pct2-chip">${pct2F(n)} + ${pct2F(r)} = ${pct2F(n + r)} (total)</span>`;
+  } else if (PCT2_MODE === "iswhat") {
+    const x = pct2N("pct2-iw-x"), y = pct2N("pct2-iw-y");
+    if (x === null || y === null) { pct2Big("\u2014", "Fill in both values"); ex.innerHTML = ""; return; }
+    if (y === 0) { pct2Big("\u2014", "Y cannot be zero"); ex.innerHTML = ""; return; }
+    const r = x / y * 100;
+    pct2Big(pct2F(r) + "%", `${pct2F(x)} out of ${pct2F(y)}`);
+    pct2Steps([
+      `<b>Formula:</b> percent = (X \u00f7 Y) \u00d7 100`,
+      `= (${pct2F(x)} \u00f7 ${pct2F(y)}) \u00d7 100 = ${pct2F(x / y, 6)} \u00d7 100 = <b>${pct2F(r)}%</b>`
+    ]);
+    ex.innerHTML = `<span class="pct2-chip">Fraction: ${pct2F(x)} / ${pct2F(y)} = ${pct2F(x / y, 4)}</span><span class="pct2-chip">Missing to 100%: ${pct2F(Math.max(0, y - x))}</span>`;
+  } else if (PCT2_MODE === "change") {
+    const a = pct2N("pct2-ch-a"), b = pct2N("pct2-ch-b");
+    if (a === null || b === null) { pct2Big("\u2014", "Fill in both values"); ex.innerHTML = ""; return; }
+    if (a === 0) { pct2Big("\u2014", "Old value cannot be zero"); ex.innerHTML = ""; return; }
+    const ch = (b - a) / Math.abs(a) * 100;
+    const up = ch >= 0;
+    pct2Big((up ? "+" : "") + pct2F(ch) + "%", `${up ? "increase" : "decrease"} from ${pct2F(a)} to ${pct2F(b)}`, up);
+    pct2Big(`<span class="${up ? "pct2-up" : "pct2-down"}">${up ? "\u2191" : "\u2193"} ${up ? "+" : ""}${pct2F(ch)}%</span>`, `${up ? "increase" : "decrease"} from ${pct2F(a)} to ${pct2F(b)}`);
+    pct2Steps([
+      `<b>Formula:</b> change = (new \u2212 old) \u00f7 |old| \u00d7 100`,
+      `= (${pct2F(b)} \u2212 ${pct2F(a)}) \u00f7 ${pct2F(Math.abs(a))} \u00d7 100 = ${pct2F(b - a)} \u00f7 ${pct2F(Math.abs(a))} \u00d7 100 = <b>${pct2F(ch)}%</b>`
+    ]);
+    ex.innerHTML = `<span class="pct2-chip">Difference: ${pct2F(b - a)}</span><span class="pct2-chip">Multiplier: \u00d7${pct2F(b / a, 4)}</span>`;
+  } else if (PCT2_MODE === "addsub") {
+    const n = pct2N("pct2-as-n"), p = pct2N("pct2-as-p");
+    if (n === null || p === null) { pct2Big("\u2014", "Fill in both values"); ex.innerHTML = ""; return; }
+    const part = p / 100 * n;
+    const r = PCT2_ADD ? n + part : n - part;
+    pct2Big(pct2F(r), `${PCT2_ADD ? "+" : "\u2212"}${pct2F(p)}% on ${pct2F(n)}`);
+    pct2Steps([
+      `<b>Formula:</b> ${PCT2_ADD ? "result = number \u00d7 (1 + percent \u00f7 100)" : "result = number \u00d7 (1 \u2212 percent \u00f7 100)"}`,
+      `= ${pct2F(n)} \u00d7 ${PCT2_ADD ? "(1 + " + pct2F(p / 100, 6) + ")" : "(1 \u2212 " + pct2F(p / 100, 6) + ")"} = <b>${pct2F(r)}</b>`
+    ]);
+    ex.innerHTML = `<span class="pct2-chip">${PCT2_ADD ? "Added" : "Removed"}: ${pct2F(part)}</span><span class="pct2-chip">Reverse: ${pct2F(PCT2_ADD ? r / (1 + p / 100) : r / (1 - p / 100))} (original)</span>`;
+  } else {
+    const f = pct2N("pct2-rv-f"), p = pct2N("pct2-rv-p");
+    if (f === null || p === null) { pct2Big("\u2014", "Fill in both values"); ex.innerHTML = ""; return; }
+    if (p === -100) { pct2Big("\u2014", "Percent cannot be \u2212100"); ex.innerHTML = ""; return; }
+    const base = f / (1 + p / 100);
+    pct2Big(pct2F(base), `original before ${pct2F(p)}% was added`);
+    pct2Steps([
+      `<b>Formula:</b> original = final \u00f7 (1 + percent \u00f7 100)`,
+      `= ${pct2F(f)} \u00f7 ${pct2F(1 + p / 100, 6)} = <b>${pct2F(base)}</b>`
+    ]);
+    ex.innerHTML = `<span class="pct2-chip">Added amount: ${pct2F(f - base)}</span><span class="pct2-chip">Proof: ${pct2F(base)} + ${pct2F(base * p / 100)} = ${pct2F(base + base * p / 100)}</span>`;
+  }
+}
+if ($("pct2-of-p")) pct2Run();
 
 function bmiCalc() {
   const w = parseFloat($("bmi-w").value), h = parseFloat($("bmi-h").value) / 100;

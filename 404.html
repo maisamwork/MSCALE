@@ -1200,6 +1200,23 @@ ul.refs a { color: var(--accent2); }
 .jf-tree details[open] > summary::before { transform: rotate(90deg); }
 .jf-tree details[open] > summary { margin-bottom: 2px; }
 .jf-badge { font-size: 10.5px; color: var(--soft); background: var(--line); border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
+
+/* ===== Percentage Calculator (advanced modes) ===== */
+.pct2-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.pct2-pane .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.pct2-dir { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.pct2-dir-btn { background: var(--card2, rgba(255,255,255,.04)); border: 1px solid var(--line); color: var(--soft); border-radius: 10px; padding: 9px 16px; font-weight: 700; font-size: 13.5px; cursor: pointer; transition: all .15s; }
+.pct2-dir-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(255,122,0,.08); }
+.pct2-result { margin: 18px 0 6px; padding: 22px 18px; border-radius: 14px; background: var(--card2, rgba(255,255,255,.04)); border: 1px solid var(--line); text-align: center; font-size: 38px; font-weight: 800; line-height: 1.15; overflow-wrap: break-word; }
+.pct2-big-sub { display: block; font-size: 13.5px; font-weight: 600; color: var(--soft); margin-top: 6px; }
+.pct2-up { color: #22c55e; }
+.pct2-down { color: #ef4444; }
+.pct2-steps { margin: 10px 0 4px; display: flex; flex-direction: column; gap: 6px; }
+.pct2-step { font-size: 13.5px; color: var(--soft); background: var(--card2, rgba(255,255,255,.03)); border-left: 3px solid var(--accent); border-radius: 6px; padding: 8px 12px; overflow-x: auto; }
+.pct2-extra { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.pct2-extra:empty { display: none; }
+.pct2-chip { font-size: 12.5px; font-weight: 600; color: var(--soft); border: 1px solid var(--line); border-radius: 20px; padding: 5px 12px; background: var(--card2, rgba(255,255,255,.03)); }
+@media (max-width: 560px) { .pct2-result { font-size: 28px; } .pct2-pane .row { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>

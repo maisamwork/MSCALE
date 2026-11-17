@@ -604,14 +604,54 @@ TOOL_BODIES = {
   <button class="btn" onclick="invPrint()">Print / Save PDF</button>
 </div>""",
 "percentage-calculator": """
-<div class="panel">
-  <div class="row">
-    <div><label>Percentage (%)</label><input type="number" id="pct-x" value="15" /></div>
-    <div><label>Of number</label><input type="number" id="pct-y" value="200" /></div>
+<div class="panel pct2">
+  <div class="pg-tabs pct2-tabs">
+    <button class="pg-tab active" onclick="pct2Mode('of', this)">% of number</button>
+    <button class="pg-tab" onclick="pct2Mode('iswhat', this)">X is what %</button>
+    <button class="pg-tab" onclick="pct2Mode('change', this)">% change</button>
+    <button class="pg-tab" onclick="pct2Mode('addsub', this)">Add / subtract %</button>
+    <button class="pg-tab" onclick="pct2Mode('reverse', this)">Reverse %</button>
   </div>
-  <button class="btn" onclick="pctCalc()">Calculate</button>
-  <div id="pct-out" class="result">Fill in both values to see results.</div>
+  <div class="pct2-pane" id="pct2-p-of">
+    <div class="row">
+      <div><label>Percentage (%)</label><input type="number" id="pct2-of-p" value="15" oninput="pct2Run()" /></div>
+      <div><label>Of number</label><input type="number" id="pct2-of-n" value="200" oninput="pct2Run()" /></div>
+    </div>
+  </div>
+  <div class="pct2-pane" id="pct2-p-iswhat" style="display:none">
+    <div class="row">
+      <div><label>Value X</label><input type="number" id="pct2-iw-x" value="30" oninput="pct2Run()" /></div>
+      <div><label>Is what % of Y</label><input type="number" id="pct2-iw-y" value="150" oninput="pct2Run()" /></div>
+    </div>
+  </div>
+  <div class="pct2-pane" id="pct2-p-change" style="display:none">
+    <div class="row">
+      <div><label>From (old value)</label><input type="number" id="pct2-ch-a" value="80" oninput="pct2Run()" /></div>
+      <div><label>To (new value)</label><input type="number" id="pct2-ch-b" value="100" oninput="pct2Run()" /></div>
+    </div>
+  </div>
+  <div class="pct2-pane" id="pct2-p-addsub" style="display:none">
+    <div class="row">
+      <div><label>Number</label><input type="number" id="pct2-as-n" value="250" oninput="pct2Run()" /></div>
+      <div><label>Percent (%)</label><input type="number" id="pct2-as-p" value="20" oninput="pct2Run()" /></div>
+    </div>
+    <div class="pct2-dir">
+      <button class="pct2-dir-btn active" id="pct2-add" onclick="pct2Dir(true, this)">+ Add (e.g. tax)</button>
+      <button class="pct2-dir-btn" id="pct2-sub" onclick="pct2Dir(false, this)">&minus; Subtract (e.g. discount)</button>
+    </div>
+  </div>
+  <div class="pct2-pane" id="pct2-p-reverse" style="display:none">
+    <div class="row">
+      <div><label>Final amount</label><input type="number" id="pct2-rv-f" value="120" oninput="pct2Run()" /></div>
+      <div><label>Percent added (%)</label><input type="number" id="pct2-rv-p" value="20" oninput="pct2Run()" /></div>
+    </div>
+    <p class="tool-note">Find the original number before a percentage was added &mdash; e.g. a price before VAT.</p>
+  </div>
+  <div class="pct2-result" id="pct2-big">&mdash;</div>
+  <div class="pct2-steps" id="pct2-steps"></div>
+  <div class="pct2-extra" id="pct2-extra"></div>
 </div>""",
+
 "bmi-calculator": """
 <div class="panel">
   <div class="row">
