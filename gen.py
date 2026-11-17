@@ -800,21 +800,19 @@ TOOL_BODIES = {
   <div id="uuid-out" class="result mono"></div>
 </div>""",
 "unit-converter": """
-<div class="panel">
-  <label>Category</label>
-  <select id="uc-cat" onchange="unitCatChange()">
-    <option value="length">Length</option>
-    <option value="weight">Weight</option>
-    <option value="data">Data size</option>
-    <option value="temp">Temperature</option>
-  </select>
-  <div class="row">
-    <div><label>Value</label><input type="number" id="uc-val" value="1" oninput="unitConvert()" /></div>
-    <div><label>From</label><select id="uc-from" onchange="unitConvert()"></select></div>
-    <div><label>To</label><select id="uc-to" onchange="unitConvert()"></select></div>
+<div class="panel uc2">
+  <div class="uc2-cats" id="uc2-cats"></div>
+  <div class="row uc2-row">
+    <div class="uc2-val"><label>Value</label><input type="number" id="uc2-val" value="1" oninput="uc2Run()" /></div>
+    <div class="uc2-from"><label>From</label><select id="uc2-from" onchange="uc2Run()"></select></div>
+    <button class="uc2-swap" title="Swap units" onclick="uc2Swap()">[[ic arrow-right]]</button>
+    <div class="uc2-to"><label>To</label><select id="uc2-to" onchange="uc2Run()"></select></div>
   </div>
-  <div id="uc-out" class="result big"></div>
+  <div class="uc2-result" id="uc2-big">&mdash;</div>
+  <p class="tool-note">Same value in every unit of this category:</p>
+  <div id="uc2-table" class="uc2-table"></div>
 </div>""",
+
 "timestamp-converter": """
 <div class="panel">
   <p>Current Unix time: <b id="ts-now">…</b></p>

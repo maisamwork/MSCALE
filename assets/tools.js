@@ -500,34 +500,77 @@ function uuidGen() {
 }
 
 /* ---------- Converters ---------- */
-const UNITS = {
-  length: { m: 1, km: 1000, cm: 0.01, mm: 0.001, mi: 1609.344, yd: 0.9144, ft: 0.3048, in: 0.0254, "nmi": 1852 },
-  weight: { kg: 1, g: 0.001, mg: 1e-6, t: 1000, lb: 0.45359237, oz: 0.028349523, st: 6.35029318 },
-  data: { B: 1, KB: 1024, MB: 1048576, GB: 1073741824, TB: 1099511627776 },
+const UC2 = {
+  length: { label: "Length", units: { "mm": 0.001, "cm": 0.01, "m": 1, "km": 1000, "in": 0.0254, "ft": 0.3048, "yd": 0.9144, "mi": 1609.344, "nmi": 1852 } },
+  weight: { label: "Weight", units: { "mg": 1e-6, "g": 0.001, "kg": 1, "t": 1000, "oz": 0.028349523125, "lb": 0.45359237, "st": 6.35029318 } },
+  temp: { label: "Temperature", units: { "\u00b0C": 1, "\u00b0F": 1, "K": 1 } },
+  data: { label: "Data size", units: { "B": 1, "KB": 1024, "MB": 1048576, "GB": 1073741824, "TB": 1099511627776 } },
+  area: { label: "Area", units: { "cm\u00b2": 0.0001, "m\u00b2": 1, "ha": 10000, "km\u00b2": 1e6, "in\u00b2": 0.00064516, "ft\u00b2": 0.09290304, "acre": 4046.8564224, "mi\u00b2": 2589988.110336 } },
+  volume: { label: "Volume", units: { "ml": 0.001, "l": 1, "m\u00b3": 1000, "tsp": 0.00492892159375, "tbsp": 0.01478676478125, "fl oz": 0.0295735295625, "cup": 0.2365882365, "pint": 0.473176473, "quart": 0.946352946, "gallon": 3.785411784 } },
+  speed: { label: "Speed", units: { "m/s": 1, "km/h": 0.277777778, "mph": 0.44704, "kn": 0.514444444, "ft/s": 0.3048 } },
+  time: { label: "Time", units: { "ms": 0.001, "s": 1, "min": 60, "h": 3600, "day": 86400, "week": 604800, "month": 2629746, "year": 31556952 } },
 };
-function unitConvert() {
-  const cat = $("uc-cat").value, v = parseFloat($("uc-val").value);
-  const from = $("uc-from").value, to = $("uc-to").value;
-  const cats = Object.keys(UNITS);
-  if (!cats.includes(cat)) return tempConvert(v, from, to);
-  if (isNaN(v)) return;
-  out("uc-out", `${v} ${from} = <b>${+(v * UNITS[cat][from] / UNITS[cat][to]).toPrecision(10)}</b> ${to}`);
+let UC2_CAT = "length";
+function uc2ToBase(cat, v, u) {
+  if (cat === "temp") {
+    if (u === "\u00b0C") return v;
+    if (u === "\u00b0F") return (v - 32) * 5 / 9;
+    return v - 273.15;
+  }
+  return v * UC2[cat].units[u];
 }
-function tempConvert(v, from, to) {
-  if (isNaN(v)) return;
-  let c = from === "°C" ? v : from === "°F" ? (v - 32) * 5 / 9 : v - 273.15;
-  const r = to === "°C" ? c : to === "°F" ? c * 9 / 5 + 32 : c + 273.15;
-  out("uc-out", `${v} ${from} = <b>${+r.toFixed(4)}</b> ${to}`);
+function uc2FromBase(cat, c, u) {
+  if (cat === "temp") {
+    if (u === "\u00b0C") return c;
+    if (u === "\u00b0F") return c * 9 / 5 + 32;
+    return c + 273.15;
+  }
+  return c / UC2[cat].units[u];
 }
-function unitCatChange() {
-  const cat = $("uc-cat").value;
-  const opts = (UNITS[cat] ? Object.keys(UNITS[cat]) : ["°C", "°F", "K"]).map(
-    (u) => `<option>${u}</option>`).join("");
-  $("uc-from").innerHTML = opts;
-  $("uc-to").innerHTML = opts;
-  $("uc-to").selectedIndex = Math.min(1, opts.split("</option>").length - 2);
-  unitConvert();
+function uc2Fmt(n) {
+  if (!isFinite(n)) return "\u2014";
+  const a = Math.abs(n);
+  if (a !== 0 && (a < 1e-6 || a >= 1e12)) return n.toExponential(6);
+  return (+n.toPrecision(10)).toLocaleString(undefined, { maximumFractionDigits: 8 });
 }
+function uc2Cats() {
+  $("uc2-cats").innerHTML = Object.keys(UC2).map(k =>
+    `<button class="uc2-cat${k === UC2_CAT ? " active" : ""}" onclick="uc2SetCat('${k}')">${UC2[k].label}</button>`).join("");
+}
+function uc2SetCat(k) { UC2_CAT = k; uc2Cats(); uc2Fill(); uc2Run(); }
+function uc2Fill() {
+  const keys = Object.keys(UC2[UC2_CAT].units);
+  const cur = [$("uc2-from").value, $("uc2-to").value];
+  $("uc2-from").innerHTML = keys.map(u => `<option>${u}</option>`).join("");
+  $("uc2-to").innerHTML = keys.map(u => `<option>${u}</option>`).join("");
+  const defFrom = keys.includes(cur[0]) ? cur[0] : keys[Math.min(2, keys.length - 1)];
+  let defTo = keys.includes(cur[1]) ? cur[1] : keys[Math.min(3, keys.length - 1)];
+  if (defTo === defFrom) defTo = keys[(keys.indexOf(defFrom) + 1) % keys.length];
+  $("uc2-from").value = defFrom;
+  $("uc2-to").value = defTo;
+}
+function uc2Swap() {
+  const f = $("uc2-from").value;
+  $("uc2-from").value = $("uc2-to").value;
+  $("uc2-to").value = f;
+  uc2Run();
+}
+function uc2Convert(v, from, to) {
+  const c = uc2ToBase(UC2_CAT, v, from);
+  return uc2FromBase(UC2_CAT, c, to);
+}
+function uc2Run() {
+  const v = parseFloat($("uc2-val").value);
+  const from = $("uc2-from").value, to = $("uc2-to").value;
+  if (isNaN(v)) { $("uc2-big").innerHTML = "\u2014"; $("uc2-table").innerHTML = ""; return; }
+  const r = uc2Convert(v, from, to);
+  $("uc2-big").innerHTML = `${uc2Fmt(v)} ${escHtml(from)} = <b>${uc2Fmt(r)}</b> ${escHtml(to)}`;
+  const keys = Object.keys(UC2[UC2_CAT].units).filter(u => u !== from);
+  $("uc2-table").innerHTML = `<table class="wc-table"><thead><tr><th>Unit</th><th>Value</th></tr></thead><tbody>` +
+    keys.map(u => `<tr><td>${escHtml(u)}</td><td><b>${uc2Fmt(uc2Convert(v, from, u))}</b></td></tr>`).join("") +
+    `</tbody></table>`;
+}
+if ($("uc2-val")) { uc2Cats(); uc2Fill(); uc2Run(); }
 
 function tsToDate() {
   const v = $("ts-in").value.trim();
