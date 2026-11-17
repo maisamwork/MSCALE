@@ -207,24 +207,101 @@ setInterval(() => {
 }, 1000);
 
 /* ---------- Security ---------- */
-function genPassword() {
-  const len = parseInt($("pw-len").value) || 16;
-  let chars = "";
-  if ($("pw-lower").checked) chars += "abcdefghijklmnopqrstuvwxyz";
-  if ($("pw-upper").checked) chars += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  if ($("pw-digits").checked) chars += "0123456789";
-  if ($("pw-symbols").checked) chars += "!@#$%^&*()-_=+[]{};:,.<>?";
-  if (!chars) { out("pw-out", "Select at least one character set", "error"); return; }
-  const arr = new Uint32Array(len);
-  crypto.getRandomValues(arr);
-  const pw = [...arr].map((n) => chars[n % chars.length]).join("");
-  out("pw-out", pw, "mono");
-  const entropy = Math.round(len * Math.log2(chars.length));
-  const strength = entropy > 100 ? "Very strong" : entropy > 70 ? "Strong" : entropy > 45 ? "Medium" : "Weak";
-  $("pw-strength").textContent = `${strength} (~${entropy} bits of entropy)`;
+var PG_MODE = "random";
+var PG_WORDS = ("able acid aged also area army away baby back ball band bank base bath bear beat been beer bell belt best bird blow blue boat body bomb bond bone book boom boot born boss both bowl bulk burn bush busy calm came camp card care case cash cast cell chat chef chip city club coal coast coat code cold come cook cool cope copy core cost crew crop dark data date dawn days dead deal dear dean debt deep deny desk dial dice diet disc disk does done door dose down draw drew drop drug drum dual duck duke dust duty each earn ease east easy edge edit else even ever exit face fact fail fair fall farm fast fate fear feed feel feet fell felt file fill film find fine fire firm fish fist five flat flow foam fold folk food foot ford fork form fort four free frog from fuel full fund gain game gate gave gear gift girl give glad glow goal goat goes gold gone good gray grew grey grow gulf hair half hall hand hang hard harm hate have head hear heat held hell help here hero high hill hint hire hold hole holy home hope horn host hour huge hunt hurt idea inch into iron item join jump just keen keep kept kick kind king knee knew know lack lady laid lake land lane last late lawn lazy lead leaf lean left less life lift like limb lime line link list live load loan lock loft logo long look lord lose loss lost loud love luck made mail main make male mall many mark mask mass mate math meal mean meat meet melt memo menu mere mess mild mile milk mill mind mine miss mist mode mood more most move much must myth nail name navy near neat neck need neon nest news next nice nine node none norm nose note noun oath obey odds okay once only onto open oral ours oven over pace pack page paid pain pair palm park part pass past path peak peel peer pier pile pilot pine pink pipe plan play plot plug plus poem poet pole poll pool poor port pose post pour pray prey prop pull pump pure push quit quiz race rack raft rage raid rail rain rank rare rate read real rear reed reef rely rent rest rice rich ride ring rise risk road roar robe rock role roll roof room root rope rose ruby rude ruin rule rush rust safe sage said sail sake sale salt same sand save scan seal seat seed seek seem seen self sell send sent shed ship shoe shop shot show shut side sigh sign silk sing sink site size skin skip slam slap sled slid slim slip slot slow snap snow soap soar sock soda sofa soft soil sold sole solo some song soon sort soul soup sour spin spot spun star stay stem step stew stir stop stow such suit sung sunk sure surf swap swim tail take tale talk tall tank tape task taxi team tear tech tell tend tent term test text than that thaw thee them then they thin this thus tick tide tidy tied tier tile till tilt time tiny tire toad toll tomb tone tool torn toss tour town trap tray tree trek trim trip true tube tune turn twin type ugly undo unit upon urge used user vain vane vary vase vast veil vein verb very vest veto vibe view vine visa void vote wage wait wake walk wall wand want ward warm warn wash wasp wave weak wear weed week weep well went were west what when whom wide wife wild will wind wine wing wipe wire wise wish with wolf wood wool word wore work worm worn wrap yard yarn yawn year yell your zeal zero zone").split(" ");
+function pgChars() {
+  var c = "";
+  if ($("pg-lower").checked) c += "abcdefghijklmnopqrstuvwxyz";
+  if ($("pg-upper").checked) c += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  if ($("pg-digits").checked) c += "0123456789";
+  if ($("pg-symbols").checked) c += "!@#$%^&*()-_=+[]{};:,.<>?";
+  if ($("pg-ambig").checked) c = c.replace(/[il1LoO0]/g, "");
+  return c;
 }
+function pgRand(len, chars) {
+  var a = new Uint32Array(len);
+  crypto.getRandomValues(a);
+  return Array.prototype.map.call(a, function (n) { return chars[n % chars.length]; }).join("");
+}
+function pgBuild() {
+  var len = parseInt($("pg-len").value) || 16;
+  if (PG_MODE === "pin") return pgRand(Math.min(len, 12), "0123456789");
+  if (PG_MODE === "memorable") {
+    var n = Math.max(3, Math.min(8, Math.round(len / 4)));
+    var a = new Uint32Array(n);
+    crypto.getRandomValues(a);
+    return Array.prototype.map.call(a, function (i) { return PG_WORDS[i % PG_WORDS.length]; }).join("-");
+  }
+  var chars = pgChars();
+  if (!chars) return null;
+  return pgRand(len, chars);
+}
+function pgEntropy(pw) {
+  if (PG_MODE === "pin") return pw.length * Math.log2(10);
+  if (PG_MODE === "memorable") return (pw.split("-").length) * Math.log2(PG_WORDS.length);
+  return pw.length * Math.log2(Math.max(pgChars().length, 2));
+}
+function pgCrackText(entropy) {
+  var sec = Math.pow(2, entropy) / 2 / 1e11;
+  if (sec < 1) return "instantly";
+  if (sec < 3600) return Math.round(sec) + " seconds";
+  if (sec < 86400) return Math.round(sec / 3600) + " hours";
+  if (sec < 31557600) return Math.round(sec / 86400) + " days";
+  var y = sec / 31557600;
+  if (y < 1e3) return Math.round(y) + " years";
+  if (y < 1e6) return nfmt(y / 1e3, 0) + " thousand years";
+  if (y < 1e9) return nfmt(y / 1e6, 0) + " million years";
+  if (y < 1e12) return nfmt(y / 1e9, 0) + " billion years";
+  return "longer than the age of the universe";
+}
+function pgShow(pw) {
+  $("pg-out").textContent = pw;
+  var e = pgEntropy(pw);
+  var fill = $("pg-fill");
+  fill.style.width = Math.min(100, (e / 128) * 100) + "%";
+  var cls = e > 100 ? "vs" : e > 75 ? "s" : e > 50 ? "g" : e > 30 ? "f" : "w";
+  fill.className = "pg-fill " + cls;
+  $("pg-label").textContent = e > 100 ? "Very strong" : e > 75 ? "Strong" : e > 50 ? "Good" : e > 30 ? "Fair" : "Weak";
+  $("pg-entropy").textContent = Math.round(e) + " bits of entropy";
+  $("pg-crack").textContent = "Estimated offline crack time at 100 billion guesses/sec: " + pgCrackText(e);
+}
+function pgGen() {
+  var pw = pgBuild();
+  if (pw === null) { $("pg-out").textContent = "Select at least one character set"; return; }
+  pgShow(pw);
+}
+function pgMode(m) {
+  PG_MODE = m;
+  var tabs = document.querySelectorAll(".pg-tab");
+  for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle("active", tabs[i].getAttribute("data-mode") === m);
+  var t = document.getElementById("pg-toggles");
+  if (t) t.classList.toggle("pg-off", m !== "random");
+  pgGen();
+}
+function pgSlider() { $("pg-len-val").textContent = $("pg-len").value; pgGen(); }
+function pgCopy() {
+  var btn = $("pg-copy");
+  navigator.clipboard.writeText($("pg-out").textContent).then(function () {
+    btn.textContent = "Copied!";
+    setTimeout(function () { btn.textContent = "Copy"; }, 1200);
+  });
+}
+function pgMulti() {
+  var rows = "";
+  for (var i = 0; i < 5; i++) {
+    var pw = pgBuild();
+    rows += "<div class='pg-row'><span class='mono'>" + pw + "</span><button class='btn btn-sm' onclick='pgCopyVal(this)'>Copy</button></div>";
+  }
+  $("pg-multi").innerHTML = rows;
+}
+function pgCopyVal(btn) {
+  navigator.clipboard.writeText(btn.parentNode.querySelector("span").textContent);
+  btn.textContent = "Copied!";
+  setTimeout(function () { btn.textContent = "Copy"; }, 1200);
+}
+if ($("pg-out")) pgGen();
 
-/* ---------- Color ---------- */
+/* ---------- Color ---------- *//* ---------- Color ---------- */
 function hexToRgb(hex) {
   const m = hex.replace("#", "").match(/^([0-9a-f]{3}|[0-9a-f]{6})$/i);
   if (!m) return null;

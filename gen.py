@@ -746,17 +746,38 @@ TOOL_BODIES = {
   <div id="ts-out2" class="result mono"></div>
 </div>""",
 "password-generator": """
-<div class="panel">
-  <label>Length: <span id="pw-len-val">16</span></label>
-  <input type="range" id="pw-len" min="6" max="64" value="16"
-    oninput="document.getElementById('pw-len-val').textContent=this.value" />
-  <label><input type="checkbox" id="pw-lower" checked style="width:auto" /> lowercase</label>
-  <label><input type="checkbox" id="pw-upper" checked style="width:auto" /> UPPERCASE</label>
-  <label><input type="checkbox" id="pw-digits" checked style="width:auto" /> digits</label>
-  <label><input type="checkbox" id="pw-symbols" checked style="width:auto" /> symbols</label>
-  <button class="btn" onclick="genPassword()">Generate password</button>
-  <div id="pw-out" class="result mono"></div>
-  <p id="pw-strength" style="color:var(--muted);font-size:13px"></p>
+<div class="panel pg-panel">
+  <div class="pg-tabs" id="pg-tabs">
+    <button class="pg-tab active" data-mode="random" onclick="pgMode('random')">Random</button>
+    <button class="pg-tab" data-mode="memorable" onclick="pgMode('memorable')">Memorable</button>
+    <button class="pg-tab" data-mode="pin" onclick="pgMode('pin')">PIN</button>
+  </div>
+  <div class="pg-out-wrap">
+    <div id="pg-out" class="pg-out" aria-live="polite">&middot;&middot;&middot;&middot;</div>
+    <div class="pg-actions">
+      <button class="btn" onclick="pgGen()">Regenerate</button>
+      <button class="btn ghost" id="pg-copy" onclick="pgCopy()">Copy</button>
+    </div>
+  </div>
+  <div class="pg-meter-row">
+    <div class="pg-meter"><div id="pg-fill" class="pg-fill"></div></div>
+    <div class="pg-meter-info"><b id="pg-label">&mdash;</b><span id="pg-entropy"></span></div>
+  </div>
+  <p id="pg-crack" class="pg-crack"></p>
+  <div class="pg-slider">
+    <label>Length: <b id="pg-len-val">16</b></label>
+    <input type="range" id="pg-len" min="4" max="64" value="16" oninput="pgSlider()" />
+    <div class="pg-range-marks"><span>4</span><span>64</span></div>
+  </div>
+  <div class="pg-toggles" id="pg-toggles">
+    <label class="pg-switch"><input type="checkbox" id="pg-upper" checked onchange="pgGen()" /><span class="pg-track"></span>Uppercase <span class="pg-set">A-Z</span></label>
+    <label class="pg-switch"><input type="checkbox" id="pg-lower" checked onchange="pgGen()" /><span class="pg-track"></span>Lowercase <span class="pg-set">a-z</span></label>
+    <label class="pg-switch"><input type="checkbox" id="pg-digits" checked onchange="pgGen()" /><span class="pg-track"></span>Numbers <span class="pg-set">0-9</span></label>
+    <label class="pg-switch"><input type="checkbox" id="pg-symbols" checked onchange="pgGen()" /><span class="pg-track"></span>Symbols <span class="pg-set">#$&amp;</span></label>
+    <label class="pg-switch"><input type="checkbox" id="pg-ambig" onchange="pgGen()" /><span class="pg-track"></span>Avoid ambiguous <span class="pg-set">il1LoO0</span></label>
+  </div>
+  <button class="btn ghost" onclick="pgMulti()">Generate 5 alternatives</button>
+  <div id="pg-multi" class="pg-multi"></div>
 </div>""",
 "color-converter": """
 <div class="panel">

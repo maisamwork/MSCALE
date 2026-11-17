@@ -1062,6 +1062,61 @@ ul.refs a { color: var(--accent2); }
   .sort-wrap select { width: 100%; height: 46px; }
   .search-kbd { display: none; }
 }
+
+/* ===== Password Generator Pro ===== */
+.pg-panel { max-width: 640px; }
+.pg-tabs { display: flex; gap: 6px; background: var(--card2); border-radius: 12px; padding: 4px; margin-bottom: 18px; }
+.pg-tab {
+  flex: 1; padding: 10px 12px; border: 0; border-radius: 9px; background: transparent;
+  color: var(--muted); font-weight: 600; font-size: .9rem; cursor: pointer; transition: all .15s ease;
+}
+.pg-tab:hover { color: var(--text); }
+.pg-tab.active { background: var(--accent); color: #fff; box-shadow: var(--sh-sm); }
+.pg-out-wrap { display: flex; flex-direction: column; gap: 12px; }
+.pg-out {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: clamp(1.05rem, 3.5vw, 1.5rem); letter-spacing: .04em; word-break: break-all;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+  padding: 18px 16px; min-height: 58px; color: var(--text); text-align: center;
+}
+.pg-actions { display: flex; gap: 10px; }
+.pg-actions .btn { flex: 1; }
+.pg-meter-row { display: flex; align-items: center; gap: 14px; margin-top: 16px; }
+.pg-meter { flex: 1; height: 8px; border-radius: 999px; background: var(--card2); overflow: hidden; }
+.pg-fill { height: 100%; width: 0; border-radius: 999px; transition: width .3s var(--ease), background .3s ease; }
+.pg-fill.w { background: #ef4444; } .pg-fill.f { background: #f59e0b; }
+.pg-fill.g { background: #eab308; } .pg-fill.s { background: #22c55e; } .pg-fill.vs { background: var(--grad); }
+.pg-meter-info { display: flex; flex-direction: column; min-width: 150px; }
+.pg-meter-info b { font-size: .9rem; }
+.pg-meter-info span { font-size: .76rem; color: var(--muted); }
+.pg-crack { font-size: .8rem; color: var(--muted); margin: 8px 0 0; }
+.pg-slider { margin-top: 18px; }
+.pg-slider label { display: flex; justify-content: space-between; font-size: .9rem; margin-bottom: 8px; }
+.pg-slider b { color: var(--accent); }
+.pg-slider input[type="range"] { width: 100%; accent-color: var(--accent); }
+.pg-range-marks { display: flex; justify-content: space-between; font-size: .72rem; color: var(--muted); }
+.pg-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; margin: 18px 0; transition: opacity .2s ease; }
+.pg-toggles.pg-off { opacity: .4; pointer-events: none; }
+.pg-switch { display: flex; align-items: center; gap: 10px; font-size: .88rem; cursor: pointer; }
+.pg-switch input { display: none; }
+.pg-track {
+  flex: 0 0 38px; width: 38px; height: 22px; border-radius: 999px; background: var(--border);
+  position: relative; transition: background .2s ease;
+}
+.pg-track::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+  border-radius: 50%; background: #fff; transition: transform .2s var(--ease);
+}
+.pg-switch input:checked + .pg-track { background: var(--accent); }
+.pg-switch input:checked + .pg-track::after { transform: translateX(16px); }
+.pg-set { margin-left: auto; font-size: .72rem; color: var(--muted); font-family: ui-monospace, Menlo, monospace; }
+.pg-multi { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.pg-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px;
+}
+.pg-row .mono { font-family: ui-monospace, Menlo, monospace; font-size: .88rem; word-break: break-all; }
+@media (max-width: 560px) { .pg-toggles { grid-template-columns: 1fr; } .pg-meter-info { min-width: 110px; } }
 </style>
 </head>
 <body>
