@@ -41,15 +41,25 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Text Diff Checker", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Compare two texts line by line and see every addition and removal highlighted. Private diff checking in your browser.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg><h1>Text Diff Checker</h1></div><p>Compare two texts line by line and see every addition and removal highlighted. Private diff checking in your browser.</p></div>
 
-<div class="panel">
+<div class="panel df2">
   <div class="row">
     <div style="flex:1;min-width:240px"><label>Original text</label>
-      <textarea id="diff-a" style="min-height:170px" placeholder="Paste the original version…"></textarea></div>
+      <textarea id="diff-a" oninput="df2Live()" style="min-height:170px" placeholder="Paste the original version…"></textarea></div>
     <div style="flex:1;min-width:240px"><label>Changed text</label>
-      <textarea id="diff-b" style="min-height:170px" placeholder="Paste the changed version…"></textarea></div>
+      <textarea id="diff-b" oninput="df2Live()" style="min-height:170px" placeholder="Paste the changed version…"></textarea></div>
   </div>
-  <button class="btn" onclick="diffRun()">Compare texts</button>
-  <div id="diff-out" class="diff-out"></div>
+  <div class="df2-opts">
+    <div class="df2-modes">
+      <button class="df2-mode active" id="df2-m-lines" onclick="df2SetMode('lines', this)">Line diff</button>
+      <button class="df2-mode" id="df2-m-words" onclick="df2SetMode('words', this)">Word diff</button>
+    </div>
+    <label class="pg-switch"><input type="checkbox" id="df2-case" onchange="df2Run()" /><span class="pg-track"></span> Ignore case</label>
+    <label class="pg-switch"><input type="checkbox" id="df2-ws" onchange="df2Run()" /><span class="pg-track"></span> Ignore extra whitespace</label>
+  </div>
+  <div class="df2-stats" id="df2-stats"></div>
+  <div class="df2-sim"><div class="df2-sim-fill" id="df2-sim"></div></div>
+  <div class="df2-legend"><span class="df2-l-add">+ added</span><span class="df2-l-del">&minus; removed</span><span class="df2-l-same">= unchanged</span></div>
+  <div id="diff-out" class="diff-out df2-out"></div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

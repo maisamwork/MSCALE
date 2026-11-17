@@ -389,16 +389,27 @@ TOOL_BODIES = {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>""",
 
 "text-diff-checker": """
-<div class="panel">
+<div class="panel df2">
   <div class="row">
     <div style="flex:1;min-width:240px"><label>Original text</label>
-      <textarea id="diff-a" style="min-height:170px" placeholder="Paste the original version\u2026"></textarea></div>
+      <textarea id="diff-a" oninput="df2Live()" style="min-height:170px" placeholder="Paste the original version\u2026"></textarea></div>
     <div style="flex:1;min-width:240px"><label>Changed text</label>
-      <textarea id="diff-b" style="min-height:170px" placeholder="Paste the changed version\u2026"></textarea></div>
+      <textarea id="diff-b" oninput="df2Live()" style="min-height:170px" placeholder="Paste the changed version\u2026"></textarea></div>
   </div>
-  <button class="btn" onclick="diffRun()">Compare texts</button>
-  <div id="diff-out" class="diff-out"></div>
+  <div class="df2-opts">
+    <div class="df2-modes">
+      <button class="df2-mode active" id="df2-m-lines" onclick="df2SetMode('lines', this)">Line diff</button>
+      <button class="df2-mode" id="df2-m-words" onclick="df2SetMode('words', this)">Word diff</button>
+    </div>
+    <label class="pg-switch"><input type="checkbox" id="df2-case" onchange="df2Run()" /><span class="pg-track"></span> Ignore case</label>
+    <label class="pg-switch"><input type="checkbox" id="df2-ws" onchange="df2Run()" /><span class="pg-track"></span> Ignore extra whitespace</label>
+  </div>
+  <div class="df2-stats" id="df2-stats"></div>
+  <div class="df2-sim"><div class="df2-sim-fill" id="df2-sim"></div></div>
+  <div class="df2-legend"><span class="df2-l-add">+ added</span><span class="df2-l-del">&minus; removed</span><span class="df2-l-same">= unchanged</span></div>
+  <div id="diff-out" class="diff-out df2-out"></div>
 </div>""",
+
 "markdown-previewer": """
 <div class="panel">
   <div class="row">

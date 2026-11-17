@@ -1556,25 +1556,79 @@ if ($("qr2-fields")) qr2Fields();
 
 /* ---- Text Diff Checker (LCS on lines) ---- */
 function dEsc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
-function diffRun() {
-  const a = document.getElementById("diff-a").value.split("\n");
-  const b = document.getElementById("diff-b").value.split("\n");
+let DF2_MODE = "lines", DF2_TIMER = null;
+function df2Norm(s) {
+  if ($("df2-case").checked) s = s.toLowerCase();
+  if ($("df2-ws").checked) s = s.replace(/\s+/g, " ").trim();
+  return s;
+}
+function df2Esc(s) { return escHtml(s); }
+function df2LcsOps(a, b) {
   const n = a.length, m = b.length;
   const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
   for (let i = n - 1; i >= 0; i--)
     for (let j = m - 1; j >= 0; j--)
       dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
-  let i = 0, j = 0, html = "", adds = 0, dels = 0;
+  const ops = [];
+  let i = 0, j = 0;
   while (i < n && j < m) {
-    if (a[i] === b[j]) { html += `<div class="dln same">${dEsc(a[i]) || "&nbsp;"}</div>`; i++; j++; }
-    else if (dp[i + 1][j] >= dp[i][j + 1]) { html += `<div class="dln del">- ${dEsc(a[i])}</div>`; i++; dels++; }
-    else { html += `<div class="dln add">+ ${dEsc(b[j])}</div>`; j++; adds++; }
+    if (a[i] === b[j]) { ops.push(["same", i, j]); i++; j++; }
+    else if (dp[i + 1][j] >= dp[i][j + 1]) { ops.push(["del", i, j]); i++; }
+    else { ops.push(["add", i, j]); j++; }
   }
-  while (i < n) { html += `<div class="dln del">- ${dEsc(a[i])}</div>`; i++; dels++; }
-  while (j < m) { html += `<div class="dln add">+ ${dEsc(b[j])}</div>`; j++; adds++; }
-  const summary = `<div class="tool-note">${adds} addition${adds === 1 ? "" : "s"}, ${dels} removal${dels === 1 ? "" : "s"}, ${n + m - adds - dels} unchanged line${n + m - adds - dels === 1 ? "" : "s"}</div>`;
-  document.getElementById("diff-out").innerHTML = summary + html;
+  while (i < n) { ops.push(["del", i, j]); i++; }
+  while (j < m) { ops.push(["add", i, j]); j++; }
+  return ops;
 }
+function df2Stats(adds, dels, same) {
+  const total = adds + dels + same;
+  const sim = total ? Math.round(same / total * 100) : 100;
+  $("df2-stats").innerHTML = `
+    <div class="jf-chip df2-c-add"><b>+${adds}</b><span>added</span></div>
+    <div class="jf-chip df2-c-del"><b>\u2212${dels}</b><span>removed</span></div>
+    <div class="jf-chip"><b>${same}</b><span>unchanged</span></div>
+    <div class="jf-chip"><b>${sim}%</b><span>similarity</span></div>`;
+  $("df2-sim").style.width = sim + "%";
+  $("df2-sim").className = "df2-sim-fill" + (sim >= 80 ? " hi" : sim >= 40 ? " mid" : " lo");
+}
+function df2Run() {
+  const rawA = $("diff-a").value, rawB = $("diff-b").value;
+  const out = $("diff-out");
+  if (!rawA && !rawB) { out.innerHTML = '<p class="wc-empty">Paste text in both boxes \u2014 the comparison updates live.</p>'; $("df2-stats").innerHTML = ""; $("df2-sim").style.width = "0"; return; }
+  let html = "", adds = 0, dels = 0, same = 0;
+  if (DF2_MODE === "lines") {
+    const A = rawA.split("\n"), B = rawB.split("\n");
+    const ops = df2LcsOps(A.map(df2Norm), B.map(df2Norm));
+    let lnA = 0, lnB = 0;
+    html = ops.map(([op, i, j]) => {
+      if (op === "same") { same++; lnA++; lnB++; return `<div class="dln same"><span class="dln-n">${lnA}</span>${df2Esc(A[i]) || "&nbsp;"}</div>`; }
+      if (op === "del") { dels++; lnA++; return `<div class="dln del"><span class="dln-n">${lnA}</span>&minus; ${df2Esc(A[i])}</div>`; }
+      adds++; lnB++; return `<div class="dln add"><span class="dln-n">${lnB}</span>+ ${df2Esc(B[j])}</div>`;
+    }).join("");
+  } else {
+    const A = rawA.split(/(\s+)/).filter(w => w.trim() !== ""), B = rawB.split(/(\s+)/).filter(w => w.trim() !== "");
+    const ops = df2LcsOps(A.map(df2Norm), B.map(df2Norm));
+    html = ops.map(([op, i, j]) => {
+      if (op === "same") { same++; return `<span class="dfw same">${df2Esc(A[i])}</span> `; }
+      if (op === "del") { dels++; return `<span class="dfw del">${df2Esc(A[i])}</span> `; }
+      adds++; return `<span class="dfw add">${df2Esc(B[j])}</span> `;
+    }).join("");
+    html = `<div class="df2-words">${html}</div>`;
+  }
+  df2Stats(adds, dels, same);
+  out.innerHTML = html;
+}
+function df2SetMode(m, btn) {
+  DF2_MODE = m;
+  $("df2-m-lines").classList.toggle("active", m === "lines");
+  $("df2-m-words").classList.toggle("active", m === "words");
+  df2Run();
+}
+function df2Live() {
+  clearTimeout(DF2_TIMER);
+  DF2_TIMER = setTimeout(df2Run, 250);
+}
+if ($("diff-a")) df2Run();
 
 /* ---- Markdown Previewer ---- */
 function mdRender() {
