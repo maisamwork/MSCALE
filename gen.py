@@ -170,11 +170,22 @@ def esc(s):
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
 def header(title, desc, depth=""):
-    nav_items = [
-        ("calculators", "Calculators"), ("text-tools", "Text"), ("developer-tools", "Developer"),
-        ("converters", "Converters"), ("pdf-tools", "PDF"), ("image-tools", "Image"),
-    ]
-    nav = "".join(f'<a href="{depth}{slug}/">{name}</a>' for slug, name in nav_items)
+    CHEV_D = '<svg class="dd-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>'
+    cat_counts = {}
+    for s, _, c, _ in LIVE:
+        cs = CAT_SLUG_BY_NAME.get(c, "calculators")
+        cat_counts[cs] = cat_counts.get(cs, 0) + 1
+    mega_items = "".join(
+        f"<a class='mega-item' href='{depth}{slug}/'><span class='icon-box' style='color:{hue_of(slug)};background:{hue_of(slug)}22'>{svg_icon(slug)}</span>"
+        f"<span class='mega-txt'><b>{CAT_PAGES[slug][0]}</b><em>{cat_counts.get(slug, 0)} live tools</em></span></a>"
+        for slug in CAT_PAGES
+    )
+    mega = (f"<div class='mega' role='menu' aria-label='Tool categories'><div class='mega-grid'>{mega_items}</div>"
+            f"<div class='mega-foot'><span>{len(LIVE)} tools live &mdash; no sign-up, runs in your browser</span>"
+            f"<a href='{depth}tools/'>Browse everything {svg_icon('arrow-right')}</a></div></div>")
+    nav = (f'<a href="{depth}index.html">Home</a>'
+           f'<div class="nav-dd"><a class="dd-top" href="{depth}tools/">Free Tools {CHEV_D}</a>{mega}</div>'
+           f'<a href="{depth}blog/">Blog</a>')
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -197,7 +208,7 @@ def header(title, desc, depth=""):
 <body>
 <header class="site"><div class="container">
   <a class="brand" href="{depth}index.html"><span class="brand-tile">{svg_icon("wrench")}</span>MSCALE<span>Tools</span></a>
-  <nav class="main" id="main-nav">{nav}<a href="{depth}blog/">Blog</a><a class="nav-cta" href="{depth}tools/">All tools</a></nav>
+  <nav class="main" id="main-nav">{nav}<a class="nav-cta" href="{depth}tools/">All tools</a></nav>
   <div class="nav-actions">
     <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark or light theme">{svg_icon("sun", "ic-sun")}{svg_icon("moon", "ic-moon")}</button>
     <button class="nav-toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">{svg_icon("menu")}</button>
@@ -1188,6 +1199,11 @@ def tools_index_html(catalog):
   <span class="stat-chip">No sign-up</span>
   <span class="stat-chip">Runs in your browser</span>
 </div>
+<div class="cat-chips" id="cat-chips">
+  <span class="chips-label">Browse by category</span>
+  <button class="chip active" data-cat="all">All</button>
+  {"".join(f"<button class='chip' data-cat='{slug}'><span class='side-dot' style='background:{hue_of(slug)}'></span>{cat_name[slug]}</button>" for slug in CAT_PAGES)}
+</div>
 {ad_slot("tools-top")}
 <div class="tools-layout">
   <aside class="tools-side" id="tools-side">{side}</aside>
@@ -1206,7 +1222,10 @@ def tools_index_html(catalog):
     {ad_slot("tools-feed", "970 × 160")}
     <div class="banner-cta">
       <div><b>Every tool you need right here in your browser.</b><span>Free, private, no sign-up — {total_live} tools live today.</span></div>
-      <a class="btn" href="word-counter.html">Try Now</a>
+      <div class="banner-btns">
+        <a class="btn" href="word-counter.html">Try Now</a>
+        <a class="btn ghost" href="https://github.com/maisamwork/MSCALE/issues/new" target="_blank" rel="noopener">Submit a tool</a>
+      </div>
     </div>
   </div>
 </div>"""
@@ -1610,19 +1629,112 @@ CAT_ABOUT = {
     ),
 }
 
+CAT_POPULAR = {
+    "calculators": ["percentage-calculator", "loan-emi-calculator", "age-calculator"],
+    "text-tools": ["word-counter", "case-converter", "text-diff-checker"],
+    "developer-tools": ["json-formatter", "slug-generator", "cron-expression-explainer"],
+    "converters": ["unit-converter", "roman-numeral-converter", "binary-converter"],
+    "security": ["password-generator", "password-strength-checker", "hash-generator"],
+    "color-tools": ["color-converter", "css-gradient-generator", "color-palette-generator"],
+    "random-generators": ["random-number-generator", "random-name-picker", "dice-roller"],
+    "pdf-tools": ["pdf-merge", "pdf-split", "pdf-to-image"],
+    "image-tools": ["image-resizer", "image-compressor", "image-cropper"],
+    "seo-web-tools": ["meta-tag-generator", "xml-sitemap-generator", "keyword-density-checker"],
+    "date-time-tools": ["date-difference", "countdown-timer", "stopwatch-online"],
+    "finance-tools": ["invoice-generator", "compound-interest-pro", "roi-calculator"],
+}
+
+CAT_ADVANCED = {
+    "calculators": [
+        ("Chain calculations into workflows", "Run one calculator, carry its result into the next: compute a percentage change, feed it into the loan calculator as an extra payment, then check the break-even point of the decision. Each tool keeps its inputs, so a whole analysis takes under a minute."),
+        ("Reverse any calculation", "Every formula here works in both directions. Know the payment you can afford but not the loan size, or the final grade but not the exam score needed? Enter what you have and read the missing number straight off the result panel."),
+        ("Sanity-check quoted numbers", "Vendors and lenders quote rounded, optimistic figures. Recompute their numbers independently with exact inputs - the difference between their figure and yours is usually a fee or an assumption worth questioning."),
+    ],
+    "text-tools": [
+        ("Audit content against hard limits", "Meta descriptions, tweets, ad headlines and abstracts all have exact character ceilings. Draft in the word counter, trim to the limit, then run the case converter and diff checker to polish the final version without leaving the browser."),
+        ("Compare two versions line by line", "The diff checker is not just for code: paste two drafts of the same paragraph and see exactly which words changed. It is the fastest way to review an edit someone else made, or to check what a rewrite actually altered."),
+        ("Normalize messy imported text", "Text pasted from PDFs and spreadsheets arrives with broken casing, doubled spaces and smart quotes. Run the cleanup and case tools in sequence to produce consistent, searchable text before publishing."),
+    ],
+    "developer-tools": [
+        ("Validate API payloads before shipping", "Paste a real response into the JSON formatter to catch trailing commas, duplicate keys and silent unicode issues before your parser hits them in production. Format, inspect, then minify the corrected version for fixtures."),
+        ("Generate production-ready identifiers", "Use the slug generator and hash tools to produce consistent URL slugs, cache keys and ids instead of hand-rolling transformations that drift between services and break routing."),
+        ("Debug cron and encoding issues", "Paste a cron expression to see every next run time, and decode base64 payloads inline when an API returns opaque strings. Both run offline, so nothing leaves your machine during incident work."),
+    ],
+    "converters": [
+        ("Read the reference table, not just the answer", "Every converter prints a table of nearby values around your result - use it when a recipe, spec or drawing needs several related conversions and you want them consistent in one glance."),
+        ("Chain units through a common base", "For compound units like speed, price per weight or data transfer, convert to the base unit first, do the arithmetic, then convert back. The swap button makes the reverse check a single click."),
+        ("Verify supplier and spec sheets", "Specs often mix metric and imperial. Convert every figure to one system before comparing products - a 10% advantage frequently disappears once units are honestly equalized."),
+    ],
+    "security": [
+        ("Grade passwords before you reuse them", "Run candidate passwords through the strength checker to see crack-time estimates against modern hardware, then generate a replacement from the generator with length 16+ and copy it straight into your manager."),
+        ("Use generated secrets as building blocks", "Generator output is ideal for Wi-Fi keys, dev API tokens and encryption passphrases. Generate, then store - never improve a random string by hand, because human edits destroy entropy."),
+        ("Make security checks a habit, not a project", "A 30-second strength check on every new account beats an annual password purge. Pair the two tools: generate on signup, verify on audit."),
+    ],
+    "color-tools": [
+        ("Build accessible palettes from one seed", "Start from your brand hex, generate tints and shades, then run the contrast checker on every text and background pair. You get a palette that is both coherent and WCAG-compliant in one pass."),
+        ("Translate color between design and code", "Designers think in HSL, CSS wants hex or rgb. The converters keep both views in sync, so a request like 10% lighter becomes an exact lightness change instead of guesswork."),
+        ("Extract and rebuild gradients", "Recreate a gradient you like by sampling its endpoints, converting them, then regenerating it with the gradient tool - adjusting the angle and stops until it matches."),
+    ],
+    "random-generators": [
+        ("Run fair draws you can defend", "For giveaways, raffles and team splits, use the pickers and shufflers instead of drawing names by hand - the result is unbiased and you can rerun it publicly to show it is honest."),
+        ("Sample realistic test data", "Random words, dates and country names make better demo datasets than typing test, test, test. Generate a batch, paste it into your spreadsheet or seed script, and your UI finally shows real-world variety."),
+        ("Break decision deadlocks", "Yes/no, letter, dice - when a choice is truly symmetric, commit to randomness in advance and let the tool decide. It removes the bias that quietly favors the first option."),
+    ],
+    "pdf-tools": [
+        ("Split, reorder and remerge without installs", "Break a 200-page PDF into chapters with the split tool, then merge the parts you need back into a clean handout. Everything happens client-side, so confidential documents never leave your device."),
+        ("Prepare documents for signing", "Extract just the pages a counterparty needs, merge them into one file, and the signature packet is ready in minutes - no full document shared, no desktop software required."),
+        ("Clean up scanned bundles", "Scanners produce bloated, unordered files. Split off blanks, merge in the right order, and the archive becomes smaller, ordered and actually usable."),
+    ],
+    "image-tools": [
+        ("Hit exact upload limits in two passes", "Resize to the target dimensions first, then compress until the file fits under the platform cap. Resizing before compressing keeps far more quality than compressing a huge image alone."),
+        ("Crop for the platform, not the camera", "Aspect ratios differ everywhere: 16:9 for thumbnails, 1:1 for avatars, 4:5 for feeds. Crop once per destination from the same source and every post looks native."),
+        ("Batch-prepare page images", "Run every image for a page through resize and compression before upload - pages load visibly faster and you avoid the oversized hero image that quietly doubles load time."),
+    ],
+    "seo-web-tools": [
+        ("Generate complete meta sets per page", "Produce title, description and keyword meta in one pass, paste them into your CMS, and keep every page within search-engine length limits instead of getting truncated in results."),
+        ("Keep sitemaps honest", "Regenerate the XML sitemap whenever pages are added or removed and resubmit it in Search Console - crawl budget stops being wasted on URLs that no longer exist."),
+        ("Check keyword balance before publishing", "Run the density checker on a draft to catch accidental stuffing and confirm the target term appears naturally - both over-use and total absence cost rankings."),
+    ],
+    "date-time-tools": [
+        ("Plan across units without a calendar", "Add or subtract days from deadlines, count business days for contracts, and compute week numbers for reporting - all three agree because they share the same date engine."),
+        ("Turn vague urgency into a number", "Use the countdown timer for public launch moments and the difference tool for how long you actually have - the pair gives the whole team the same visible deadline."),
+        ("Time-box work precisely", "Stopwatch for measuring how long a task really takes, pomodoro for keeping focus sprints honest. Measured time is the input that makes every deadline estimate better."),
+    ],
+    "finance-tools": [
+        ("Model a decision end to end", "Price a product with the break-even calculator, check the return with ROI, then project savings growth with compound interest - the three together answer whether it is viable and what it earns."),
+        ("Compare offers on true cost", "Run competing loans through the amortization calculator and compare total interest, not monthly payment. The schedule shows exactly where a cheaper-looking offer costs more."),
+        ("Turn bills into budget lines", "The electricity cost calculator converts any appliance into an annual figure; do that for your top five devices and your energy budget stops being a guess."),
+    ],
+}
+
 def category_page(slug, name, icon, live_slugs, catalog_cat):
     live_names_by_slug = {s: (n, d) for s, n, _, d in LIVE}
     hue = hue_of(slug)
     tile = f"<span class='icon-box' style='color:{hue};background:{hue}22'>{svg_icon(slug)}</span>"
+    pop_slugs = [s for s in CAT_POPULAR.get(slug, []) if s in live_names_by_slug]
+    for s in live_slugs:
+        if len(pop_slugs) >= 3:
+            break
+        if s not in pop_slugs:
+            pop_slugs.append(s)
+    pop_slugs = pop_slugs[:3]
+    pop_tags = ["HOT", "POPULAR", "POPULAR"]
+    pop_cards = "".join(
+        f"<a class='card pop-feat' data-name='{esc(live_names_by_slug[s][0].lower())}' data-kind='live' href='../tools/{s}.html'>"
+        f"<div class='card-head'>{tile}<h3>{live_names_by_slug[s][0]}</h3></div><p>{live_names_by_slug[s][1]}</p>"
+        f"<div class='card-foot'><span class='hot-tag {t.lower()}'>{t}</span><span class='btn btn-sm'>Use Tool</span></div></a>"
+        for s, t in zip(pop_slugs, pop_tags)
+    )
     live_cards = "".join(
-        f"<a class='card' data-name='{esc(live_names_by_slug[s][0].lower())}' href='../tools/{s}.html'><div class='card-head'>{tile}<h3>{live_names_by_slug[s][0]}</h3></div>"
-        f"<p>{live_names_by_slug[s][1]}</p><span class='tag'>LIVE</span></a>"
-        for s in live_slugs
+        f"<a class='card' data-name='{esc(live_names_by_slug[s][0].lower())}' data-kind='live' href='../tools/{s}.html'>"
+        f"<div class='card-head'>{tile}<h3>{live_names_by_slug[s][0]}</h3></div>"
+        f"<p>{live_names_by_slug[s][1]}</p><span class='tag live'>LIVE</span></a>"
+        for s in live_slugs if s not in pop_slugs
     )
     live_names = {live_names_by_slug[s][0].lower() for s in live_slugs}
     coming = [(i["n"], i.get("s", "")) for i in CATALOG if i["c"] == slug and i["n"].lower() not in live_names][:120]
     coming_cards = "".join(
-        f"<div class='card soon' data-name='{esc(n.lower())}'><div class='card-head'>{tile}<h3>{esc(n)}</h3></div>"
+        f"<div class='card soon' data-name='{esc(n.lower())}' data-kind='soon'><div class='card-head'>{tile}<h3>{esc(n)}</h3></div>"
         f"<p>{esc(d)}</p><span class='tag'>coming soon</span></div>"
         for n, d in coming
     )
@@ -1635,7 +1747,20 @@ def category_page(slug, name, icon, live_slugs, catalog_cat):
             f"<section class='about-sec'><h2 class='section'>About {esc(name)}</h2>"
             f"<p>{a1}</p><p>{a2}</p><ul>{lis}</ul></section>"
         )
+    adv_items = CAT_ADVANCED.get(slug, [])
+    adv_html = ""
+    if adv_items:
+        adv_cards = "".join(
+            f"<div class='adv-item'><span class='adv-num'>{i + 1}</span><div><b>{esc(t)}</b><p>{esc(d)}</p></div></div>"
+            for i, (t, d) in enumerate(adv_items)
+        )
+        adv_html = f"<section class='adv-sec'><h2 class='section'>Advanced use of {esc(name)}</h2><div class='adv-grid'>{adv_cards}</div></section>"
+    blog_cards = "".join(
+        f"<a class='card blog-card' href='../blog/{p['slug']}.html'><h3>{esc(p['title'])}</h3><p>{esc(p['desc'])}</p><span class='post-meta'>{p['date']}</span></a>"
+        for p in BLOG_POSTS
+    )
     n_live, n_coming = len(live_slugs), len(coming)
+    n_all = n_live + n_coming
     crumb = f"""<nav class="breadcrumb" aria-label="Breadcrumb">
 <a href="../index.html">{svg_icon("wrench", "crumb-ic")}Home</a>
 <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
@@ -1652,13 +1777,15 @@ def category_page(slug, name, icon, live_slugs, catalog_cat):
     filter_js = """
 (function () {
   var input = document.getElementById('cat-search');
-  if (!input) return;
   var cards = [].slice.call(document.querySelectorAll('.grid .card'));
   var note = document.getElementById('cat-count');
-  input.addEventListener('input', function () {
-    var q = input.value.trim().toLowerCase(), n = 0;
+  var state = { q: "", kind: "all" };
+  function apply() {
+    var n = 0;
     cards.forEach(function (c) {
-      var hit = !q || (c.getAttribute('data-name') || '').indexOf(q) > -1;
+      var hitQ = !state.q || (c.getAttribute('data-name') || '').indexOf(state.q) > -1;
+      var hitK = state.kind === 'all' || c.getAttribute('data-kind') === state.kind;
+      var hit = hitQ && hitK;
       c.style.display = hit ? '' : 'none';
       if (hit) n++;
     });
@@ -1666,12 +1793,34 @@ def category_page(slug, name, icon, live_slugs, catalog_cat):
       var vis = [].slice.call(s.querySelectorAll('.card')).some(function (c) { return c.style.display !== 'none'; });
       s.style.display = vis ? '' : 'none';
     });
-    if (note) note.textContent = q ? ('Showing ' + n + ' of ' + cards.length + ' tools') : '';
+    if (note) note.textContent = (state.q || state.kind !== 'all') ? ('Showing ' + n + ' of ' + cards.length + ' tools') : '';
+  }
+  if (input) input.addEventListener('input', function () { state.q = input.value.trim().toLowerCase(); apply(); });
+  var sbtn = document.getElementById('cat-search-btn');
+  if (sbtn) sbtn.addEventListener('click', function () { apply(); });
+  var tabs = document.getElementById('cat-tabs');
+  if (tabs) tabs.addEventListener('click', function (e) {
+    var b = e.target.closest('.cat-tab');
+    if (!b) return;
+    [].slice.call(tabs.querySelectorAll('.cat-tab')).forEach(function (x) { x.classList.remove('active'); });
+    b.classList.add('active');
+    state.kind = b.getAttribute('data-kind');
+    apply();
+  });
+  var sort = document.getElementById('cat-sort');
+  if (sort) sort.addEventListener('change', function () {
+    var grid = document.getElementById('all-grid');
+    if (!grid) return;
+    var list = [].slice.call(grid.querySelectorAll('.card'));
+    if (sort.value === 'az') list.sort(function (a, b) { return (a.getAttribute('data-name') || '') < (b.getAttribute('data-name') || '') ? -1 : 1; });
+    else if (sort.value === 'za') list.sort(function (a, b) { return (a.getAttribute('data-name') || '') > (b.getAttribute('data-name') || '') ? -1 : 1; });
+    else list.sort(function (a, b) { return (b.getAttribute('data-kind') === 'live' ? 1 : 0) - (a.getAttribute('data-kind') === 'live' ? 1 : 0); });
+    list.forEach(function (c) { grid.appendChild(c); });
   });
 })();
 """
     return (
-        header(f"{name} — Free Online | MSCALE Tools", f"Free online {name.lower()} — fast, private, no sign-up.", "../")
+        header(f"{name} \u2014 Free Online | MSCALE Tools", f"Free online {name.lower()} \u2014 fast, private, no sign-up.", "../")
         + f"""{crumb}
 <script type="application/ld+json">{jsonld}</script>
 <div class="cat-hero">
@@ -1679,20 +1828,42 @@ def category_page(slug, name, icon, live_slugs, catalog_cat):
   <div>
     <h1>{name}</h1>
     <p>{intro}</p>
-    <p class="cat-stats"><b>{n_live} live tools</b> · {n_coming}+ more coming · 100% free · no sign-up</p>
+    <p class="cat-stats"><b>{n_live} live tools</b> \u00b7 {n_coming}+ more coming \u00b7 100% free \u00b7 no sign-up</p>
   </div>
 </div>
-<div class="cat-search-wrap">
-  {svg_icon("search", "search-ic")}
-  <input id="cat-search" placeholder="Search in {name.lower()} (e.g. 'password', 'convert')…" />
+<div class="cat-search-row">
+  <div class="cat-search-wrap">
+    {svg_icon("search", "search-ic")}
+    <input id="cat-search" placeholder="Search in {name.lower()} (e.g. 'password', 'convert')\u2026" />
+  </div>
+  <button id="cat-search-btn" class="btn" style="background:{hue}">Search</button>
 </div>
 <p id="cat-count"></p>
-<section class="cat-sec"><h2 class="section">Most popular {name.lower()}</h2>
-<div class="grid">{live_cards}</div></section>
-<section class="cat-sec"><h2 class="section">All {name.lower()} tools</h2>
-<div class="grid">{coming_cards}</div></section>
+<div class="cat-tabs" id="cat-tabs">
+  <button class="cat-tab active" data-kind="all">All <em>{n_all}</em></button>
+  <button class="cat-tab" data-kind="live">Online now <em>{n_live}</em></button>
+  <button class="cat-tab" data-kind="soon">Coming soon <em>{n_coming}</em></button>
+</div>
+<section class="cat-sec"><div class="sec-head"><h2 class="section">Most popular {name.lower()}</h2></div>
+<div class="grid">{pop_cards}</div></section>
+<section class="cat-sec"><div class="sec-head"><h2 class="section">All {name.lower()} tools</h2>
+<select id="cat-sort" aria-label="Sort tools"><option value="pop">Sort: Popular first</option><option value="az">Sort: A to Z</option><option value="za">Sort: Z to A</option></select></div>
+<p class="all-count">{n_all} tools</p>
+<div class="grid" id="all-grid">{live_cards}{coming_cards}</div></section>
+{adv_html}
 {about_html}
+<section class="cat-sec"><h2 class="section">Related guides from our blog</h2>
+<div class="blog-grid">{blog_cards}</div></section>
+<section class="nl-sec">
+  <div><b>Get new {esc(name.lower())} tools first</b><p>One short email when new tools ship. No spam, unsubscribe anytime.</p></div>
+  <form onsubmit="return nlSub(event)">
+    <input type="email" required placeholder="you@email.com">
+    <button class="btn" type="submit">Subscribe</button>
+  </form>
+  <div id="nl-msg" class="tool-note"></div>
+</section>
 <p style="margin-top:26px"><a class="btn ghost" href="../tools/">Browse all 1,800+ tools{svg_icon("arrow-right")}</a></p>
+{ad_slot("cat-bottom", "970 \u00d7 120")}
 <script>{filter_js}</script>"""
         + footer("../")
     )

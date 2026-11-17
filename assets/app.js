@@ -85,8 +85,13 @@ function escHtml2(s) {
   return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+var HOT_TOOLS = { "word-counter": 1, "password-generator": 1, "json-formatter": 1, "qr-code-generator": 1,
+  "image-compressor": 1, "pdf-merge": 1, "unit-converter": 1, "loan-emi-calculator": 1,
+  "percentage-calculator": 1, "case-converter": 1, "compound-interest-pro": 1, "image-resizer": 1 };
+
 function toolCardHtml(t, catName, hue) {
-  var head = '<div class="card-head">' + window.ICONS[t.catSlug].replace("<svg ", '<svg class="card-ic" style="color:' + hue + '" ') + "<h3>" + escHtml2(t.name) + "</h3></div>";
+  var ic = (window.ICONS || {})[t.catSlug || t.cat] || "";
+  var head = '<div class="card-head">' + ic.replace("<svg ", '<svg class="card-ic" style="color:' + hue + '" ') + "<h3>" + escHtml2(t.name) + "</h3>" + (t.live && HOT_TOOLS[t.slug] ? '<span class="hot-tag hot">HOT</span>' : "") + "</div>";
   var desc = "<p>" + escHtml2(t.desc || "") + "</p>";
   var badge = '<span class="badge" style="color:' + hue + ';background:' + hue + '22">' + escHtml2(catName) + "</span>";
   var status = t.live
@@ -116,7 +121,8 @@ function initToolsPage() {
   };
   var SLUG_NAMES = { "calculators": "Calculators", "text-tools": "Text Tools", "developer-tools": "Developer Tools", "converters": "Converters", "security": "Security", "color-tools": "Color Tools", "random-generators": "Random Generators", "pdf-tools": "PDF Tools", "image-tools": "Image Tools", "seo-web-tools": "SEO & Web Tools", "date-time-tools": "Date & Time Tools", "finance-tools": "Finance Tools" };
   (window.LIVE_TOOLS || []).forEach(function (t) {
-    ALL.push({ name: t.name, desc: t.desc, cat: t.catSlug, live: true, url: t.url.replace(/^tools\//, "") });
+    var sl = t.url.replace(/^tools\//, "").replace(/\.html$/, "");
+    ALL.push({ name: t.name, desc: t.desc, cat: t.catSlug, slug: sl, live: true, url: t.url.replace(/^tools\//, "") });
     catName[t.catSlug] = t.cat;
   });
   var hueFor = {};
@@ -159,6 +165,18 @@ function initToolsPage() {
     side.querySelectorAll(".side-item").forEach(function (b) { b.classList.remove("active"); });
     btn.classList.add("active");
     state.cat = btn.getAttribute("data-cat");
+    render();
+  });
+  var chips = document.getElementById("cat-chips");
+  if (chips) chips.addEventListener("click", function (e) {
+    var btn = e.target.closest(".chip");
+    if (!btn) return;
+    chips.querySelectorAll(".chip").forEach(function (b) { b.classList.remove("active"); });
+    btn.classList.add("active");
+    state.cat = btn.getAttribute("data-cat");
+    if (side) {
+      side.querySelectorAll(".side-item").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-cat") === state.cat); });
+    }
     render();
   });
   var more = document.getElementById("tools-more");
