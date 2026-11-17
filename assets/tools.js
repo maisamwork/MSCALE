@@ -1394,23 +1394,115 @@ function jsonToCsv() {
 /* ===================== Batch 11: advanced tools ===================== */
 
 /* ---- QR Code Generator ---- */
-function qrGen() {
-  const box = document.getElementById("qr-box");
-  const txt = document.getElementById("qr-text").value;
-  if (!txt.trim()) { box.innerHTML = "<p class='error'>Enter some text or a URL first.</p>"; return; }
-  box.innerHTML = "";
-  const size = +document.getElementById("qr-size").value;
-  const ecc = document.getElementById("qr-ecc").value;
-  new QRCode(box, { text: txt, width: size, height: size, correctLevel: QRCode.CorrectLevel[ecc] });
+let QR2_TYPE = "text";
+function qr2Type(t, btn) {
+  QR2_TYPE = t;
+  document.querySelectorAll(".qr2-tabs .pg-tab").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  qr2Fields();
+  qr2Gen();
 }
-function qrDownload() {
+function qr2F(id, label, ph, val) {
+  return `<div><label>${label}</label><input type="text" id="${id}" placeholder="${ph}" value="${val || ""}" oninput="qr2Gen()" /></div>`;
+}
+function qr2Fields() {
+  const el = $("qr2-fields");
+  if (QR2_TYPE === "text") {
+    el.innerHTML = `<label>Text or URL to encode</label><textarea id="qr-text" oninput="qr2Gen()" placeholder="https://example.com"></textarea>`;
+  } else if (QR2_TYPE === "wifi") {
+    el.innerHTML = `<div class="row"><div>${qr2F("qr-w-ssid", "Network name (SSID)", "MyWiFi")}</div><div>${qr2F("qr-w-pass", "Password", "\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022")}</div></div>
+      <div class="row"><div><label>Security</label><select id="qr-w-sec" onchange="qr2Gen()"><option value="WPA" selected>WPA / WPA2 / WPA3</option><option value="WEP">WEP</option><option value="nopass">Open (no password)</option></select></div>
+      <div><label>Hidden network</label><label class="pg-switch"><input type="checkbox" id="qr-w-hid" onchange="qr2Gen()" /><span class="pg-track"></span> Hidden SSID</label></div></div>`;
+  } else if (QR2_TYPE === "email") {
+    el.innerHTML = `<div class="row"><div>${qr2F("qr-e-to", "Email address", "name@example.com")}</div><div>${qr2F("qr-e-sub", "Subject (optional)", "Hello")}</div></div>
+      <label>Message (optional)</label><textarea id="qr-e-body" oninput="qr2Gen()" placeholder="Write your message\u2026"></textarea>`;
+  } else if (QR2_TYPE === "phone") {
+    el.innerHTML = `<div class="row"><div>${qr2F("qr-p-num", "Phone number", "+15551234567")}</div></div>`;
+  } else {
+    el.innerHTML = `<div class="row"><div>${qr2F("qr-s-num", "Phone number", "+15551234567")}</div><div>${qr2F("qr-s-msg", "Message (optional)", "Hi!")}</div></div>`;
+  }
+  qr2Gen();
+}
+function qr2Payload() {
+  const esc = (s) => (s || "").replace(/([\\;,:"])/g, "\\$1");
+  if (QR2_TYPE === "wifi") {
+    const ssid = ($("qr-w-ssid") || {}).value || "";
+    if (!ssid) return "";
+    const sec = $("qr-w-sec").value;
+    const pass = ($("qr-w-pass") || {}).value || "";
+    const hid = $("qr-w-hid") && $("qr-w-hid").checked ? "H;" : "";
+    return `WIFI:T:${sec};S:${esc(ssid)};${sec !== "nopass" ? "P:" + esc(pass) + ";" : ""}${hid};`;
+  }
+  if (QR2_TYPE === "email") {
+    const to = ($("qr-e-to") || {}).value || "";
+    if (!to) return "";
+    const sub = encodeURIComponent(($("qr-e-sub") || {}).value || "");
+    const body = encodeURIComponent(($("qr-e-body") || {}).value || "");
+    return `mailto:${to}?subject=${sub}&body=${body}`;
+  }
+  if (QR2_TYPE === "phone") {
+    const n = ($("qr-p-num") || {}).value || "";
+    return n ? "tel:" + n : "";
+  }
+  if (QR2_TYPE === "sms") {
+    const n = ($("qr-s-num") || {}).value || "";
+    const m = ($("qr-s-msg") || {}).value || "";
+    return n ? `SMSTO:${n}:${m}` : "";
+  }
+  return ($("qr-text") || {}).value || "";
+}
+function qr2Gen() {
+  const box = $("qr-box");
+  if (!box) return;
+  const data = qr2Payload();
+  const status = $("qr2-status");
+  box.innerHTML = "";
+  if (!data) { if (status) status.textContent = "Fill in the fields above \u2014 the QR code updates live."; return; }
+  if (typeof QRCode === "undefined") { if (status) status.textContent = "QR library still loading\u2026"; return; }
+  try {
+    new QRCode(box, {
+      text: data,
+      width: +$("qr-size").value,
+      height: +$("qr-size").value,
+      colorDark: $("qr-fg").value,
+      colorLight: $("qr-bg").value,
+      correctLevel: QRCode.CorrectLevel[$("qr-ecc").value],
+    });
+    if (status) status.textContent = `${data.length} characters encoded \u00b7 level ${$("qr-ecc").value} correction`;
+  } catch (e) {
+    if (status) status.textContent = "Too much data for one QR code \u2014 shorten the text or lower the correction level.";
+  }
+}
+function qr2Download() {
   const c = document.querySelector("#qr-box canvas");
   const img = document.querySelector("#qr-box img");
-  const url = c ? c.toDataURL("image/png") : (img ? img.src : null);
-  if (!url) return;
+  if (!c && !img) return;
   const a = document.createElement("a");
+  let url;
+  if (c) {
+    const margin = +$("qr-margin").value;
+    const out = document.createElement("canvas");
+    const pad = margin * Math.round(c.width / 32);
+    out.width = c.width + pad * 2;
+    out.height = c.height + pad * 2;
+    const ctx = out.getContext("2d");
+    ctx.fillStyle = $("qr-bg").value;
+    ctx.fillRect(0, 0, out.width, out.height);
+    ctx.drawImage(c, pad, pad);
+    url = out.toDataURL("image/png");
+  } else {
+    url = img.src;
+  }
   a.href = url; a.download = "qr-code.png"; a.click();
 }
+function qr2CopyData(btn) {
+  const data = qr2Payload();
+  if (!data) return;
+  (navigator.clipboard ? navigator.clipboard.writeText(data) : Promise.reject()).then(() => {
+    btn.textContent = "Copied!"; setTimeout(() => { btn.textContent = "Copy QR data"; }, 1200);
+  }).catch(() => {});
+}
+if ($("qr2-fields")) qr2Fields();
 
 /* ---- Text Diff Checker (LCS on lines) ---- */
 function dEsc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }

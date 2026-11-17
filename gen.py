@@ -354,20 +354,40 @@ TOOL_BODIES = {
 </div>""",
 
 "qr-code-generator": """
-<div class="panel">
-  <label>Text or URL to encode</label>
-  <textarea id="qr-text" placeholder="https://example.com"></textarea>
-  <div class="row">
-    <div><label>Size</label>
-      <select id="qr-size"><option value="200">200 px</option><option value="300" selected>300 px</option><option value="400">400 px</option><option value="500">500 px</option></select></div>
-    <div><label>Error correction</label>
-      <select id="qr-ecc"><option value="L">L \u2014 smallest</option><option value="M" selected>M \u2014 balanced</option><option value="Q">Q \u2014 robust</option><option value="H">H \u2014 most robust</option></select></div>
+<div class="panel qr2">
+  <div class="pg-tabs qr2-tabs">
+    <button class="pg-tab active" onclick="qr2Type('text', this)">Text / URL</button>
+    <button class="pg-tab" onclick="qr2Type('wifi', this)">WiFi</button>
+    <button class="pg-tab" onclick="qr2Type('email', this)">Email</button>
+    <button class="pg-tab" onclick="qr2Type('phone', this)">Phone</button>
+    <button class="pg-tab" onclick="qr2Type('sms', this)">SMS</button>
   </div>
-  <button class="btn" onclick="qrGen()">Generate QR Code</button>
-  <div id="qr-box" class="qr-box"></div>
-  <button class="btn ghost" onclick="qrDownload()">Download PNG</button>
+  <div id="qr2-fields"></div>
+  <div class="qr2-opts">
+    <div class="row">
+      <div><label>Size</label>
+        <select id="qr-size"><option value="200">200 px</option><option value="300" selected>300 px</option><option value="400">400 px</option><option value="500">500 px</option><option value="600">600 px</option></select></div>
+      <div><label>Error correction</label>
+        <select id="qr-ecc"><option value="L">L \u2014 smallest</option><option value="M" selected>M \u2014 balanced</option><option value="Q">Q \u2014 robust</option><option value="H">H \u2014 most robust</option></select></div>
+      <div><label>Quiet zone</label>
+        <select id="qr-margin"><option value="0">None</option><option value="4" selected>Standard (4)</option><option value="8">Wide (8)</option></select></div>
+    </div>
+    <div class="row qr2-colors">
+      <div><label>Foreground</label><input type="color" id="qr-fg" value="#111827" oninput="qr2Gen()" /></div>
+      <div><label>Background</label><input type="color" id="qr-bg" value="#ffffff" oninput="qr2Gen()" /></div>
+    </div>
+  </div>
+  <div class="qr2-preview">
+    <div id="qr-box" class="qr-box"></div>
+    <p class="tool-note" id="qr2-status"></p>
+    <div class="qr2-dl">
+      <button class="btn" onclick="qr2Download()">Download PNG</button>
+      <button class="btn ghost" onclick="qr2CopyData(this)">Copy QR data</button>
+    </div>
+  </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>""",
+
 "text-diff-checker": """
 <div class="panel">
   <div class="row">
