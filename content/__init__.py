@@ -28,3 +28,9 @@ MEGA = {}
 MEGA.update(_MEGA1)
 MEGA.update(_MEGA2)
 MEGA.update(_MEGA3)
+
+from .blog_meta import BLOG_META as _BMETA, LENGTH_RANGES as _LR, enriched_blocks as _eb, geo_checks as _gc
+BLOG_META = _BMETA
+LENGTH_RANGES = _LR
+blog_enriched_blocks = _eb
+blog_geo_checks = _gc

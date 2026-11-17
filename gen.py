@@ -169,7 +169,7 @@ CAT_SLUG_BY_NAME = {v[0] if isinstance(v, tuple) else v: k for k, v in CAT_PAGES
 def esc(s):
     return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
-def header(title, desc, depth=""):
+def header(title, desc, depth="", extra_head="", og_image="", robots="", canonical=""):
     CHEV_D = '<svg class="dd-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>'
     cat_counts = {}
     for s, _, c, _ in LIVE:
@@ -199,6 +199,10 @@ def header(title, desc, depth=""):
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="MSCALE Tools"/>
 <meta name="twitter:card" content="summary"/>
+{f'<link rel="canonical" href="{canonical}"/>' if canonical else ''}
+{f'<meta name="robots" content="{robots}"/>' if robots else ''}
+{f'<meta property="og:image" content="{og_image}"/>' if og_image else ''}
+{extra_head}
 <script>document.documentElement.setAttribute("data-theme", (function(){{try{{return localStorage.getItem("mscale-theme")||"dark"}}catch(e){{return "dark"}}}})());</script>
 <link rel="stylesheet" href="{depth}assets/style.css"/>
 <script src="{depth}assets/live-tools.js" defer></script>
@@ -1088,70 +1092,337 @@ def article_html(slug, name):
     return "\n".join(out)
 
 
+def _slufigy(s):
+    s = re.sub(r"[^a-z0-9\s-]", "", s.lower()).strip()
+    return re.sub(r"[\s_]+", "-", s)
+
+
+BASE_URL = "https://maisamwork.github.io/MSCALE/"
+
+
+def full_blocks(post):
+    """Base blocks enriched: quick answer + comparison table before the FAQ, conclusion + references after."""
+    from content import blog_enriched_blocks
+    pre, post_extra = blog_enriched_blocks(post["slug"])
+    blocks = list(post["blocks"])
+    faq_i = next((i for i, (k, _) in enumerate(blocks) if k == "faq"), len(blocks))
+    return blocks[:faq_i] + pre + blocks[faq_i:] + post_extra
+
+
+def _h2_ids(blocks):
+    seen, out = {}, []
+    for kind, val in blocks:
+        if kind == "h2":
+            base = _slufigy(val) or "sec"
+            seen[base] = seen.get(base, 0) + 1
+            out.append((base if seen[base] == 1 else f"{base}-{seen[base]}", val))
+    return out
+
+
 def blog_wordcount(post):
     texts = []
-    for kind, val in post["blocks"]:
-        if kind in ("p", "h2", "h3"):
+    for kind, val in full_blocks(post):
+        if kind in ("p", "h2", "h3", "callout"):
             texts.append(val)
         elif kind in ("ul", "ol"):
             texts.extend(val)
         elif kind == "faq":
             texts.extend(f"{q} {a}" for q, a in val)
+        elif kind == "table":
+            texts.extend(str(h) for h in val["headers"])
+            for row in val["rows"]:
+                texts.extend(str(c) for c in row)
+        elif kind == "refs":
+            texts.extend(t for t, _ in val)
     return len(re.findall(r"[A-Za-z0-9'\u2019\-]+", " ".join(texts)))
 
 
 def blog_blocks_html(post):
     out = []
-    for kind, val in post["blocks"]:
+    for kind, val in full_blocks(post):
         if kind == "p":
             out.append(f"<p>{esc(val)}</p>")
         elif kind == "h2":
-            out.append(f'<h2 class="section">{esc(val)}</h2>')
+            out.append(("H2", val))
         elif kind == "h3":
             out.append(f"<h3>{esc(val)}</h3>")
         elif kind in ("ul", "ol"):
             tag = "ul" if kind == "ul" else "ol"
             out.append(f"<{tag}>" + "".join(f"<li>{esc(i)}</li>" for i in val) + f"</{tag}>")
+        elif kind == "table":
+            head = "".join(f"<th>{esc(str(h))}</th>" for h in val["headers"])
+            rows = "".join("<tr>" + "".join(f"<td>{esc(str(c))}</td>" for c in r) + "</tr>" for r in val["rows"])
+            out.append(f'<div class="table-wrap"><table><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div>')
+        elif kind == "callout":
+            out.append(f'<div class="quick-answer"><span class="qa-tag">Quick answer</span><p>{esc(val)}</p></div>')
+        elif kind == "refs":
+            lis = "".join(f'<li><a href="{u}" target="_blank" rel="noopener">{esc(t)}</a></li>' for t, u in val)
+            out.append(f'<ul class="refs">{lis}</ul>')
         elif kind == "faq":
-            out.append('<h2 class="section">Frequently Asked Questions</h2>')
+            out.append('<h2 class="section" id="faqs">Frequently Asked Questions</h2>')
             for q, a in val:
                 out.append(f"<h3>{esc(q)}</h3><p>{esc(a)}</p>")
-    return "\n".join(out)
+    # assign ids to h2s in a second pass
+    ids = iter(_h2_ids(full_blocks(post)))
+    final = []
+    for chunk in out:
+        if isinstance(chunk, tuple) and chunk[0] == "H2":
+            hid, txt = next(ids)
+            final.append(f'<h2 class="section" id="{hid}">{esc(txt)}</h2>')
+        else:
+            final.append(chunk)
+    return "\n".join(final)
+
+
+def build_blog_images():
+    """Generate 16:9 featured images (1200/768/480, WebP + PNG) with the brand gradient."""
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except ImportError:
+        print("Pillow not installed - skipping blog image generation")
+        return False
+    import os
+    os.makedirs(f"{ROOT}/assets/blog", exist_ok=True)
+    for post in BLOG_POSTS:
+        slug, title = post["slug"], post["title"]
+        for w in (1200, 768, 480):
+            h = int(w * 675 / 1200)
+            png, webp = f"{ROOT}/assets/blog/{slug}-{w}.png", f"{ROOT}/assets/blog/{slug}-{w}.webp"
+            if os.path.exists(png) and os.path.exists(webp):
+                continue
+            img = Image.new("RGB", (w, h))
+            dr = ImageDraw.Draw(img)
+            top, bot = (26, 22, 38), (255, 122, 26)
+            for y in range(h):
+                t = y / h
+                dr.line([(0, y), (w, y)], fill=tuple(int(top[i] + (bot[i] - top[i]) * t) for i in range(3)))
+            # subtle grid dots
+            dot = max(1, w // 400)
+            for gx in range(0, w, max(28, w // 24)):
+                for gy in range(0, h, max(28, h // 12)):
+                    dr.ellipse([gx, gy, gx + dot, gy + dot], fill=(255, 255, 255, 18))
+            # brand chip
+            pad = w // 24
+            dr.rounded_rectangle([pad, pad, pad + w // 5, pad + h // 9], radius=h // 24, fill=(255, 122, 26))
+            try:
+                f_small = ImageFont.load_default(size=max(14, h // 18))
+                f_big = ImageFont.load_default(size=max(22, h // 8))
+            except TypeError:
+                f_small = f_big = ImageFont.load_default()
+            dr.text((pad + w // 90, pad + h // 40), "MSCALE Tools", font=f_small, fill=(255, 255, 255))
+            # wrapped title
+            words, lines, cur = title.split(), [], ""
+            for wd in words:
+                trial = (cur + " " + wd).strip()
+                if f_big.getlength(trial) > w - 2 * pad and cur:
+                    lines.append(cur)
+                    cur = wd
+                else:
+                    cur = trial
+            if cur:
+                lines.append(cur)
+            lines = lines[:3]
+            ty = h / 2 - len(lines) * h / 12
+            for ln in lines:
+                dr.text((pad, ty), ln, font=f_big, fill=(255, 255, 255))
+                ty += h / 6
+            # bottom bar
+            dr.rectangle([0, h - h // 14, w, h], fill=(255, 122, 26))
+            img.save(png, optimize=True)
+            try:
+                img.save(webp, quality=82, method=6)
+            except Exception:
+                pass
+    print("blog images: generated/verified", len(BLOG_POSTS) * 2, "files per size set")
+    return True
+
+
+def _post_picture(post, eager=False):
+    from content import BLOG_META
+    m = BLOG_META[post["slug"]]
+    alt = esc(m["featured"]["alt"])
+    sizes = "(max-width: 760px) 100vw, 760px"
+    preload = ' fetchpriority="high"' if eager else ' loading="lazy"'
+    return f"""<figure class="featured">
+  <picture>
+    <source type="image/webp" srcset="../assets/blog/{post['slug']}-480.webp 480w, ../assets/blog/{post['slug']}-768.webp 768w, ../assets/blog/{post['slug']}-1200.webp 1200w" sizes="{sizes}" />
+    <img src="../assets/blog/{post['slug']}-1200.png" srcset="../assets/blog/{post['slug']}-480.png 480w, ../assets/blog/{post['slug']}-768.png 768w, ../assets/blog/{post['slug']}-1200.png 1200w" sizes="{sizes}" alt="{alt}" width="1200" height="675" decoding="async"{preload} />
+  </picture>
+  <figcaption>{esc(m['featured']['caption'])} <span class="img-credit">Image: {esc(m['featured']['credit'])}</span></figcaption>
+</figure>"""
 
 
 def blog_post_html(post):
+    from content import BLOG_META
+    m = BLOG_META[post["slug"]]
+    seo = m["seo"]
     blocks = blog_blocks_html(post)
-    jsonld = json.dumps({
-        "@context": "https://schema.org",
-        "@type": "Article",
-        "headline": post["title"],
-        "description": post["desc"],
-        "datePublished": post["date"],
-        "author": {"@type": "Organization", "name": "MSCALE Tools"},
-    })
-    related = "".join(
-        f'<a class="card" href="../tools/{s}.html"><div class="card-head">{svg_icon(CAT_SLUG_BY_NAME.get(c, "wrench"), "card-ic", hue_of(CAT_SLUG_BY_NAME.get(c, "wrench")))}<h3>{n}</h3></div><p>{d}</p><span class="tag">LIVE</span></a>'
-        for s, n, c, d in LIVE[:4]
+    toc = _h2_ids(full_blocks(post))
+    words = blog_wordcount(post)
+    reading = max(1, round(words / 200))
+    canonical = f"{BASE_URL}blog/{post['slug']}.html"
+    og_img = f"{BASE_URL}assets/blog/{post['slug']}-1200.png"
+    sizes = "(max-width: 760px) 100vw, 760px"
+    meta_desc = esc(seo["meta_desc"])
+    extra_head = (
+        f'<link rel="canonical" href="{canonical}"/>\n'
+        f'<meta name="robots" content="{esc(seo.get("robots", "index, follow"))}"/>\n'
+        f'<meta name="keywords" content="{esc(seo["focus_keyword"] + ", " + ", ".join(seo["secondary_keywords"]))}"/>\n'
+        f'<meta property="og:title" content="{esc(seo["seo_title"])}"/>\n'
+        f'<meta property="og:description" content="{meta_desc}"/>\n'
+        f'<meta property="og:image" content="{og_img}"/>\n'
+        f'<meta property="og:image:width" content="1200"/>\n'
+        f'<meta property="og:image:height" content="675"/>\n'
+        f'<meta property="og:url" content="{canonical}"/>\n'
+        f'<meta property="og:type" content="article"/>\n'
+        f'<meta name="twitter:card" content="summary_large_image"/>\n'
+        f'<meta name="twitter:title" content="{esc(seo["seo_title"])}"/>\n'
+        f'<meta name="twitter:description" content="{meta_desc}"/>\n'
+        f'<meta name="twitter:image" content="{og_img}"/>\n'
+        f'<link rel="preload" as="image" href="../assets/blog/{post["slug"]}-768.webp" imagesrcset="../assets/blog/{post["slug"]}-480.webp 480w, ../assets/blog/{post["slug"]}-768.webp 768w, ../assets/blog/{post["slug"]}-1200.webp 1200w" imagesizes="{sizes}"/>\n'
+    )
+    faq = next((v for k, v in full_blocks(post) if k == "faq"), [])
+    schemas = [
+        {"@context": "https://schema.org", "@type": "Article",
+         "headline": seo["seo_title"], "description": seo["meta_desc"],
+         "image": [f"{BASE_URL}assets/blog/{post['slug']}-1200.png"],
+         "datePublished": m["date"], "dateModified": m["updated"],
+         "inLanguage": "en",
+         "author": {"@type": m["author"]["type"], "name": m["author"]["name"], "url": m["author"]["url"]},
+         "publisher": {"@type": "Organization", "name": "MSCALE Tools",
+                       "logo": {"@type": "ImageObject", "url": BASE_URL + "assets/favicon.svg"}},
+         "mainEntityOfPage": {"@type": "WebPage", "@id": canonical}},
+        {"@context": "https://schema.org", "@type": "BreadcrumbList",
+         "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": BASE_URL},
+            {"@type": "ListItem", "position": 2, "name": "Blog", "item": BASE_URL + "blog/"},
+            {"@type": "ListItem", "position": 3, "name": post["title"], "item": canonical}]},
+    ]
+    if faq:
+        schemas.append({"@context": "https://schema.org", "@type": "FAQPage",
+                        "mainEntity": [{"@type": "Question", "name": q,
+                                        "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]})
+    jsonld = "".join(f'<script type="application/ld+json">{json.dumps(s)}</script>' for s in schemas)
+    toc_html = "".join(f'<a href="#{hid}">{esc(txt)}</a>' for hid, txt in toc)
+    author = m["author"]
+    initials = "".join(w[0] for w in author["name"].split()[:2])
+    other_posts = [p for p in BLOG_POSTS if p["slug"] != post["slug"]]
+    rel_articles = "".join(
+        f'<a class="side-link" href="{p["slug"]}.html"><b>{esc(p["title"])}</b><span>{max(1, round(blog_wordcount(p) / 200))} min read</span></a>'
+        for p in other_posts
+    )
+    rel_tools = "".join(
+        f'<a class="side-link" href="../tools/{s}.html"><b>{n}</b><span>{CAT_SLUG_BY_NAME.get(c, "")}</span></a>'
+        for s, n, c, _ in LIVE if s in m.get("related_tools", [])[:3]
+    )
+    pop_articles = "".join(
+        f'<a class="side-link" href="{p["slug"]}.html"><b>{esc(p["title"])}</b><span>{p["date"]}</span></a>'
+        for p in BLOG_POSTS[:2]
     )
     return (
-        header(f'{post["title"]} | MSCALE Tools Blog', post["desc"], "../")
-        + f"""<nav class="breadcrumb" aria-label="Breadcrumb">
+        header(f'{seo["seo_title"]} | MSCALE Tools Blog', seo["meta_desc"], "../", extra_head=extra_head)
+        + f"""{jsonld}
+<nav class="breadcrumb" aria-label="Breadcrumb">
 <a href="../index.html">{svg_icon("wrench", "crumb-ic")}Home</a>
 <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
 <a href="../blog/">Blog</a>
 <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
 <span>{esc(post["title"])}</span>
 </nav>
-<article class="prose">
-<script type="application/ld+json">{jsonld}</script>
-<p class="post-meta">{post["date"]} &middot; MSCALE Tools</p>
-<h1>{esc(post["title"])}</h1>
-{blocks}
+<div class="post-layout">
+<article class="prose post-full">
+  <div class="post-cats"><a class="chip chip-cat" href="../blog/">{esc(m["category"])}</a></div>
+  <h1>{esc(post["title"])}</h1>
+  <p class="post-lead">{esc(post["desc"])}</p>
+  <div class="post-byline">
+    <span class="avatar" aria-hidden="true">{initials}</span>
+    <div>
+      <b>{esc(author["name"])} <a class="byline-link" href="{author["url"]}">profile</a></b>
+      <span class="post-dates">Published {m["date"]} &middot; Updated {m["updated"]} &middot; {reading} min read</span>
+    </div>
+  </div>
+  {_post_picture(post, eager=True)}
+  {blocks}
 </article>
-<h2 class="section">Try these tools</h2>
-<div class="grid">{related}</div>"""
+<aside class="post-side" aria-label="Article sidebar">
+  <div class="side-box"><div class="side-title">On this page</div><nav class="toc">{toc_html}</nav></div>
+  <div class="side-box"><div class="side-title">Related tools</div>{rel_tools}</div>
+  <div class="side-box"><div class="side-title">Related articles</div>{rel_articles}</div>
+  <div class="side-box"><div class="side-title">Popular articles</div>{pop_articles}</div>
+  <div class="side-box side-news">
+    <div class="side-title">Newsletter</div>
+    <p>New tools and guides, straight to your inbox.</p>
+    <form onsubmit="return nlSub(event)">
+      <input type="email" required placeholder="you@email.com" />
+      <button class="btn" type="submit">Subscribe</button>
+    </form>
+    <div id="nl-msg" class="tool-note"></div>
+  </div>
+</aside>
+</div>
+{ad_slot("post-bottom", "970 \u00d7 120")}
+<section class="cat-sec"><h2 class="section">Try these tools</h2>
+<div class="grid">{"".join(f'<a class="card" href="../tools/{s}.html"><div class="card-head">{svg_icon(CAT_SLUG_BY_NAME.get(c, "wrench"), "card-ic", hue_of(CAT_SLUG_BY_NAME.get(c, "wrench")))}<h3>{n}</h3></div><p>{d}</p><span class="tag live">LIVE</span></a>' for s, n, c, d in LIVE[:4])}</div></section>"""
         + footer("../")
     )
+
+
+def blog_index_html():
+    from content import BLOG_META
+    cards = "".join(
+        f"""<a class="card blog-card" href="{p['slug']}.html">
+<figure class="blog-thumb"><img src="../assets/blog/{p['slug']}-768.webp" onerror="this.onerror=null;this.src='../assets/blog/{p['slug']}-768.png'" alt="{esc(BLOG_META[p['slug']]['featured']['alt'])}" width="768" height="432" loading="lazy" decoding="async" /></figure>
+<div class="blog-card-body"><span class="chip chip-cat">{esc(BLOG_META[p['slug']]['category'])}</span>
+<h3>{esc(p["title"])}</h3>
+<p>{esc(p["desc"])}</p>
+<span class="post-meta">{p["date"]} &middot; {max(1, round(blog_wordcount(p) / 200))} min read</span></div>
+</a>"""
+        for p in BLOG_POSTS
+    )
+    hero = BLOG_POSTS[0]
+    hm = BLOG_META[hero["slug"]]
+    return (
+        header("Blog | MSCALE Tools", "Practical guides on word counts, password security, JSON, images and getting the most from online tools.", "../")
+        + f"""<div class="tool-head"><div class="tool-title">""" + svg_icon("book-open", "tool-ic big") + f"""<h1>Blog</h1></div>
+<p>Practical, in-depth guides from the MSCALE Tools team. Every article is a full read, no fluff.</p></div>
+{ad_slot("blog-top", "970 \u00d7 120")}
+<a class="blog-hero" href="{hero["slug"]}.html">
+  {_post_picture(hero)}
+  <div class="blog-hero-body">
+    <span class="chip chip-cat">Featured &middot; {esc(hm["category"])}</span>
+    <h2>{esc(hero["title"])}</h2>
+    <p>{esc(hero["desc"])}</p>
+    <span class="post-meta">{hm["date"]} &middot; {max(1, round(blog_wordcount(hero) / 200))} min read</span>
+  </div>
+</a>
+<div class="blog-grid">""" + cards + "</div>" + footer("../")
+    )
+
+
+def gen_sitemap():
+    import datetime
+    from xml.dom import minidom
+    urls = [""]
+    for d in sorted(os.listdir(ROOT)):
+        if os.path.isdir(f"{ROOT}/{d}") and os.path.exists(f"{ROOT}/{d}/index.html") and d not in ("assets", "data", "content", "blog", "tools", "__pycache__"):
+            urls.append(f"{d}/")
+    for f in sorted(os.listdir(f"{ROOT}/tools")):
+        if f.endswith(".html") and f != "index.html":
+            urls.append(f"tools/{f}")
+    urls.append("tools/")
+    urls.append("blog/")
+    for f in sorted(os.listdir(f"{ROOT}/blog")):
+        if f.endswith(".html") and f != "index.html":
+            urls.append(f"blog/{f}")
+    today = datetime.date.today().isoformat()
+    lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
+    for u in urls:
+        lines.append(f"<url><loc>{BASE_URL}{u}</loc><lastmod>{today}</lastmod><changefreq>weekly</changefreq></url>")
+    lines.append("</urlset>")
+    with open(f"{ROOT}/sitemap.xml", "w") as f:
+        f.write("\n".join(lines))
+    minidom.parse(f"{ROOT}/sitemap.xml")
+    print(f"sitemap: {len(urls)} URLs, XML valid")
 
 
 def tools_index_html(catalog):
@@ -1229,24 +1500,6 @@ def tools_index_html(catalog):
     </div>
   </div>
 </div>"""
-        + footer("../")
-    )
-
-
-def blog_index_html():
-    cards = "".join(
-        f"""<a class="card blog-card" href="{p['slug']}.html">
-<h3>{esc(p["title"])}</h3>
-<p>{esc(p["desc"])}</p>
-<span class="post-meta">{p["date"]}</span>
-</a>"""
-        for p in BLOG_POSTS
-    )
-    return (
-        header("Blog | MSCALE Tools", "Practical guides on word counts, password security, JSON, images and getting the most from online tools.", "../")
-        + """<div class="tool-head"><div class="tool-title">""" + svg_icon("book-open", "tool-ic big") + """<h1>Blog</h1></div>
-<p>Practical, in-depth guides from the MSCALE Tools team. Every article is a full read, no fluff.</p></div>
-<div class="blog-grid">""" + cards + "</div>"
         + footer("../")
     )
 
@@ -1918,12 +2171,52 @@ def main():
         with open(f"{ROOT}/blog/{post['slug']}.html", "w") as f:
             f.write(blog_post_html(post))
     report = [(s, article_wordcount(CONTENT[s])) for s in TOOL_BODIES]
-    for post in BLOG_POSTS:
-        report.append(("blog/" + post["slug"], blog_wordcount(post)))
     oob = [(s, n) for s, n in report if not (1000 <= n <= 1200)]
     if oob:
-        raise SystemExit("CONTENT WORD COUNT OUT OF RANGE (1000-1200): " + repr(oob))
-    print("word counts OK: %d pages, min %d, max %d" % (len(report), min(n for _, n in report), max(n for _, n in report)))
+        raise SystemExit("TOOL CONTENT WORD COUNT OUT OF RANGE (1000-1200): " + repr(oob))
+    from content import LENGTH_RANGES, blog_geo_checks, BLOG_META
+    for post in BLOG_POSTS:
+        wc = blog_wordcount(post)
+        lo, hi = LENGTH_RANGES[BLOG_META[post["slug"]]["length"]]
+        if not (lo <= wc <= hi):
+            raise SystemExit(f'blog/{post["slug"]}: {wc} words outside {BLOG_META[post["slug"]]["length"]} range {lo}-{hi}')
+    # --- SEO panel validations ---
+    titles = [p["title"] for p in BLOG_POSTS]
+    if len(titles) != len(set(titles)):
+        raise SystemExit("SEO: duplicate article titles")
+    slugs = [p["slug"] for p in BLOG_POSTS]
+    if len(slugs) != len(set(slugs)):
+        raise SystemExit("SEO: duplicate slugs")
+    for post in BLOG_POSTS:
+        m, seo = BLOG_META[post["slug"]], BLOG_META[post["slug"]]["seo"]
+        md = seo["meta_desc"]
+        if not (50 <= len(md) <= 160):
+            raise SystemExit(f'SEO {post["slug"]}: meta description {len(md)} chars (guidance: 50-160)')
+        if len(seo["seo_title"]) > 65:
+            raise SystemExit(f'SEO {post["slug"]}: seo_title {len(seo["seo_title"])} chars > 65')
+        if not seo["focus_keyword"]:
+            raise SystemExit(f'SEO {post["slug"]}: missing focus keyword')
+        blocks = full_blocks(post)
+        h1 = [k for k, _ in blocks if k == "h1"]
+        if h1:
+            raise SystemExit(f'SEO {post["slug"]}: blocks must not contain h1 (template renders the single H1)')
+        seen_h2 = False
+        for k, _ in blocks:
+            if k == "h2":
+                seen_h2 = True
+            elif k == "h3" and not seen_h2:
+                raise SystemExit(f'SEO {post["slug"]}: heading hierarchy broken - h3 before first h2')
+        if not m["featured"].get("alt"):
+            raise SystemExit(f'SEO {post["slug"]}: featured image missing alt text')
+        errs = blog_geo_checks(post, blog_wordcount(post))
+        if errs:
+            raise SystemExit("GEO/AEO checks failed: " + "; ".join(errs))
+    print(f'SEO panel: titles/slugs unique, meta descs in range, H1 + hierarchy OK, alt text OK for {len(BLOG_POSTS)} posts')
+    build_blog_images()
+    gen_sitemap()
+    report_b = [("blog/" + p["slug"], blog_wordcount(p)) for p in BLOG_POSTS]
+    all_wc = [n for _, n in report] + [n for _, n in report_b]
+    print("word counts OK: %d pages, min %d, max %d" % (len(all_wc), min(all_wc), max(all_wc)))
     print(f"catalog: {len(catalog)} entries; pages written")
 
 main()

@@ -913,6 +913,102 @@ nav.main > a:hover::after, nav.main .dd-top:hover::after, nav.main > a.active::a
 }
 @media (max-width: 900px) { .adv-grid { grid-template-columns: 1fr; } .cat-search-row { flex-direction: column; } }
 @media (max-width: 640px) { .mega-grid { grid-template-columns: 1fr; } .adv-grid { grid-template-columns: 1fr; } }
+
+/* ===== Blog system: layout, typography, sidebar, CMS elements ===== */
+.post-layout {
+  display: grid; grid-template-columns: minmax(0, 760px) 280px;
+  gap: 40px; justify-content: center; max-width: 1180px; margin: 0 auto; padding-top: 10px;
+}
+.post-full { min-width: 0; }
+.post-cats { display: flex; gap: 8px; margin-bottom: 14px; }
+.chip-cat {
+  display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: .76rem; font-weight: 600;
+  background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent);
+  text-decoration: none;
+}
+.post-full h1 { font-size: clamp(28px, 4vw, 38px); line-height: 1.2; margin: 0 0 12px; }
+.post-lead { font-size: 1.1rem; color: var(--muted); line-height: 1.65; margin: 0 0 18px; }
+.post-byline { display: flex; align-items: center; gap: 12px; margin: 0 0 20px; }
+.post-byline .avatar {
+  flex: 0 0 44px; width: 44px; height: 44px; border-radius: 50%; display: inline-flex;
+  align-items: center; justify-content: center; font-weight: 700; font-size: .9rem;
+  background: var(--grad); color: #fff;
+}
+.post-byline b { display: block; font-size: .92rem; }
+.byline-link { font-size: .78rem; color: var(--accent); margin-left: 6px; text-decoration: none; }
+.post-dates { font-size: .8rem; color: var(--muted); }
+figure.featured { margin: 0 0 26px; }
+figure.featured img {
+  width: 100%; max-width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover;
+  border-radius: 12px; border: 1px solid var(--border); display: block;
+}
+figure.featured figcaption { font-size: .8rem; color: var(--muted); margin-top: 8px; }
+.img-credit { color: var(--muted); opacity: .75; }
+.post-full p { font-size: 17.5px; line-height: 1.75; margin: 0 0 18px; }
+.post-full h2 { font-size: 28px; line-height: 1.3; margin: 34px 0 14px; scroll-margin-top: 90px; }
+.post-full h3 { font-size: 22px; line-height: 1.35; margin: 26px 0 10px; scroll-margin-top: 90px; }
+.post-full ul, .post-full ol { margin: 0 0 18px; padding-left: 24px; }
+.post-full li { font-size: 17.5px; line-height: 1.75; margin-bottom: 8px; }
+.quick-answer {
+  border-left: 4px solid var(--accent); background: color-mix(in srgb, var(--accent) 7%, var(--card));
+  border-radius: 0 12px 12px 0; padding: 16px 18px; margin: 0 0 22px;
+}
+.qa-tag {
+  display: inline-block; font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 6px;
+}
+.quick-answer p { margin: 0; font-size: 16.5px; }
+.table-wrap { overflow-x: auto; margin: 0 0 22px; border: 1px solid var(--border); border-radius: 12px; }
+.table-wrap table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.table-wrap th { text-align: left; background: var(--card2); padding: 11px 14px; font-weight: 600; }
+.table-wrap td { padding: 11px 14px; border-top: 1px solid var(--border); line-height: 1.5; }
+ul.refs { list-style: none; padding-left: 0; }
+ul.refs li { padding-left: 22px; position: relative; }
+ul.refs li::before { content: "\2197"; position: absolute; left: 0; color: var(--accent); font-size: .85rem; }
+ul.refs a { color: var(--accent2); }
+.post-side { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.side-box { border: 1px solid var(--border); border-radius: var(--r-md, 14px); background: var(--card); padding: 16px; }
+.side-box .side-title { font-size: .78rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.toc { display: flex; flex-direction: column; gap: 2px; }
+.toc a { font-size: .84rem; color: var(--muted); text-decoration: none; padding: 5px 8px; border-radius: 8px; border-left: 2px solid transparent; }
+.toc a:hover { color: var(--accent); background: var(--card2); }
+.side-link { display: flex; flex-direction: column; gap: 2px; padding: 8px 0; text-decoration: none; border-bottom: 1px solid var(--border); }
+.side-link:last-child { border-bottom: 0; }
+.side-link b { font-size: .84rem; color: var(--text); font-weight: 600; line-height: 1.35; }
+.side-link span { font-size: .74rem; color: var(--muted); }
+.side-link:hover b { color: var(--accent); }
+.side-news p { font-size: .8rem; color: var(--muted); margin: 0 0 10px; }
+.side-news form { display: flex; flex-direction: column; gap: 8px; }
+.side-news input { padding: 9px 12px; border-radius: 9px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+.blog-hero {
+  display: grid; grid-template-columns: 1.15fr 1fr; gap: 26px; align-items: center;
+  border: 1px solid var(--border); border-radius: var(--r-lg, 18px); background: var(--card);
+  padding: 22px; margin: 22px 0 30px; text-decoration: none; color: var(--text);
+  transition: transform .2s var(--ease, ease), border-color .2s ease;
+}
+.blog-hero:hover { transform: translateY(-3px); border-color: var(--accent); }
+.blog-hero .featured { margin: 0; }
+.blog-hero-body h2 { font-size: clamp(20px, 2.6vw, 28px); margin: 10px 0; line-height: 1.25; }
+.blog-hero-body p { font-size: .95rem; color: var(--muted); line-height: 1.6; }
+.blog-card .blog-thumb { margin: 0 0 12px; }
+.blog-thumb img {
+  width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover;
+  border-radius: 10px; border: 1px solid var(--border); display: block;
+}
+.blog-card-body { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.blog-card-body h3 { margin: 0; }
+@media (max-width: 1180px) { .post-layout { max-width: 94%; } }
+@media (max-width: 1000px) {
+  .post-layout { grid-template-columns: 1fr; gap: 26px; }
+  .post-side { order: 2; }
+  .blog-hero { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .post-layout { padding-left: 0; padding-right: 0; }
+  .post-full p, .post-full li { font-size: 16.5px; }
+  .post-full h2 { font-size: 24px; }
+  .post-full h3 { font-size: 20px; }
+}
 </style>
 </head>
 <body>
