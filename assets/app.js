@@ -103,7 +103,7 @@ function toolCardHtml(t, catName, hue) {
 function initToolsPage() {
   var grid = document.getElementById("tools-grid");
   if (!grid) return;
-  var state = { cat: "all", q: "", sort: "pop", shown: 48 };
+  var state = { cat: "all", q: "", sort: "pop", shown: 1e9 };
   try {
     var qp = new URLSearchParams(location.search).get("q");
     if (qp) { state.q = qp.toLowerCase(); var si = document.getElementById("tools-search"); if (si) si.value = qp; }
@@ -149,7 +149,7 @@ function initToolsPage() {
   }
 
   var input = document.getElementById("tools-search");
-  if (input) input.addEventListener("input", function () { state.q = input.value; state.shown = 48; render(); });
+  if (input) input.addEventListener("input", function () { state.q = input.value; render(); });
   var sort = document.getElementById("tools-sort");
   if (sort) sort.addEventListener("change", function () { state.sort = sort.value; render(); });
   var side = document.getElementById("tools-side");
@@ -159,11 +159,10 @@ function initToolsPage() {
     side.querySelectorAll(".side-item").forEach(function (b) { b.classList.remove("active"); });
     btn.classList.add("active");
     state.cat = btn.getAttribute("data-cat");
-    state.shown = 48;
     render();
   });
   var more = document.getElementById("tools-more");
-  if (more) more.addEventListener("click", function () { state.shown += 60; render(); });
+  if (more) more.parentNode && more.parentNode.style && (more.parentNode.style.display = "none");
 
   function useCatalog(catalog) {
     (catalog || []).forEach(function (c) {
