@@ -2034,4 +2034,174 @@ function dtBizDays() { var a = _v("bd-a"), b = _v("bd-b");
   setD("wn-date", today);
   setD("bd-a", new Date(today.getFullYear(), today.getMonth(), 1));
   setD("bd-b", today);
+  if ($("sl-time")) attachTimePicker("sl-time", "sl-tv", "07:00");
 })();
+
+/* ---------- MEGA3: advanced calculators ---------- */
+function drawLineChart(cv, series, labels) {
+  if (!cv) return;
+  var ctx = cv.getContext("2d");
+  var W = cv.width, H = cv.height, pad = 44, pw = W - pad - 16, ph = H - 30 - 20;
+  ctx.clearRect(0, 0, W, H);
+  var css = getComputedStyle(document.documentElement);
+  var txt = (css.getPropertyValue("--muted") || "#8b93a7").trim();
+  var line = (css.getPropertyValue("--accent") || "#ff7a1a").trim();
+  var grid = (css.getPropertyValue("--border") || "rgba(255,255,255,.08)").trim();
+  var max = Math.max.apply(null, series), min = Math.min.apply(null, series);
+  if (max === min) max = min + 1;
+  ctx.strokeStyle = grid; ctx.fillStyle = txt; ctx.font = "11px sans-serif"; ctx.lineWidth = 1;
+  for (var g = 0; g <= 4; g++) {
+    var gy = 20 + ph - (ph * g) / 4;
+    ctx.beginPath(); ctx.moveTo(pad, gy); ctx.lineTo(pad + pw, gy); ctx.stroke();
+    ctx.fillText(nfmt(max - ((max - min) * g) / 4, 0), 4, gy + 4);
+  }
+  ctx.strokeStyle = line; ctx.lineWidth = 2.5; ctx.beginPath();
+  for (var i = 0; i < series.length; i++) {
+    var x = pad + (pw * i) / (series.length - 1);
+    var y = 20 + ph - ((series[i] - min) / (max - min)) * ph;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.fillStyle = line;
+  for (var j = 0; j < series.length; j++) {
+    var px = pad + (pw * j) / (series.length - 1);
+    var py = 20 + ph - ((series[j] - min) / (max - min)) * ph;
+    ctx.beginPath(); ctx.arc(px, py, 3, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.fillStyle = txt;
+  var step = Math.ceil(labels.length / 6);
+  for (var k = 0; k < labels.length; k += step) {
+    var lx = pad + (pw * k) / (series.length - 1);
+    ctx.fillText(labels[k], Math.min(lx, W - 30), H - 6);
+  }
+}
+function ci() {
+  var p = _n("ci-p"), m = _n("ci-m"), r = _n("ci-r"), y = _n("ci-y"), n = _n("ci-f") || 12;
+  if (p === null || r === null || y === null) { out("ci-out", "Enter an initial amount, a rate and a number of years.", "result warn"); return; }
+  m = m || 0;
+  var i = r / 100 / n, months = Math.round(y * 12), bal = p, series = [], labels = [];
+  for (var mo = 1; mo <= months; mo++) {
+    bal = bal * (1 + i) + m;
+    if (mo % 12 === 0) { series.push(bal); labels.push("Yr " + mo / 12); }
+  }
+  var contrib = p + m * months, interest = bal - contrib;
+  out("ci-out", "<b>Final balance: " + nfmt(bal) + "</b><br>Total contributions: " + nfmt(contrib) + " &nbsp;\u00b7&nbsp; Interest earned: <b>" + nfmt(interest) + "</b> (" + nfmt((interest / Math.max(contrib, 0.01)) * 100, 1) + "% growth)");
+  drawLineChart($("ci-chart"), series, labels);
+}
+function am() {
+  var P = _n("am-a"), rp = _n("am-r"), y = _n("am-y");
+  if (P === null || rp === null || y === null) { out("am-out", "Enter loan amount, rate and term.", "result warn"); return; }
+  var r = rp / 100 / 12, n = Math.round(y * 12), pay;
+  if (r === 0) pay = P / n; else pay = P * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
+  var bal = P, totInt = 0, rows = "", yearInt = 0, yearPrin = 0;
+  for (var mo = 1; mo <= n; mo++) {
+    var intM = bal * r, prM = pay - intM;
+    bal = Math.max(0, bal - prM); totInt += intM; yearInt += intM; yearPrin += prM;
+    if (mo % 12 === 0 || mo === n) {
+      rows += "<tr><td>Year " + Math.ceil(mo / 12) + "</td><td>" + nfmt(pay * (mo % 12 === 0 ? 12 : mo % 12)) + "</td><td>" + nfmt(yearInt) + "</td><td>" + nfmt(yearPrin) + "</td><td>" + nfmt(bal) + "</td></tr>";
+      yearInt = 0; yearPrin = 0;
+    }
+  }
+  out("am-out", "<b>Monthly payment: " + nfmt(pay) + "</b><br>Total paid: " + nfmt(pay * n) + " &nbsp;\u00b7&nbsp; Total interest: <b>" + nfmt(totInt) + "</b>");
+  $("am-table").innerHTML = "<table class='uc-table'><thead><tr><th>Period</th><th>Paid</th><th>Interest</th><th>Principal</th><th>Balance</th></tr></thead><tbody>" + rows + "</tbody></table>";
+}
+function cal() {
+  var age = _n("cal-age"), h = _n("cal-h"), w = _n("cal-w"), sex = _v("cal-sex"), act = parseFloat(_v("cal-act")) || 1.2;
+  if (age === null || h === null || w === null) { out("cal-out", "Enter age, height and weight.", "result warn"); return; }
+  var bmr = 10 * w + 6.25 * h - 5 * age + (sex === "m" ? 5 : -161);
+  var tdee = bmr * act;
+  out("cal-out", "<b>BMR: " + nfmt(bmr, 0) + " kcal/day</b><br>TDEE (maintenance): <b>" + nfmt(tdee, 0) + " kcal/day</b><br>Lose ~0.5 kg/wk: " + nfmt(tdee - 500, 0) + " &nbsp;\u00b7&nbsp; Gain ~0.5 kg/wk: " + nfmt(tdee + 500, 0));
+}
+function bf() {
+  var sex = _v("bf-sex"), h = _n("bf-h"), neck = _n("bf-neck"), waist = _n("bf-waist"), hip = _n("bf-hip");
+  if (h === null || neck === null || waist === null || (sex === "f" && hip === null)) { out("bf-out", "Enter height, neck and waist" + (sex === "f" ? " and hip measurements." : "."), "result warn"); return; }
+  var bf;
+  if (sex === "m") {
+    if (waist - neck <= 0) { out("bf-out", "Waist must be larger than neck for the formula.", "result warn"); return; }
+    bf = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(h)) - 450;
+  } else {
+    if (waist + hip - neck <= 0) { out("bf-out", "Check the measurements \u2014 waist + hip must exceed neck.", "result warn"); return; }
+    bf = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.221 * Math.log10(h)) - 450;
+  }
+  var cat = bf < 6 ? "Essential fat" : bf < 14 ? "Athletic" : bf < 18 ? "Fit" : bf < 25 ? "Average" : "Above average";
+  if (sex === "f") cat = bf < 14 ? "Essential fat" : bf < 21 ? "Athletic" : bf < 25 ? "Fit" : bf < 32 ? "Average" : "Above average";
+  out("bf-out", "<b>Estimated body fat: " + nfmt(bf, 1) + "%</b><br>Category: " + cat + " &nbsp;\u00b7&nbsp; Lean mass: about " + nfmt(100 - bf, 1) + "% of body weight");
+}
+function orm() {
+  var w = _n("orm-w"), r = _n("orm-r");
+  if (w === null || r === null || r < 1) { out("orm-out", "Enter the weight and reps (at least 1).", "result warn"); return; }
+  if (r > 12) { out("orm-out", "Use a set of 12 reps or fewer \u2014 higher-rep sets do not predict a 1RM reliably.", "result warn"); return; }
+  var epley = w * (1 + r / 30), brz = w * 36 / (37 - r), avg = (epley + brz) / 2;
+  var pcts = [95, 90, 85, 80, 75, 70, 65, 60], rows = "";
+  for (var i = 0; i < pcts.length; i++) {
+    var load = avg * pcts[i] / 100;
+    rows += "<tr><td>" + pcts[i] + "%</td><td>" + nfmt(load, 1) + " kg</td><td>" + (pcts[i] >= 90 ? "1\u20133 reps" : pcts[i] >= 80 ? "4\u20136 reps" : pcts[i] >= 70 ? "8\u201312 reps" : "12+ reps (endurance)") + "</td></tr>";
+  }
+  out("orm-out", "<b>Estimated 1RM: " + nfmt(avg, 1) + " kg</b><br>Epley: " + nfmt(epley, 1) + " &nbsp;\u00b7&nbsp; Brzycki: " + nfmt(brz, 1));
+  $("orm-table").innerHTML = "<table class='uc-table'><thead><tr><th>% of 1RM</th><th>Load</th><th>Typical reps</th></tr></thead><tbody>" + rows + "</tbody></table>";
+}
+function pace() {
+  var d = _n("pace-d"), h = _n("pace-h") || 0, m = _n("pace-m") || 0, s = _n("pace-s") || 0;
+  if (d === null || d <= 0 || (h + m + s) === 0) { out("pace-out", "Enter a distance and a finish time.", "result warn"); return; }
+  var tot = h * 3600 + m * 60 + s;
+  var spk = tot / d, spm = spk * 1.609344, kmh = 3600 / spk;
+  function fmtPace(sec) { var mm = Math.floor(sec / 60), ss = Math.round(sec % 60); if (ss === 60) { mm++; ss = 0; } return mm + ":" + String(ss).padStart(2, "0"); }
+  out("pace-out", "<b>Pace: " + fmtPace(spk) + " /km</b> &nbsp;\u00b7&nbsp; " + fmtPace(spm) + " /mile<br>Speed: " + nfmt(kmh, 2) + " km/h (" + nfmt(kmh / 1.609344, 2) + " mph)<br>Predicted 10K at this pace: " + fmtPace(spk * 10 / 60) + " min \u2014 " + fmtPace(spk * 10) + " total");
+}
+function be() {
+  var f = _n("be-f"), p = _n("be-p"), v = _n("be-v");
+  if (f === null || p === null || v === null) { out("be-out", "Enter fixed costs, price and variable cost.", "result warn"); return; }
+  var margin = p - v;
+  if (margin <= 0) { out("be-out", "Price per unit must exceed variable cost per unit \u2014 with this margin no volume ever breaks even.", "result warn"); return; }
+  var units = Math.ceil(f / margin);
+  out("be-out", "<b>Break-even: " + nfmt(units, 0) + " units</b> &nbsp;\u00b7&nbsp; Revenue needed: " + nfmt(units * p) + "<br>Margin per unit: " + nfmt(margin) + " (" + nfmt(margin / p * 100, 1) + "% of price)");
+}
+function roi() {
+  var ini = _n("roi-i"), fin = _n("roi-f"), y = _n("roi-y");
+  if (ini === null || fin === null || ini <= 0) { out("roi-out", "Enter an initial investment and final value.", "result warn"); return; }
+  var roi = (fin - ini) / ini * 100;
+  var extra = "";
+  if (y !== null && y > 0 && fin > 0) {
+    var cagr = (Math.pow(fin / ini, 1 / y) - 1) * 100;
+    extra = "<br>Annualized (CAGR): <b>" + nfmt(cagr, 2) + "% per year</b> over " + nfmt(y, 1) + " years";
+  }
+  out("roi-out", "<b>ROI: " + nfmt(roi, 2) + "%</b><br>Net gain/loss: " + nfmt(fin - ini) + extra);
+}
+function up() {
+  var pa = _n("up-pa"), sa = _n("up-sa"), pb = _n("up-pb"), sb = _n("up-sb");
+  if (pa === null || sa === null || sa <= 0 || pb === null || sb === null || sb <= 0) { out("up-out", "Enter price and size (same unit) for both products.", "result warn"); return; }
+  var ua = pa / sa, ub = pb / sb;
+  var cheap = ua < ub ? "Product A" : ub < ua ? "Product B" : null;
+  var sav = cheap ? Math.abs(ua - ub) / Math.max(ua, ub) * 100 : 0;
+  out("up-out", "<b>A: " + nfmt(ua, 3) + " per unit</b> &nbsp;\u00b7&nbsp; B: " + nfmt(ub, 3) + " per unit<br>" + (cheap ? "<b>" + cheap + " is cheaper</b> \u2014 you save " + nfmt(sav, 1) + "% per unit." : "Both cost the same per unit."));
+}
+function gr() {
+  var c = _n("gr-c"), w = _n("gr-w"), d = _n("gr-d");
+  if (c === null || w === null || d === null || w <= 0 || w > 100) { out("gr-out", "Enter current grade, exam weight (1\u2013100%) and target.", "result warn"); return; }
+  var need = (d - c * (1 - w / 100)) / (w / 100);
+  if (need <= 0) out("gr-out", "\ud83c\udf89 <b>Target already secured!</b> Even a 0 on the final leaves you at " + nfmt(c * (1 - w / 100), 1) + "%.");
+  else if (need > 100) out("gr-out", "<b>Not reachable:</b> you would need " + nfmt(need, 1) + "% on the final. Best possible overall grade: " + nfmt(c * (1 - w / 100) + 100 * (w / 100), 1) + "%.");
+  else out("gr-out", "<b>You need " + nfmt(need, 1) + "% on the final</b> to reach an overall " + nfmt(d, 1) + "%.");
+}
+function ec() {
+  var w = _n("ec-w"), h = _n("ec-h"), d = _n("ec-d") || 365, p = _n("ec-p");
+  if (w === null || h === null || p === null) { out("ec-out", "Enter watts, hours per day and price per kWh.", "result warn"); return; }
+  var kwhDay = w / 1000 * h, costDay = kwhDay * p;
+  var kwhYear = kwhDay * d;
+  out("ec-out", "<b>" + nfmt(kwhDay, 2) + " kWh/day \u2192 " + nfmt(costDay) + " per day</b><br>Monthly: " + nfmt(costDay * 30.4) + " &nbsp;\u00b7&nbsp; Yearly: <b>" + nfmt(costDay * d) + "</b> (" + nfmt(kwhYear, 0) + " kWh)");
+}
+function sleep() {
+  var tv = _v("sl-tv") || "07:00";
+  var parts = tv.split(":"), wake = (+parts[0]) * 60 + (+parts[1]);
+  var rows = "", times = [];
+  for (var c = 6; c >= 3; c--) {
+    var t = wake - (c * 90 + 15);
+    while (t < 0) t += 1440;
+    var hh = Math.floor(t / 60) % 24, mm = t % 60;
+    var ampm = hh < 12 ? "AM" : "PM", h12 = hh % 12 === 0 ? 12 : hh % 12;
+    var label = h12 + ":" + String(mm).padStart(2, "0") + " " + ampm;
+    times.push(label);
+    rows += "<tr><td>" + c + " cycles</td><td>" + (c * 1.5) + " h sleep</td><td><b>" + label + "</b></td></tr>";
+  }
+  $("sleep-out").innerHTML = "<b>Bedtimes for a " + tv + " wake-up</b> (includes 15 min to fall asleep)<table class='uc-table' style='margin-top:10px'><thead><tr><th>Cycles</th><th>Sleep</th><th>Bedtime</th></tr></thead><tbody>" + rows + "</tbody></table>";
+}

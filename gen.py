@@ -1345,10 +1345,9 @@ def index_page(catalog):
         live_by_cat.setdefault(cs, []).append((s, n))
     cat_cards = ""
     for slug, (name, _, _, _) in CAT_PAGES.items():
-        n = cat_counts.get(slug, 0) + len(live_by_cat.get(slug, []))
-        subs = "".join(f"<a href='tools/{s}.html'>{nm}</a>" for s, nm in live_by_cat.get(slug, [])[:3])
+        n = len(live_by_cat.get(slug, []))
         cat_cards += (f"<a class='cat-card' href='{slug}/'><span class='icon-box' style='color:{hue_of(slug)};background:{hue_of(slug)}22'>{svg_icon(slug)}</span>"
-                      f"<h3>{name}</h3><p>{n} tools<span class='cat-arrow'>{svg_icon('arrow-right')}</span></p><div class='cat-links'>{subs}</div></a>")
+                      f"<h3>{name}</h3><p><span class='cat-count'>{n} live tools</span><span class='cat-arrow'>{svg_icon('arrow-right')}</span></p></a>")
     popular_slugs = ["word-counter", "password-generator", "json-formatter", "case-converter"]
     live_by_slug = {s: (n, c, d) for s, n, c, d in LIVE}
     popular_cards = "".join(
@@ -1360,10 +1359,6 @@ def index_page(catalog):
     featured_cards = "".join(
         f"<a class='card' href='tools/{s}.html'><div class='card-head'>{svg_icon(CAT_SLUG_BY_NAME.get(live_by_slug[s][1], 'wrench'), 'card-ic', hue_of(CAT_SLUG_BY_NAME.get(live_by_slug[s][1], 'wrench')))}<h3>{live_by_slug[s][0]}</h3></div><p>{live_by_slug[s][2]}</p><span class='tag'>LIVE</span></a>"
         for s in featured_slugs if s in live_by_slug
-    )
-    all_cards = "".join(
-        f"<a class='card' href='tools/{s}.html'><div class='card-head'>{svg_icon(CAT_SLUG_BY_NAME.get(c, 'wrench'), 'card-ic', hue_of(CAT_SLUG_BY_NAME.get(c, 'wrench')))}<h3>{n}</h3></div><p>{d}</p><span class='tag'>LIVE</span></a>"
-        for s, n, c, d in LIVE
     )
     blog_cards = "".join(
         f"<a class='card blog-card' href='blog/{p['slug']}.html'><h3>{esc(p['title'])}</h3><p>{esc(p['desc'])}</p><span class='post-meta'>{p['date']}</span></a>"
@@ -1402,9 +1397,6 @@ def index_page(catalog):
 <div class="cat-grid">{cat_cards}</div>
 <div class="sec-head"><h2 class="section">Featured tools</h2><a class="sec-link" href="tools/">Browse everything {svg_icon("arrow-right")}</a></div>
 <div class="grid">{featured_cards}</div>
-{ad_slot("home-pre-all")}
-<h2 class="section" id="all">All live tools</h2>
-<div class="grid" id="tool-list">{all_cards}</div>
 {ad_slot("home-pre-blog")}
 <h2 class="section">From the blog</h2>
 <div class="blog-grid">{blog_cards}</div>

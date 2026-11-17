@@ -773,3 +773,24 @@ html[data-theme="light"] .hero-new::before, html[data-theme="light"] .tools-head
 .in { width: 100%; }
 .uc-fl, .uc-tl { display: block; }
 .shade-cell.base { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* MEGA3: category count chip + canvas chart */
+.cat-count {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  font-size: .78rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.cat-card p { display: flex; align-items: center; gap: 8px; }
+.chart {
+  width: 100%;
+  height: auto;
+  margin-top: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm, 10px);
+  background: color-mix(in srgb, var(--card) 60%, transparent);
+}
