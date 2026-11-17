@@ -67,29 +67,126 @@ function wcRefTable() {
   }
   $("wc-table").innerHTML = h + "</tbody></table>";
 }
+const WC_STOP = new Set(("the,a,an,and,or,but,if,then,else,when,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,down,in,out,on,off,over,under,again,further,once,here,there,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,can,will,just,should,now,is,are,was,were,be,been,being,have,has,had,having,do,does,did,doing,would,could,ought,i,me,my,we,our,you,your,he,him,his,she,her,it,its,they,them,their,what,which,who,whom,this,that,these,those,am,as,until,while,of").split(","));
+function wc2Syllables(w) {
+  w = w.toLowerCase().replace(/[^a-z]/g, "");
+  if (w.length <= 3) return 1;
+  w = w.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, "").replace(/^y/, "");
+  return (w.match(/[aeiouy]{1,2}/g) || ["x"]).length;
+}
+function wc2Flesch(words, sentences, syl) {
+  if (!words || !sentences) return null;
+  const score = 206.835 - 1.015 * (words / sentences) - 84.6 * (syl / words);
+  return Math.max(0, Math.min(100, score));
+}
+function wc2ReadLabel(s) {
+  if (s === null) return { cls: "r-na", lab: "\u2014", note: "Not enough text yet" };
+  if (s >= 90) return { cls: "r-easy", lab: "Very easy", note: "5th grade \u00b7 very simple words" };
+  if (s >= 80) return { cls: "r-easy", lab: "Easy", note: "6th grade \u00b7 easy to read" };
+  if (s >= 70) return { cls: "r-ok", lab: "Fairly easy", note: "7th grade \u00b7 clear and simple" };
+  if (s >= 60) return { cls: "r-ok", lab: "Standard", note: "8th-9th grade \u00b7 plain English" };
+  if (s >= 50) return { cls: "r-mid", lab: "Fairly difficult", note: "10th-12th grade \u00b7 some complexity" };
+  if (s >= 30) return { cls: "r-hard", lab: "Difficult", note: "College level \u00b7 dense wording" };
+  return { cls: "r-hard", lab: "Very difficult", note: "Graduate level \u00b7 best for academics" };
+}
+function wc2Bar(pct, cls) {
+  return `<div class="wc-bar"><div class="wc-bar-fill ${cls || ""}" style="width:${Math.max(2, Math.min(100, pct))}%"></div></div>`;
+}
+function wc2Stats(t) {
+  const trimmed = t.trim();
+  const words = trimmed ? trimmed.split(/\s+/).length : 0;
+  const sentences = (t.match(/[^.!?]+[.!?]+(\s|$)/g) || (trimmed ? [1] : [])).length;
+  const paras = trimmed ? trimmed.split(/\n\s*\n/).filter(p => p.trim()).length : 0;
+  const noSp = t.replace(/\s/g, "").length;
+  const tokens = (t.toLowerCase().match(/[a-z0-9'\u2019-]+/g) || []);
+  const uniq = new Set(tokens).size;
+  const letters = t.replace(/[^\w'\u2019-]/g, "").length;
+  const avgLen = words ? (letters / words).toFixed(1) : "0";
+  let syl = 0;
+  for (const w of tokens) syl += wc2Syllables(w);
+  const flesch = wc2Flesch(words, sentences, syl);
+  const longest = trimmed ? trimmed.split(/(?<=[.!?])\s+/).reduce((a, b) => (b.split(/\s+/).length > a.split(/\s+/).length ? b : a), "") : "";
+  const longestWords = longest ? longest.split(/\s+/).length : 0;
+  return { t, words, sentences, paras, noSp, uniq, avgLen, flesch, longest, longestWords, tokens };
+}
+function wc2Tiles(s) {
+  $("wc-tiles").innerHTML = `
+    <div class="wc-tile"><b>${s.words.toLocaleString()}</b><span>Words</span></div>
+    <div class="wc-tile"><b>${s.t.length.toLocaleString()}</b><span>Characters</span></div>
+    <div class="wc-tile"><b>${s.noSp.toLocaleString()}</b><span>No spaces</span></div>
+    <div class="wc-tile"><b>${s.sentences.toLocaleString()}</b><span>Sentences</span></div>
+    <div class="wc-tile"><b>${s.paras.toLocaleString()}</b><span>Paragraphs</span></div>
+    <div class="wc-tile"><b>${s.uniq.toLocaleString()}</b><span>Unique words</span></div>
+    <div class="wc-tile"><b>${s.avgLen}</b><span>Avg word length</span></div>
+    <div class="wc-tile"><b>${wcDur(s.words, 230)}</b><span>Reading time</span></div>
+    <div class="wc-tile"><b>${wcDur(s.words, 130)}</b><span>Speaking time</span></div>
+    <div class="wc-tile"><b>${wcPages(s.words, 250)}</b><span>Pages \u00b7 Letter</span></div>`;
+}
+function wc2Keywords(s) {
+  const el = $("wc-kw");
+  if (!s.words) { el.innerHTML = '<p class="wc-empty">Start typing to see keyword density.</p>'; return; }
+  const stop = $("wc-kw-stop").checked;
+  const phrases = $("wc-kw-2w").checked;
+  let units = s.tokens.filter(w => w.length >= 3 && (!stop || !WC_STOP.has(w)));
+  if (phrases) {
+    const raw = s.tokens;
+    const ph = [];
+    for (let i = 0; i < raw.length - 1; i++) {
+      if (raw[i].length >= 3 && raw[i + 1].length >= 3 && (!stop || (!WC_STOP.has(raw[i]) && !WC_STOP.has(raw[i + 1])))) ph.push(raw[i] + " " + raw[i + 1]);
+    }
+    units = units.concat(ph);
+  }
+  const freq = new Map();
+  for (const u of units) freq.set(u, (freq.get(u) || 0) + 1);
+  const top = [...freq.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
+  if (!top.length) { el.innerHTML = '<p class="wc-empty">No keywords yet \u2014 keep typing.</p>'; return; }
+  const max = top[0][1];
+  el.innerHTML = top.map(([w, n]) => {
+    const d = ((n / s.words) * 100).toFixed(1);
+    const hot = d > 4 ? " hot" : "";
+    return `<div class="wc-kw-row${hot}"><span class="wc-kw-word">${escHtml(w)}</span><span class="wc-kw-n">${n}\u00d7</span><span class="wc-kw-d">${d}%</span>${wc2Bar((n / max) * 100)}</div>`;
+  }).join("");
+}
+function wc2Readability(s) {
+  const r = wc2ReadLabel(s.flesch);
+  const score = s.flesch === null ? "\u2014" : Math.round(s.flesch);
+  $("wc-read").innerHTML = `
+    <div class="wc-read-card ${r.cls}">
+      <div class="wc-read-score">${score}</div>
+      <div><b>${r.lab}</b><span>${r.note}</span></div>
+    </div>
+    <div class="wc-read-meta"><span>Flesch reading ease</span>${s.longestWords ? `<span>Longest sentence: <b>${s.longestWords} words</b></span>` : ""}</div>`;
+}
+function wc2Social(s) {
+  const limits = [["SEO title", 60], ["Meta description", 160], ["X / Twitter post", 280], ["LinkedIn post", 3000], ["Instagram caption", 2200], ["SMS message", 160]];
+  const n = s.t.length;
+  $("wc-social").innerHTML = limits.map(([name, lim]) => {
+    const pct = (n / lim) * 100;
+    const cls = pct > 100 ? " over" : pct > 85 ? " near" : "";
+    const left = lim - n;
+    const txt = left >= 0 ? `${left.toLocaleString()} left` : `${(-left).toLocaleString()} over`;
+    return `<div class="wc-soc-row"><span class="wc-soc-name">${name}</span><span class="wc-soc-n${cls.trim()}">${txt}</span>${wc2Bar(pct, cls.trim())}</div>`;
+  }).join("");
+}
 function wordCount() {
   const t = $("wc-in").value;
-  const words = t.trim() ? t.trim().split(/\s+/).length : 0;
-  const sentences = (t.match(/[.!?]+(\s|$)/g) || []).length;
-  const paras = t.trim() ? t.trim().split(/\n\s*\n/).filter(Boolean).length : 0;
-  const noSp = t.length ? t.replace(/\s/g, "").length : 0;
-  const uniq = new Set((t.toLowerCase().match(/[a-z0-9'\u2019-]+/g) || [])).size;
-  const avgLen = words ? (t.replace(/\s/g, "").replace(/[^\w'\u2019-]/g, "").length / words).toFixed(1) : "0";
-  $("wc-stats").innerHTML =
-    `<div class="stat"><b>${words}</b><span>Words</span></div>
-     <div class="stat"><b>${t.length}</b><span>Characters</span></div>
-     <div class="stat"><b>${noSp}</b><span>No spaces</span></div>
-     <div class="stat"><b>${sentences}</b><span>Sentences</span></div>
-     <div class="stat"><b>${paras}</b><span>Paragraphs</span></div>
-     <div class="stat"><b>${uniq}</b><span>Unique words</span></div>
-     <div class="stat"><b>${avgLen}</b><span>Avg word length</span></div>
-     <div class="stat"><b>${wcDur(words, 100)}</b><span>Read · slow (100 wpm)</span></div>
-     <div class="stat"><b>${wcDur(words, 230)}</b><span>Read · average (230 wpm)</span></div>
-     <div class="stat"><b>${wcDur(words, 300)}</b><span>Read · fast (300 wpm)</span></div>
-     <div class="stat"><b>${wcDur(words, 130)}</b><span>Speaking (130 wpm)</span></div>
-     <div class="stat"><b>${wcPages(words, 250)}</b><span>Pages · Letter (250 w/p)</span></div>`;
+  const s = wc2Stats(t);
+  wc2Tiles(s); wc2Keywords(s); wc2Readability(s); wc2Social(s);
   if (!$("wc-table").innerHTML) wcRefTable();
 }
+function wc2Clear() { $("wc-in").value = ""; wordCount(); $("wc-in").focus(); }
+function wc2Copy(btn) {
+  const t = $("wc-in").value;
+  if (!t) return;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => {
+    btn.textContent = "Copied!"; setTimeout(() => { btn.textContent = "Copy text"; }, 1200);
+  }).catch(() => {});
+}
+function wc2Sample() {
+  $("wc-in").value = "Content length is one of the quietest ranking factors in modern search. Articles that answer a question completely tend to earn links, keep readers on the page, and give search engines enough context to understand the topic. A good word counter does more than tally characters: it shows reading time, keyword density, and readability so writers can edit with confidence. Aim for clarity first. Short sentences, familiar words, and a logical structure will always beat a padded paragraph. When you finish a draft, check the platform limits below before you publish, because a perfect headline that gets cut off at sixty characters helps nobody.";
+  wordCount();
+}
+if ($("wc-in")) wordCount();
 
 function convertCase(mode) {
   const t = $("case-in").value;

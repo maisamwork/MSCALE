@@ -28,6 +28,7 @@ ICONS = {
     "date-time-tools": '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
     "finance-tools": '<rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>',
     "zap": '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    "gauge": '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
     "smartphone": '<rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/>',
     "book-open": '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
     "shield-check": '<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1 1 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',    "menu": '<line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="18" y2="18"/>',
@@ -637,13 +638,36 @@ TOOL_BODIES = {
   <div id="emi-out" class="result">Enter loan details.</div>
 </div>""",
 "word-counter": """
-<div class="panel">
-  <label>Type or paste text</label>
-  <textarea id="wc-in" oninput="wordCount()" placeholder="Start typing…"></textarea>
-  <div id="wc-stats" class="stat-row"></div>
-  <p class="tool-note">Reference table — pages and time estimates for common document lengths (Letter ≈ 250 words/page, A4 ≈ 500 words/page):</p>
+<div class="panel wc-pro">
+  <div class="wc-toolbar">
+    <span class="wc-live-dot"></span><span class="wc-live-txt">Live counting as you type</span>
+    <span class="wc-tb-spacer"></span>
+    <button class="btn ghost sm" onclick="wc2Sample()">Load sample</button>
+    <button class="btn ghost sm" onclick="wc2Copy(this)">Copy text</button>
+    <button class="btn ghost sm danger" onclick="wc2Clear()">Clear</button>
+  </div>
+  <textarea id="wc-in" oninput="wordCount()" placeholder="Start typing or paste your text here&hellip;"></textarea>
+  <div class="wc-tiles" id="wc-tiles"></div>
+  <div class="wc-cols">
+    <div class="wc-col">
+      <h3 class="wc-h">[[ic zap]] Keyword density</h3>
+      <div class="wc-kw-opts">
+        <label class="pg-switch"><input type="checkbox" id="wc-kw-stop" checked onchange="wordCount()" /><span class="pg-track"></span> Exclude common words</label>
+        <label class="pg-switch"><input type="checkbox" id="wc-kw-2w" onchange="wordCount()" /><span class="pg-track"></span> 2-word phrases</label>
+      </div>
+      <div id="wc-kw" class="wc-kw"></div>
+    </div>
+    <div class="wc-col">
+      <h3 class="wc-h">[[ic gauge]] Readability</h3>
+      <div id="wc-read"></div>
+      <h3 class="wc-h">[[ic smartphone]] Platform limits</h3>
+      <div id="wc-social"></div>
+    </div>
+  </div>
+  <p class="tool-note">Reference table &mdash; pages and time estimates for common document lengths (Letter &asymp; 250 words/page, A4 &asymp; 500 words/page):</p>
   <div id="wc-table" class="wc-table-wrap"></div>
 </div>""",
+
 "case-converter": """
 <div class="panel">
   <label>Your text</label>
@@ -1537,7 +1561,7 @@ def tools_index_html(catalog):
 
 def tool_page(slug, name, cat, desc):
     cat_slug = CAT_SLUG_BY_NAME.get(cat, "calculators")
-    body = TOOL_BODIES[slug]
+    body = re.sub(r"\[\[ic ([a-z0-9-]+)\]\]", lambda m: svg_icon(m.group(1), "ic-inline"), TOOL_BODIES[slug])
     related = [(s, n) for s, n, c, _ in LIVE if c == cat and s != slug][:4]
     rel_html = ""
     if related:

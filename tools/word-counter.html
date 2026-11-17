@@ -41,11 +41,33 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Word Counter", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Count words, characters, sentences and paragraphs, plus estimated reading time.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg><h1>Word Counter</h1></div><p>Count words, characters, sentences and paragraphs, plus estimated reading time.</p></div>
 
-<div class="panel">
-  <label>Type or paste text</label>
-  <textarea id="wc-in" oninput="wordCount()" placeholder="Start typing…"></textarea>
-  <div id="wc-stats" class="stat-row"></div>
-  <p class="tool-note">Reference table — pages and time estimates for common document lengths (Letter ≈ 250 words/page, A4 ≈ 500 words/page):</p>
+<div class="panel wc-pro">
+  <div class="wc-toolbar">
+    <span class="wc-live-dot"></span><span class="wc-live-txt">Live counting as you type</span>
+    <span class="wc-tb-spacer"></span>
+    <button class="btn ghost sm" onclick="wc2Sample()">Load sample</button>
+    <button class="btn ghost sm" onclick="wc2Copy(this)">Copy text</button>
+    <button class="btn ghost sm danger" onclick="wc2Clear()">Clear</button>
+  </div>
+  <textarea id="wc-in" oninput="wordCount()" placeholder="Start typing or paste your text here&hellip;"></textarea>
+  <div class="wc-tiles" id="wc-tiles"></div>
+  <div class="wc-cols">
+    <div class="wc-col">
+      <h3 class="wc-h"><svg class="ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Keyword density</h3>
+      <div class="wc-kw-opts">
+        <label class="pg-switch"><input type="checkbox" id="wc-kw-stop" checked onchange="wordCount()" /><span class="pg-track"></span> Exclude common words</label>
+        <label class="pg-switch"><input type="checkbox" id="wc-kw-2w" onchange="wordCount()" /><span class="pg-track"></span> 2-word phrases</label>
+      </div>
+      <div id="wc-kw" class="wc-kw"></div>
+    </div>
+    <div class="wc-col">
+      <h3 class="wc-h"><svg class="ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg> Readability</h3>
+      <div id="wc-read"></div>
+      <h3 class="wc-h"><svg class="ic-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2"/><path d="M12 18h.01"/></svg> Platform limits</h3>
+      <div id="wc-social"></div>
+    </div>
+  </div>
+  <p class="tool-note">Reference table &mdash; pages and time estimates for common document lengths (Letter &asymp; 250 words/page, A4 &asymp; 500 words/page):</p>
   <div id="wc-table" class="wc-table-wrap"></div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
