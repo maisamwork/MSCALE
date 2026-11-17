@@ -1006,14 +1006,28 @@ TOOL_BODIES = {
   </div>
 </div>""",
 "lorem-ipsum-generator": """
-<div class="panel">
-  <div class="row">
-    <div><label>Paragraphs</label><input type="number" id="lorem-n" value="3" min="1" max="20" /></div>
-    <div><label>Sentences per paragraph</label><input type="number" id="lorem-s" value="4" min="1" max="20" /></div>
+<div class="panel lr2">
+  <div class="lr2-types">
+    <button class="lr2-type active" id="lr2-t-paras" onclick="lr2Type('paras', this)">Paragraphs</button>
+    <button class="lr2-type" id="lr2-t-sents" onclick="lr2Type('sents', this)">Sentences</button>
+    <button class="lr2-type" id="lr2-t-words" onclick="lr2Type('words', this)">Words</button>
+    <button class="lr2-type" id="lr2-t-lists" onclick="lr2Type('lists', this)">HTML lists</button>
   </div>
-  <button class="btn" onclick="genLorem()">Generate</button>
-  <div id="lorem-out" class="result mono"></div>
+  <div class="row">
+    <div><label id="lr2-n-label">Paragraphs</label><input type="number" id="lorem-n" value="3" min="1" max="50" oninput="lr2Live()" /></div>
+    <div id="lr2-s-wrap"><label>Sentences per paragraph</label><input type="number" id="lorem-s" value="4" min="1" max="30" oninput="lr2Live()" /></div>
+    <div id="lr2-start-wrap"><label class="lr2-opt"><input type="checkbox" id="lr2-start" checked onchange="lr2Gen()" style="width:auto" /> Start with &ldquo;Lorem ipsum dolor sit amet&rdquo;</label></div>
+  </div>
+  <div class="lr2-stats" id="lr2-stats"></div>
+  <div id="lorem-out" class="result mono lr2-out"></div>
+  <div class="lr2-actions">
+    <button class="btn" onclick="lr2Gen()">Regenerate</button>
+    <button class="btn ghost" onclick="lr2Copy(this)">Copy text</button>
+    <button class="btn ghost" onclick="lr2CopyHtml(this)">Copy HTML</button>
+    <button class="btn ghost" onclick="lr2Download()">Download .txt</button>
+  </div>
 </div>""",
+
 "word-frequency-counter": """
 <div class="panel">
   <label>Text to analyze</label>

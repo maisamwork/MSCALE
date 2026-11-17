@@ -822,22 +822,99 @@ function sortLines(mode) {
 }
 
 const LOREM_WORDS = "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi aliquip ex ea commodo consequat duis aute irure in reprehenderit voluptate velit esse cillum eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt culpa qui officia deserunt mollit anim id est laborum".split(" ");
-function genLorem() {
-  const paras = Math.min(parseInt($("lorem-n").value) || 3, 20);
-  const sentences = Math.min(parseInt($("lorem-s").value) || 4, 20);
-  const rand = (a) => a[Math.floor(Math.random() * a.length)];
-  const result = [];
-  for (let p = 0; p < paras; p++) {
-    const s = [];
-    for (let i = 0; i < sentences; i++) {
-      const len = 6 + Math.floor(Math.random() * 12);
-      const words = Array.from({ length: len }, () => rand(LOREM_WORDS));
-      s.push(words[0][0].toUpperCase() + words[0].slice(1) + " " + words.slice(1).join(" ") + ".");
-    }
-    result.push(s.join(" "));
-  }
-  out("lorem-out", result.join("\n\n"), "mono");
+let LR2_TYPE = "paras";
+function lr2Type(t, btn) {
+  LR2_TYPE = t;
+  ["paras", "sents", "words", "lists"].forEach(k => $("lr2-t-" + k).classList.toggle("active", k === t));
+  const nLabel = $("lr2-n-label"), sWrap = $("lr2-s-wrap");
+  if (t === "paras") { nLabel.textContent = "Paragraphs"; sWrap.style.display = "block"; $("lr2-start-wrap").style.display = "block"; }
+  else if (t === "sents") { nLabel.textContent = "Sentences"; sWrap.style.display = "none"; $("lr2-start-wrap").style.display = "block"; }
+  else if (t === "words") { nLabel.textContent = "Words"; sWrap.style.display = "none"; $("lr2-start-wrap").style.display = "none"; }
+  else { nLabel.textContent = "List items"; sWrap.style.display = "none"; $("lr2-start-wrap").style.display = "none"; }
+  lr2Gen();
 }
+function lr2Sentence(minW, maxW) {
+  const len = minW + Math.floor(Math.random() * (maxW - minW + 1));
+  const words = Array.from({ length: len }, () => LOREM_WORDS[Math.floor(Math.random() * LOREM_WORDS.length)]);
+  return words[0][0].toUpperCase() + words[0].slice(1) + " " + words.slice(1).join(" ") + ".";
+}
+function lr2Paragraph(sents, startClassic) {
+  const s = [];
+  for (let i = 0; i < sents; i++) s.push(lr2Sentence(6, 17));
+  let p = s.join(" ");
+  if (startClassic) p = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " + p;
+  return p;
+}
+function lr2Text() {
+  const n = Math.min(parseInt($("lorem-n").value) || 3, 50);
+  const sents = Math.min(parseInt($("lorem-s").value) || 4, 30);
+  const classic = $("lr2-start") && $("lr2-start").checked;
+  if (LR2_TYPE === "paras") {
+    const arr = [];
+    for (let p = 0; p < n; p++) arr.push(lr2Paragraph(sents, classic && p === 0));
+    return arr.join("\n\n");
+  }
+  if (LR2_TYPE === "sents") {
+    const arr = [];
+    for (let i = 0; i < n; i++) arr.push(classic && i === 0 ? "Lorem ipsum dolor sit amet, consectetur adipiscing elit." : lr2Sentence(6, 17));
+    return arr.join(" ");
+  }
+  if (LR2_TYPE === "words") {
+    const arr = [];
+    for (let i = 0; i < n; i++) arr.push(LOREM_WORDS[Math.floor(Math.random() * LOREM_WORDS.length)]);
+    return arr.join(" ").replace(/^\w/, c => c.toUpperCase()) + ".";
+  }
+  const arr = [];
+  for (let i = 0; i < n; i++) arr.push(lr2Sentence(4, 10).replace(/\.$/, ""));
+  return arr;
+}
+function lr2Stats(text) {
+  const words = text.trim().split(/\s+/).length;
+  const chars = text.length;
+  $("lr2-stats").innerHTML = `
+    <div class="jf-chip"><b>${words.toLocaleString()}</b><span>words</span></div>
+    <div class="jf-chip"><b>${chars.toLocaleString()}</b><span>characters</span></div>
+    <div class="jf-chip"><b>${lr2Kb(new Blob([text]).size)}</b><span>size</span></div>`;
+}
+function lr2Kb(n) { return n < 1024 ? n + " B" : (n / 1024).toFixed(1) + " KB"; }
+function lr2Html() {
+  const t = lr2Text();
+  if (LR2_TYPE === "paras") return t.split("\n\n").map(p => "<p>" + escHtml(p) + "</p>").join("\n");
+  if (LR2_TYPE === "lists") return "<ul>\n" + t.map(li => "  <li>" + escHtml(li) + "</li>").join("\n") + "\n</ul>";
+  return "<p>" + escHtml(Array.isArray(t) ? t.join(" ") : t) + "</p>";
+}
+function lr2Gen() {
+  const t = lr2Text();
+  const text = Array.isArray(t) ? t.join("\n") : t;
+  $("lorem-out").textContent = text;
+  lr2Stats(text);
+}
+function lr2Live() { clearTimeout(LR2_TIMER); LR2_TIMER = setTimeout(lr2Gen, 300); }
+let LR2_TIMER = null;
+function lr2Copy(btn) {
+  const t = $("lorem-out").textContent;
+  if (!t) return;
+  (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => {
+    btn.textContent = "Copied!"; setTimeout(() => { btn.textContent = "Copy text"; }, 1200);
+  }).catch(() => {});
+}
+function lr2CopyHtml(btn) {
+  const h = lr2Html();
+  (navigator.clipboard ? navigator.clipboard.writeText(h) : Promise.reject()).then(() => {
+    btn.textContent = "HTML copied!"; setTimeout(() => { btn.textContent = "Copy HTML"; }, 1200);
+  }).catch(() => {});
+}
+function lr2Download() {
+  const t = $("lorem-out").textContent;
+  if (!t) return;
+  const blob = new Blob([t], { type: "text/plain" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "lorem-ipsum.txt";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+if ($("lorem-out")) lr2Gen();
 
 function wordFreq() {
   const stop = new Set("the a an and or but of to in on at for with by from as is are was were be been being it its this that these those i you he she they we not no do does did have has had will would can could should may might must about into over after".split(" "));

@@ -1293,6 +1293,17 @@ ul.refs a { color: var(--accent2); }
 .dfw.same { color: var(--soft); }
 .dfw.add { background: rgba(34,197,94,.18); color: #16a34a; font-weight: 600; }
 .dfw.del { background: rgba(239,68,68,.18); color: #dc2626; text-decoration: line-through; }
+
+/* ===== Lorem Ipsum Generator (advanced) ===== */
+.lr2-types { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.lr2-type { background: var(--card2, rgba(255,255,255,.04)); border: 1px solid var(--line); color: var(--soft); border-radius: 20px; padding: 7px 14px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all .15s; }
+.lr2-type.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.lr2-type:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+.lr2-opt { display: flex; align-items: center; gap: 8px; font-size: 13.5px; white-space: nowrap; padding-top: 22px; }
+.lr2-stats { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+.lr2-stats:empty { display: none; }
+.lr2-out { max-height: 380px; overflow: auto; white-space: pre-wrap; }
+.lr2-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 </style>
 </head>
 <body>
