@@ -975,40 +975,90 @@ function romanConvert(mode) {
 }
 
 /* ---------- Image ---------- */
-function imgLoaded() {
-  const file = $("img-file").files[0];
+let IR2_IMG = null, IR2_ORIG_SIZE = 0, IR2_ORIG_NAME = "image";
+function ir2Kb(n) { return n < 1024 ? n + " B" : n < 1048576 ? (n / 1024).toFixed(1) + " KB" : (n / 1048576).toFixed(2) + " MB"; }
+function ir2Load() {
+  const file = ($("ir2-file") || {}).files && $("ir2-file").files[0];
   if (!file) return;
+  IR2_ORIG_SIZE = file.size;
+  IR2_ORIG_NAME = (file.name || "image").replace(/\.[^.]+$/, "");
   const img = new Image();
   img.onload = () => {
-    $("img-w").value = img.width;
-    $("img-h").value = img.height;
-    $("img-info").textContent = `Original: ${img.width}×${img.height} (${(file.size / 1024).toFixed(0)} KB)`;
+    IR2_IMG = img;
+    $("ir2-w").value = img.width;
+    $("ir2-h").value = img.height;
+    $("ir2-before").src = img.src;
+    $("ir2-meta-a").textContent = `${img.width}\u00d7${img.height} \u00b7 ${ir2Kb(file.size)}`;
+    $("ir2-controls").style.display = "block";
+    ir2Apply();
   };
   img.src = URL.createObjectURL(file);
 }
-function resizeImage() {
-  const file = $("img-file").files[0];
-  if (!file) return;
-  const img = new Image();
-  img.onload = () => {
-    const w = parseInt($("img-w").value) || img.width;
-    const h = $("img-lock").checked ? Math.round(w * img.height / img.width) : (parseInt($("img-h").value) || img.height);
-    const fmt = $("img-fmt").value;
-    const q = parseInt($("img-q").value) / 100;
-    const canvas = document.createElement("canvas");
-    canvas.width = w; canvas.height = h;
-    canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-    const url = canvas.toDataURL("image/" + fmt, q);
-    $("img-preview").src = url;
-    $("img-preview").style.display = "block";
-    const link = $("img-download");
-    link.href = url;
-    link.download = "resized." + (fmt === "jpeg" ? "jpg" : fmt);
-    link.style.display = "inline-block";
-    $("img-info").textContent = `${img.width}×${img.height} → ${w}×${h}`;
-  };
-  img.src = URL.createObjectURL(file);
+function ir2Scale(p) {
+  if (!IR2_IMG) return;
+  $("ir2-lock").checked = true;
+  $("ir2-w").value = Math.max(1, Math.round(IR2_IMG.width * p / 100));
+  $("ir2-h").value = Math.max(1, Math.round(IR2_IMG.height * p / 100));
+  ir2Apply();
 }
+function ir2Fit(w, h) {
+  if (!IR2_IMG) return;
+  $("ir2-lock").checked = false;
+  $("ir2-w").value = w;
+  $("ir2-h").value = h;
+  ir2Apply();
+}
+function ir2OnW() {
+  if (!IR2_IMG) return;
+  const w = parseInt($("ir2-w").value);
+  if ($("ir2-lock").checked && w > 0) $("ir2-h").value = Math.max(1, Math.round(w * IR2_IMG.height / IR2_IMG.width));
+  ir2Apply();
+}
+function ir2OnH() {
+  if (!IR2_IMG) return;
+  const h = parseInt($("ir2-h").value);
+  if ($("ir2-lock").checked && h > 0) $("ir2-w").value = Math.max(1, Math.round(h * IR2_IMG.width / IR2_IMG.height));
+  ir2Apply();
+}
+function ir2Q() { $("ir2-qv").textContent = $("ir2-q").value; ir2Apply(); }
+function ir2Apply() {
+  if (!IR2_IMG) return;
+  const w = parseInt($("ir2-w").value), h = parseInt($("ir2-h").value);
+  if (!w || !h || w < 1 || h < 1) return;
+  const fmt = $("ir2-fmt").value;
+  const q = parseInt($("ir2-q").value) / 100;
+  const canvas = document.createElement("canvas");
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (fmt === "jpeg") { ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, w, h); }
+  ctx.drawImage(IR2_IMG, 0, 0, w, h);
+  const url = canvas.toDataURL("image/" + fmt, q);
+  const prev = $("ir2-preview");
+  prev.src = url;
+  const bytes = Math.round((url.length - "data:image/png;base64,".length) * 3 / 4);
+  const saved = IR2_ORIG_SIZE ? Math.max(0, Math.round((1 - bytes / IR2_ORIG_SIZE) * 100)) : 0;
+  $("ir2-meta-b").textContent = `${w}\u00d7${h} \u00b7 ~${ir2Kb(bytes)}` + (saved > 0 ? ` \u00b7 ${saved}% smaller` : "");
+  const link = $("ir2-download");
+  link.href = url;
+  link.download = IR2_ORIG_NAME + "-" + w + "x" + h + "." + (fmt === "jpeg" ? "jpg" : fmt);
+  link.style.display = "inline-block";
+}
+(function () {
+  const drop = $("ir2-drop");
+  if (!drop) return;
+  ["dragover", "dragenter"].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add("drag"); }));
+  ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.remove("drag"); }));
+  drop.addEventListener("drop", (e) => {
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (!f || !/^image\//.test(f.type)) return;
+    try {
+      const dt = new DataTransfer();
+      dt.items.add(f);
+      $("ir2-file").files = dt.files;
+    } catch (err) { /* older browsers: use input directly */ }
+    ir2Load();
+  });
+})();
 
 /* ---------- Color ---------- */
 function genPalette() {

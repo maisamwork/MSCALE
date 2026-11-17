@@ -1077,21 +1077,54 @@ TOOL_BODIES = {
   <div id="roman-out" class="result big"></div>
 </div>""",
 "image-resizer": """
-<div class="panel">
-  <label>Choose image (stays on your device)</label>
-  <input type="file" id="img-file" accept="image/*" onchange="imgLoaded()" />
-  <div class="row">
-    <div><label>Width (px)</label><input type="number" id="img-w" /></div>
-    <div><label>Height (px)</label><input type="number" id="img-h" /></div>
-    <div><label>Format</label><select id="img-fmt"><option value="jpeg">JPG</option><option value="png">PNG</option><option value="webp">WebP</option></select></div>
-    <div><label>Quality (%)</label><input type="number" id="img-q" value="90" min="10" max="100" /></div>
+<div class="panel ir2">
+  <div class="ir2-drop" id="ir2-drop" onclick="document.getElementById('ir2-file').click()">
+    [[ic image-tools]]
+    <b>Drop an image here</b> or click to browse
+    <span>Everything stays on your device \u2014 nothing is uploaded</span>
+    <input type="file" id="ir2-file" accept="image/*" onchange="ir2Load()" />
   </div>
-  <label><input type="checkbox" id="img-lock" checked style="width:auto" /> Lock aspect ratio</label>
-  <button class="btn" onclick="resizeImage()">Resize & convert</button>
-  <p id="img-info" style="color:var(--muted);font-size:13px"></p>
-  <img id="img-preview" alt="preview" />
-  <a id="img-download" class="btn" style="display:none">↓ Download</a>
+  <div id="ir2-controls" style="display:none">
+    <div class="ir2-presets">
+      <span class="ir2-pl">Quick scale:</span>
+      <button class="ir2-preset" onclick="ir2Scale(25)">25%</button>
+      <button class="ir2-preset" onclick="ir2Scale(50)">50%</button>
+      <button class="ir2-preset" onclick="ir2Scale(75)">75%</button>
+      <button class="ir2-preset" onclick="ir2Scale(100)">100%</button>
+      <span class="ir2-pl">Sizes:</span>
+      <button class="ir2-preset" onclick="ir2Fit(1920,1080)">1920\u00d71080</button>
+      <button class="ir2-preset" onclick="ir2Fit(1200,675)">1200\u00d7675</button>
+      <button class="ir2-preset" onclick="ir2Fit(1080,1080)">1080\u00d71080</button>
+      <button class="ir2-preset" onclick="ir2Fit(800,600)">800\u00d7600</button>
+      <button class="ir2-preset" onclick="ir2Fit(400,400)">400\u00d7400</button>
+    </div>
+    <div class="row">
+      <div><label>Width (px)</label><input type="number" id="ir2-w" oninput="ir2OnW()" /></div>
+      <div><label>Height (px)</label><input type="number" id="ir2-h" oninput="ir2OnH()" /></div>
+      <div><label>Format</label><select id="ir2-fmt" onchange="ir2Apply()"><option value="jpeg">JPG</option><option value="png">PNG</option><option value="webp" selected>WebP</option></select></div>
+      <div><label>Quality: <span id="ir2-qv">90</span>%</label><input type="range" id="ir2-q" min="10" max="100" value="90" class="pg-slider" oninput="ir2Q()" /></div>
+    </div>
+    <label class="pg-switch"><input type="checkbox" id="ir2-lock" checked onchange="ir2Apply()" /><span class="pg-track"></span> Lock aspect ratio</label>
+    <div class="ir2-compare">
+      <div class="ir2-side">
+        <span class="ir2-tag">Before</span>
+        <img id="ir2-before" alt="Original image" />
+        <p class="ir2-meta" id="ir2-meta-a"></p>
+      </div>
+      <div class="ir2-arrow">\u2192</div>
+      <div class="ir2-side">
+        <span class="ir2-tag ir2-tag-after">After</span>
+        <img id="ir2-preview" alt="Resized preview" />
+        <p class="ir2-meta" id="ir2-meta-b"></p>
+      </div>
+    </div>
+    <div class="ir2-actions">
+      <button class="btn" onclick="ir2Apply()">Resize &amp; convert</button>
+      <a id="ir2-download" class="btn" style="display:none" download>\u2193 Download</a>
+    </div>
+  </div>
 </div>""",
+
 "palette-generator": """
 <div class="panel">
   <label>Base color (hex)</label>
