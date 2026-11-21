@@ -971,35 +971,60 @@ TOOL_BODIES = {
 </div>""",
 
 "age-calculator": """
+
 <div class="panel ag2">
   <label>Date of birth</label>
   <input type="text" id="age-dob" readonly placeholder="Pick your date of birth" oninput="ageCalc()">
   <div class="row">
     <div><label>Compare with (defaults to today)</label><input type="text" id="ag2-on" readonly placeholder="Today" /></div>
+    <div style="align-self:end"><button class="btn ghost" onclick="ag2Today()">Compare with today</button></div>
   </div>
   <div class="pct2-result" id="ag2-big">&mdash;</div>
+  <div class="jf-stats" id="ag2-chips"></div>
   <table class="wc-table ag2-table"><tbody>
-    <tr><th>Total months</th><td id="ag2-months">\u2014</td></tr>
-    <tr><th>Total weeks</th><td id="ag2-weeks">\u2014</td></tr>
-    <tr><th>Total days</th><td id="ag2-days">\u2014</td></tr>
-    <tr><th>Total hours</th><td id="ag2-hours">\u2014</td></tr>
-    <tr><th>Next birthday in</th><td id="ag2-next">\u2014</td></tr>
-    <tr><th>Day of birth</th><td id="ag2-dow">\u2014</td></tr>
+    <tr><th>Total months</th><td id="ag2-months">&mdash;</td></tr>
+    <tr><th>Total weeks</th><td id="ag2-weeks">&mdash;</td></tr>
+    <tr><th>Total days</th><td id="ag2-days">&mdash;</td></tr>
+    <tr><th>Total hours</th><td id="ag2-hours">&mdash;</td></tr>
+    <tr><th>Total minutes</th><td id="ag2-mins">&mdash;</td></tr>
+    <tr><th>Next birthday in</th><td id="ag2-next">&mdash;</td></tr>
+    <tr><th>Day of birth</th><td id="ag2-dow">&mdash;</td></tr>
   </tbody></table>
-</div>""",
+  <label>Milestones ahead</label>
+  <div class="jf-stats" id="ag2-mile"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="ag2Copy(this)">Copy summary</button>
+  </div>
+</div>
+""",
 
 "loan-emi-calculator": """
+
 <div class="panel ln2">
+  <div class="lr2-types" style="margin-bottom:10px">
+    <button type="button" class="lr2-type" onclick="ln2Term(5)">5 years</button>
+    <button type="button" class="lr2-type" onclick="ln2Term(10)">10 years</button>
+    <button type="button" class="lr2-type" onclick="ln2Term(15)">15 years</button>
+    <button type="button" class="lr2-type active" onclick="ln2Term(30)">30 years</button>
+  </div>
   <div class="row">
     <div><label>Loan amount</label><input type="number" id="emi-p" value="250000" oninput="emiCalc()" /></div>
     <div><label>Interest rate (% / year)</label><input type="number" id="emi-r" value="7.5" step="0.01" oninput="emiCalc()" /></div>
     <div><label>Term (years)</label><input type="number" id="emi-n" value="30" oninput="emiCalc()" /></div>
+    <div><label>Extra / month (prepay)</label><input type="number" id="emi-x" value="0" min="0" oninput="emiCalc()" /></div>
   </div>
   <div class="pct2-result" id="ln2-big">&mdash;</div>
+  <div class="jf-stats" id="ln2-chips"></div>
   <div class="ci2-bars" id="ln2-bars"></div>
-  <p class="tool-note">Payment schedule (first years shown \u2014 principal vs interest each year)</p>
+  <p class="tool-note" id="ln2-pay"></p>
+  <div class="lr2-actions" style="margin:10px 0">
+    <button class="btn ghost" onclick="ln2Csv()">Download full schedule (CSV)</button>
+    <button class="btn ghost" onclick="ln2Copy(this)">Copy summary</button>
+  </div>
+  <p class="tool-note">Payment schedule (year by year &mdash; principal vs interest, includes prepayments)</p>
   <div class="uc2-table" id="ln2-table"></div>
-</div>""",
+</div>
+""",
 
 "word-counter": """
 <div class="panel wc-pro">
@@ -1259,6 +1284,7 @@ TOOL_BODIES = {
   <div id="pg-multi" class="pg-multi"></div>
 </div>""",
 "color-converter": """
+
 <div class="panel cc2">
   <div class="cc2-picker">
     <input type="color" id="col-cc" value="#ff7000" oninput="cc2FromPicker()" aria-label="Pick color" />
@@ -1273,9 +1299,14 @@ TOOL_BODIES = {
     <div class="cc2-big" id="col-swatch"></div>
     <div class="cc2-big cc2-comp" id="cc2-comp" title="Complementary"></div>
   </div>
+  <label>WCAG contrast</label>
+  <div class="jf-stats" id="cc2-contrast"></div>
+  <label>Tints &amp; shades (click to copy)</label>
+  <div id="cc2-ramps" class="cc2-ramps"></div>
   <p class="tool-note">Click any value to copy:</p>
   <div id="col-out" class="cc2-fmts"></div>
-</div>""",
+</div>
+""",
 "random-number-generator": """
 <div class="panel rn2">
   <div class="row">
@@ -1535,6 +1566,7 @@ TOOL_BODIES = {
 </div>""",
 
 "hash-generator": """
+
 <div class="panel hg2">
   <label>Text to hash &mdash; updates live, click any hash to copy</label>
   <textarea id="hash-in" oninput="hashGen()" placeholder="Type anything&hellip;">hello world</textarea>
@@ -1545,7 +1577,20 @@ TOOL_BODIES = {
     <label class="pg-switch"><input type="checkbox" id="hg2-s512" checked onchange="hashGen()" /><span class="pg-track"></span> SHA-512</label>
   </div>
   <div id="hash-out" class="result mono"></div>
-</div>""",
+
+  <h3 style="margin:22px 0 4px;font-size:17px">Hash a file instead</h3>
+  <p class="tool-note">Drop any file to get its checksums &mdash; ideal for verifying downloads. Files are hashed locally and never uploaded.</p>
+  <div class="bi2-drop" id="hg2-drop" ondragover="bi2Drag(event)" ondragleave="bi2Undrag(event)" ondrop="hf2Drop(event)" onclick="hf2Pick()">
+    <p><b>Drop a file here</b></p>
+    <p class="tool-note">or click to choose one</p>
+  </div>
+  <input type="file" id="hg2-file" style="display:none" onchange="hf2File(this.files[0])">
+  <div class="jf-stats" id="hg2-fstats"></div>
+  <label>Verify against an expected checksum (optional)</label>
+  <input id="hg2-expect" placeholder="Paste the SHA-256 the download page gave you&hellip;" oninput="hf2Check()">
+  <div id="hg2-fout" class="result mono"></div>
+</div>
+""",
 
 "jwt-decoder": """
 <div class="panel jw2">

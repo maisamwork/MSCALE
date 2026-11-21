@@ -41,6 +41,7 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Color Converter", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Convert colors between HEX, RGB and HSL with a live preview swatch.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><h1>Color Converter</h1></div><p>Convert colors between HEX, RGB and HSL with a live preview swatch.</p></div>
 
+
 <div class="panel cc2">
   <div class="cc2-picker">
     <input type="color" id="col-cc" value="#ff7000" oninput="cc2FromPicker()" aria-label="Pick color" />
@@ -55,9 +56,14 @@
     <div class="cc2-big" id="col-swatch"></div>
     <div class="cc2-big cc2-comp" id="cc2-comp" title="Complementary"></div>
   </div>
+  <label>WCAG contrast</label>
+  <div class="jf-stats" id="cc2-contrast"></div>
+  <label>Tints &amp; shades (click to copy)</label>
+  <div id="cc2-ramps" class="cc2-ramps"></div>
   <p class="tool-note">Click any value to copy:</p>
   <div id="col-out" class="cc2-fmts"></div>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the Color Converter?</h2>

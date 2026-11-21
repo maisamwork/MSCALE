@@ -142,44 +142,138 @@ function ageCalc() {
   let y = on.getFullYear() - dob.getFullYear(), m2 = on.getMonth() - dob.getMonth(), d = on.getDate() - dob.getDate();
   if (d < 0) { m2--; d += new Date(on.getFullYear(), on.getMonth(), 0).getDate(); }
   if (m2 < 0) { y--; m2 += 12; }
-  const days = Math.floor((on - dob) / 86400000);
-  $("ag2-big").innerHTML = `${y} <span class="pct2-big-sub-inline">years</span> ${m2} <span class="pct2-big-sub-inline">months</span> ${d} <span class="pct2-big-sub-inline">days</span>`;
+  const msTot = Math.max(0, on - dob), days = Math.floor(msTot / 86400000);
+  $("ag2-big").innerHTML = y + ' <span class="pct2-big-sub-inline">years</span> ' + m2 + ' <span class="pct2-big-sub-inline">months</span> ' + d + ' <span class="pct2-big-sub-inline">days</span>';
   $("ag2-months").textContent = (y * 12 + m2).toLocaleString();
   $("ag2-weeks").textContent = Math.floor(days / 7).toLocaleString();
   $("ag2-days").textContent = days.toLocaleString();
   $("ag2-hours").textContent = (days * 24).toLocaleString();
+  const mins = $("ag2-mins");
+  if (mins) mins.textContent = (days * 1440).toLocaleString();
   let nb = new Date(on.getFullYear(), dob.getMonth(), dob.getDate());
   if (nb < on) nb = new Date(on.getFullYear() + 1, dob.getMonth(), dob.getDate());
   const toNb = Math.ceil((nb - on) / 86400000);
-  $("ag2-next").textContent = `${toNb} day${toNb === 1 ? "" : "s"} (${nb.toLocaleDateString(undefined, { month: "short", day: "numeric" })})`;
+  $("ag2-next").textContent = toNb + " day" + (toNb === 1 ? "" : "s") + " (" + nb.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + ", " + nb.toLocaleDateString(undefined, { weekday: "long" }) + ")";
   $("ag2-dow").textContent = dob.toLocaleDateString(undefined, { weekday: "long" });
+  const chips = $("ag2-chips");
+  if (chips) chips.innerHTML =
+    '<span class="jf-chip"><b>' + (msTot / 1000).toLocaleString(undefined, { maximumFractionDigits: 0 }) + "</b>seconds alive</span>" +
+    '<span class="jf-chip"><b>' + y + "y " + m2 + "m</b>exact</span>" +
+    '<span class="jf-chip"><b>' + Math.round(days / 365.25 * 10) / 10 + "</b>decimal years</span>" +
+    '<span class="jf-chip"><b>' + Math.floor(on.getFullYear() - dob.getFullYear()) + "</b>birthdays so far</span>";
+  const mile = $("ag2-mile");
+  if (mile) {
+    const marks = [
+      { at: 1000, label: "1,000 days" }, { at: 5000, label: "5,000 days" },
+      { at: 10000, label: "10,000 days" }, { at: 20000, label: "20,000 days" },
+      { at: Math.round(1e9 / 86400), label: "1 billion seconds" },
+      { at: 1000 * 365.25, label: "1,000,000 hours (approx)" }
+    ];
+    const items = marks
+      .filter((k) => k.at > days)
+      .slice(0, 4)
+      .map((k) => {
+        const when = new Date(dob.getTime() + k.at * 86400000);
+        const inDays = Math.ceil((when - on) / 86400000);
+        return '<span class="jf-chip"><b>' + k.label + "</b>" + inDays.toLocaleString() + " d \u00b7 " + when.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }) + "</span>";
+      });
+    mile.innerHTML = items.join("") || '<span class="jf-chip ok"><b>all in</b>every listed milestone is behind you</span>';
+  }
 }
+function ag2Today() { const el = $("ag2-on"); if (el) { el.value = ""; delete el.dataset.date; } ageCalc(); }
+function ag2Copy(btn) {
+  const get = (id) => ($(id) || {}).textContent || "";
+  const t = "Age: " + (document.getElementById("ag2-big") || {}).textContent.trim() +
+    " \u00b7 Total days: " + get("#ag2-days").replace(/[,\u00a0]/g, "").trim() +
+    " \u00b7 Next birthday: " + get("#ag2-next").trim();
+  copyText(t, btn);
+}
+if ($("age-dob")) ageCalc();
 
 function emiCalc() {
-  const P = parseFloat($("emi-p").value), r = parseFloat($("emi-r").value) / 100 / 12, n = parseInt($("emi-n").value) * 12;
-  if (!P || isNaN(r) || !n) { $("ln2-big").innerHTML = "\u2014"; return; }
-  const emi = r === 0 ? P / n : P * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
-  const total = emi * n, interest = total - P;
-  $("ln2-big").innerHTML = `${emi.toFixed(2)}<span class="pct2-big-sub">monthly payment \u00b7 ${n} payments</span>`;
-  const max = Math.max(P, interest, 1);
-  $("ln2-bars").innerHTML = `
-    <div class="ci2-bar-row"><span>Principal</span><div class="wc-bar"><div class="wc-bar-fill" style="width:${(P / max * 100).toFixed(1)}%"></div></div><b>${(P / total * 100).toFixed(1)}%</b></div>
-    <div class="ci2-bar-row"><span>Interest</span><div class="wc-bar"><div class="wc-bar-fill near" style="width:${(interest / max * 100).toFixed(1)}%"></div></div><b>${(interest / total * 100).toFixed(1)}%</b></div>`;
-  const bal0 = P;
-  let bal = P, rows = [], yInt = 0, yPrin = 0;
-  for (let i = 1; i <= n; i++) {
-    const int = bal * r;
-    const prin = emi - int;
+  const P = parseFloat($("emi-p").value), rRate = parseFloat($("emi-r").value) / 100 / 12;
+  let n = parseInt($("emi-n").value) * 12;
+  const extra = parseFloat($("emi-x").value) || 0;
+  const big = $("ln2-big");
+  if (!big) return;
+  if (!P || isNaN(rRate) || !n || n <= 0) { big.innerHTML = "\u2014"; const c = $("ln2-chips"); if (c) c.innerHTML = ""; return; }
+  const emi = rRate === 0 ? P / n : P * rRate * Math.pow(1 + rRate, n) / (Math.pow(1 + rRate, n) - 1);
+  const pay = emi + extra;
+  // base loan totals (no prepayment)
+  const total0 = emi * n, int0 = total0 - P;
+  // amortize with the actual payment (incl. extra) for real payoff time + interest
+  let bal = P, m = 0, intX = 0;
+  const rows = [];
+  let yInt = 0, yPrin = 0;
+  const cap = n + 600;
+  if (pay <= P * rRate) {
+    big.innerHTML = '<span class="error">Payment must exceed the monthly interest (' + (P * rRate).toFixed(2) + ')</span>';
+    const c = $("ln2-chips"); if (c) c.innerHTML = "";
+    const t = $("ln2-table"); if (t) t.innerHTML = "";
+    const b = $("ln2-bars"); if (b) b.innerHTML = "";
+    return;
+  }
+  while (bal > 0.005 && m < cap) {
+    const int = bal * rRate;
+    const prin = Math.min(pay - int, bal);
     bal -= prin;
-    yInt += int; yPrin += prin;
-    if (i % 12 === 0 || i === n) {
-      rows.push([Math.ceil(i / 12), yPrin, yInt, Math.max(0, bal)]);
+    intX += int; yInt += int; yPrin += prin;
+    m++;
+    if (m % 12 === 0 || bal <= 0.005) {
+      rows.push([Math.ceil(m / 12), yPrin, yInt, Math.max(0, bal)]);
       yInt = 0; yPrin = 0;
     }
   }
-  $("ln2-table").innerHTML = `<table class="wc-table"><thead><tr><th>Year</th><th>Principal paid</th><th>Interest paid</th><th>Balance left</th></tr></thead><tbody>` +
-    rows.map(([y, p, i2, b]) => `<tr><td>${y}</td><td><b>${p.toFixed(0)}</b></td><td style="color:#f59e0b">${i2.toFixed(0)}</td><td>${b.toFixed(0)}</td></tr>`).join("") + `</tbody></table>`;
+  const totalX = pay * m, intXsave = int0 - intX;
+  const ms = (mm) => Math.floor(mm / 12) + "y " + Math.round(mm % 12) + "mo";
+  big.innerHTML = emi.toFixed(2) + '<span class="pct2-big-sub">monthly payment \u00b7 ' + n + " payments</span>";
+  const chips = $("ln2-chips");
+  if (chips) {
+    let h =
+      '<span class="jf-chip"><b>' + totalX.toFixed(0) + "</b>total paid</span>" +
+      '<span class="jf-chip"><b>' + intX.toFixed(0) + "</b>total interest</span>" +
+      '<span class="jf-chip"><b>' + ms(m) + "</b>payoff time</span>" +
+      '<span class="jf-chip"><b>' + Math.round((totalX / 12) * 100) / 100 + "</b>per year</span>";
+    if (extra > 0) {
+      h += '<span class="jf-chip ok"><b>' + ms(Math.max(0, n - m)) + "</b>earlier</span>" +
+        '<span class="jf-chip ok"><b>' + Math.round(intXsave).toLocaleString() + "</b>interest saved</span>";
+    }
+    chips.innerHTML = h;
+  }
+  const max = Math.max(P, intX, 1);
+  const bars = $("ln2-bars");
+  if (bars) bars.innerHTML =
+    '<div class="ci2-bar-row"><span>Principal</span><div class="wc-bar"><div class="wc-bar-fill" style="width:' + (P / (P + intX) * 100).toFixed(1) + '%"></div></div><b>' + (P / (P + intX) * 100).toFixed(1) + "%</b></div>" +
+    '<div class="ci2-bar-row"><span>Interest</span><div class="wc-bar"><div class="wc-bar-fill near" style="width:' + (intX / (P + intX) * 100).toFixed(1) + '%"></div></div><b>' + (intX / (P + intX) * 100).toFixed(1) + "%</b></div>";
+  const note = $("ln2-pay");
+  if (note) note.textContent = extra > 0
+    ? "You pay " + pay.toFixed(2) + "/month \u2014 clears the loan in " + ms(m) + " instead of " + ms(n) + " and saves " + Math.round(intXsave).toLocaleString() + " in interest."
+    : "Pay a little extra each month to see how much faster the loan clears.";
+  EM2_ROWS = rows.map(([y, p, i2, b]) => [y, p, i2, b]);
+  EM2_META = { amount: P, rate: rRate * 1200, emi: emi, pay: pay, months: m, interest: intX };
+  const t = $("ln2-table");
+  if (t) {
+    let h = '<table class="wc-table"><thead><tr><th>Year</th><th>Principal paid</th><th>Interest paid</th><th>Balance left</th></tr></thead><tbody>';
+    const show = rows.slice(0, 50);
+    h += show.map(([y, p, i2, b]) => "<tr><td>" + y + "</td><td><b>" + p.toFixed(0) + "</b></td><td style=\"color:#f59e0b\">" + i2.toFixed(0) + "</td><td>" + b.toFixed(0) + "</td></tr>").join("");
+    if (rows.length > 50) h += '<tr><td colspan="4" style="color:var(--soft)">&mdash; " + (rows.length - 50) + " more years in the CSV \u2014</td></tr>';
+    h += "</tbody></table>";
+    t.innerHTML = h;
+  }
 }
+function ln2Term(y) { if ($("emi-n")) $("emi-n").value = String(y); emiCalc(); }
+function ln2Csv() {
+  if (!EM2_ROWS.length) return;
+  const meta = EM2_META;
+  let csv = "Loan amount," + meta.amount + "\nInterest rate %/year," + meta.rate + "\nMonthly payment," + meta.pay + "\nPayoff months," + meta.months + "\nTotal interest," + meta.interest.toFixed(2) + "\n\nYear,Principal paid,Interest paid,Balance left\n";
+  csv += EM2_ROWS.map(([y, p, i2, b]) => [y, p.toFixed(2), i2.toFixed(2), b.toFixed(2)].join(",")).join("\n");
+  dlBytes(csv, "loan-schedule.csv", "text/csv");
+}
+function ln2Copy(btn) {
+  const t = "Monthly payment: " + (parseFloat($("emi-p").value) ? $("ln2-big").textContent.trim() : "\u2014");
+  copyText(t, btn);
+}
+let EM2_ROWS = [], EM2_META = {};
 if ($("emi-p")) emiCalc();
 
 /* ---------- Text ---------- */
@@ -4606,3 +4700,123 @@ function sleep() {
   }
   $("sleep-out").innerHTML = "<b>Bedtimes for a " + tv + " wake-up</b> (includes 15 min to fall asleep)<table class='uc-table' style='margin-top:10px'><thead><tr><th>Cycles</th><th>Sleep</th><th>Bedtime</th></tr></thead><tbody>" + rows + "</tbody></table>";
 }
+
+
+/* ---------- File hashing (Hash Generator) ---------- */
+function hf2Algos() {
+  var out = [];
+  [["1", "SHA-1"], ["256", "SHA-256"], ["384", "SHA-384"], ["512", "SHA-512"]].forEach(function (a) {
+    var el = document.getElementById("hg2-s" + a[0]);
+    if (el && el.checked) out.push(a);
+  });
+  return out;
+}
+function hf2Digest(bytes, algo) {
+  return crypto.subtle.digest("SHA-" + algo, bytes).then(function (h) {
+    return Array.from(new Uint8Array(h)).map(function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+  });
+}
+let HF2_LAST = {};
+async function hf2File(f) {
+  const box = document.getElementById("hg2-fout"), stats = document.getElementById("hg2-fstats");
+  if (!box) return;
+  if (!f) return;
+  const algos = hf2Algos();
+  if (!algos.length) { box.innerHTML = "<span class='error'>Tick at least one algorithm above.</span>"; return; }
+  box.innerHTML = "Hashing <b>" + escHtml(f.name) + "</b>\u2026";
+  try {
+    const buf = await f.arrayBuffer();
+    HF2_LAST = {};
+    for (const [n, label] of algos) HF2_LAST[label] = await hf2Digest(buf, n);
+    const size = (f.size / 1024).toFixed(1) + " KB";
+    if (stats) stats.innerHTML =
+      '<span class="jf-chip"><b>' + escHtml(f.name) + "</b>" + size + '</span>' +
+      '<span class="jf-chip"><b>' + algos.length + "</b>hashes</span>" +
+      '<span class="jf-chip"><b>local</b>never uploaded</span>';
+    box.innerHTML = Object.entries(HF2_LAST).map(function (e) {
+      return '<div class="hg2-row"><b>' + e[0] + '</b><code class="clickable" onclick="copyText(this.textContent,this)' + '">' + e[1] + "</code></div>";
+    }).join("");
+    hf2Check();
+  } catch (e) {
+    box.innerHTML = "<span class='error'>Could not read that file.</span>";
+  }
+}
+function hf2Drop(ev) { bi2Undrag(ev); const f = ((ev.dataTransfer && ev.dataTransfer.files) || [])[0]; if (f) hf2File(f); }
+function hf2Pick() { const inp = document.getElementById("hg2-file"); if (inp) inp.click(); }
+function hf2Check() {
+  const wob = document.getElementById("hg2-fout");
+  if (!wob || wob.querySelector(".error")) {
+    if (wob) wob.innerHTML = wob.innerHTML; /* keep */
+  }
+  const want = (document.getElementById("hg2-expect").value || "").trim().toLowerCase();
+  if (!want) {
+    const stats = document.getElementById("hg2-fstats");
+    if (stats && HF2_LAST && Object.keys(HF2_LAST).length) {
+      const c = stats.querySelector(".jf-chip-bad, .jf-chip.ok");
+      if (c) c.remove();
+    }
+    return;
+  }
+  Object.entries(HF2_LAST).forEach(function (e) {
+    if (e[1] === want) wob.insertAdjacentHTML("afterbegin", '<div class="jf-stats" style="margin:0 0 6px"><span class="jf-chip ok"><b>MATCH</b>' + e[0] + " verified \u2014 the file is bit-for-bit identical.</span></div>");
+  });
+}
+/* ---------- Color contrast + tint/shade ramps (Color Converter) ---------- */
+function cc2Parse(colStr) {
+  const s = (colStr || "").trim().toLowerCase();
+  let m = s.match(/^#([0-9a-f]{6})$/);
+  if (m) return [parseInt(m[1].slice(0, 2), 16), parseInt(m[1].slice(2, 4), 16), parseInt(m[1].slice(4, 6), 16)];
+  m = s.match(/^#([0-9a-f]{3})$/);
+  if (m) return m[1].split("").map(function (c) { return parseInt(c + c, 16); });
+  m = s.match(/^rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)/);
+  if (m) return [+m[1], +m[2], +m[3]];
+  return null;
+}
+function cc2Lum(rgb) {
+  const lin = rgb.map(function (v) {
+    const c = v / 255;
+    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+}
+function cc2Ratio(fg, bg) {
+  const a = cc2Lum(fg), b = cc2Lum(bg);
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+function cc2CcChip(ratio, label) {
+  const aa = ratio >= 4.5, aaa = ratio >= 7;
+  const cls = !aa ? "jf-chip-bad" : aaa ? "ok" : "";
+  return '<span class="jf-chip ' + cls + '"><b>' + ratio.toFixed(1) + ":1</b>on " + label + (aaa ? " \u00b7 AAA" : aa ? " \u00b7 AA" : " \u00b7 fails AA") + "</span>";
+}
+function cc2Extras() {
+  const rgb = cc2Parse(($("col-in") || {}).value);
+  if (!rgb) return;
+  const wrap = document.getElementById("cc2-contrast");
+  if (wrap) {
+    const rw = cc2Ratio(rgb, [255, 255, 255]), rb = cc2Ratio(rgb, [0, 0, 0]);
+    wrap.innerHTML = cc2CcChip(rw, "white") + cc2CcChip(rb, "black") +
+      '<span class="jf-chip"><b>' + (rw >= rb ? "white" : "black") + "</b>best text on this colour</span>";
+  }
+  const ramps = document.getElementById("cc2-ramps");
+  if (ramps) {
+    const mix = function (t, other) {
+      return rgb.map(function (v, i) { return Math.round(v + (other[i] - v) * t).toString(16).padStart(2, "0"); });
+    };
+    const hex2 = function (rg) { return "#" + rg.map(function (x) { return (Number(x).toString(16).padStart(2, "0")); }).join(""); };
+    const hexStr = function (parts) { return "#" + parts.join(""); };
+    let h = "";
+    [0.8, 0.6, 0.4, 0.2].forEach(function (t) { h += '<button type="button" class="cc2-swatch" style="background:' + hexStr(mix(t, [255, 255, 255])) + '" data-c="' + hexStr(mix(t, [255, 255, 255])) + '" onclick="copyText(this.dataset.c,this)" title="Tint ' + Math.round(t * 100) + '%"></button>'; });
+    h += '<button type="button" class="cc2-swatch" style="background:' + hex2(rgb) + '" data-c="' + hex2(rgb) + '" onclick="copyText(this.dataset.c,this)" title="Base"></button>';
+    [0.2, 0.4, 0.6, 0.8].forEach(function (t) { h += '<button type="button" class="cc2-swatch" style="background:' + hexStr(mix(t, [0, 0, 0])) + '" data-c="' + hexStr(mix(t, [0, 0, 0])) + '" onclick="copyText(this.dataset.c,this)" title="Shade ' + Math.round(t * 100) + '%"></button>'; });
+    ramps.innerHTML = h;
+  }
+}
+(function () {
+  const old = colorConvert;
+  colorConvert = function () { old(); cc2Extras(); };
+  const oldPick = cc2FromPicker;
+  cc2FromPicker = function () { oldPick(); cc2Extras(); };
+  const oldRand = cc2Random;
+  cc2Random = function () { oldRand(); cc2Extras(); };
+  cc2Extras();
+})();

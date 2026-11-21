@@ -41,6 +41,7 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Hash Generator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Generate SHA-1, SHA-256 and SHA-512 hashes of any text instantly in your browser.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>Hash Generator</h1></div><p>Generate SHA-1, SHA-256 and SHA-512 hashes of any text instantly in your browser.</p></div>
 
+
 <div class="panel hg2">
   <label>Text to hash &mdash; updates live, click any hash to copy</label>
   <textarea id="hash-in" oninput="hashGen()" placeholder="Type anything&hellip;">hello world</textarea>
@@ -51,7 +52,20 @@
     <label class="pg-switch"><input type="checkbox" id="hg2-s512" checked onchange="hashGen()" /><span class="pg-track"></span> SHA-512</label>
   </div>
   <div id="hash-out" class="result mono"></div>
+
+  <h3 style="margin:22px 0 4px;font-size:17px">Hash a file instead</h3>
+  <p class="tool-note">Drop any file to get its checksums &mdash; ideal for verifying downloads. Files are hashed locally and never uploaded.</p>
+  <div class="bi2-drop" id="hg2-drop" ondragover="bi2Drag(event)" ondragleave="bi2Undrag(event)" ondrop="hf2Drop(event)" onclick="hf2Pick()">
+    <p><b>Drop a file here</b></p>
+    <p class="tool-note">or click to choose one</p>
+  </div>
+  <input type="file" id="hg2-file" style="display:none" onchange="hf2File(this.files[0])">
+  <div class="jf-stats" id="hg2-fstats"></div>
+  <label>Verify against an expected checksum (optional)</label>
+  <input id="hg2-expect" placeholder="Paste the SHA-256 the download page gave you&hellip;" oninput="hf2Check()">
+  <div id="hg2-fout" class="result mono"></div>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the Hash Generator?</h2>

@@ -1444,6 +1444,19 @@ ul.refs a { color: var(--accent2); }
 #icr2-wrap { position: relative; display: inline-block; max-width: 100%; }
 #icr2-wrap img { max-width: 100%; display: block; cursor: crosshair; user-select: none; }
 .icr2-box { position: absolute; border: 2px dashed var(--accent); background: rgba(255, 112, 0, .13); display: none; pointer-events: none; }
+
+
+/* ===== Batch 10: Loan EMI / Age / File Hash / Color ramps ===== */
+.jf-chip.ok { border-color: var(--ok); }
+.jf-chip.ok b { color: var(--ok); }
+.cc2-ramps { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+.cc2-swatch { width: 52px; height: 52px; border-radius: var(--r-sm); border: 2px solid var(--border); cursor: pointer; transition: transform .12s ease, border-color .12s ease; }
+.cc2-swatch:hover { transform: scale(1.08); border-color: var(--text); }
+.hg2-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+.hg2-row b { min-width: 64px; font-size: 13px; }
+.hg2-row code { font-size: 12.5px; word-break: break-all; text-align: left; cursor: pointer; padding: 4px 6px; border-radius: var(--r-sm); background: var(--bg2); flex: 1; }
+#hg2-drop { text-align: center; padding: 26px 10px; }
+@media (max-width: 640px) { .cc2-swatch { width: 40px; height: 40px; } }
 </style>
 </head>
 <body>
