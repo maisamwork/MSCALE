@@ -5162,3 +5162,62 @@ document.addEventListener("keydown", function (e) {
   e.preventDefault();
   rnYesNo();
 });
+
+
+/* ---------- CB2: shared upgrades for the calculator engine (22 tools) ---------- */
+var CB2_N = 0;
+var CB2_FNS = ["si", "avg", "sqrt", "pow", "cirA", "cirC", "triA", "rectA", "facCalc", "gcdCalc",
+  "primeCalc", "n2wCalc", "quadCalc", "arCalc", "pmCalc", "logCalc", "hrsCalc", "fuelCalc",
+  "cbrtCalc", "pctChCalc", "hypCalc", "ratioCalc"];
+function cb2Stamp() {
+  var d = new Date();
+  return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") +
+    ":" + String(d.getSeconds()).padStart(2, "0");
+}
+function cb2After() {
+  CB2_N++;
+  var st = document.getElementById("cb2-meta");
+  if (st) st.innerHTML = rn2Chip(String(CB2_N), "calculations this visit") + rn2Chip(cb2Stamp(), "last update");
+}
+CB2_FNS.forEach(function (fn) {
+  var orig = window[fn] || eval(fn);
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); cb2After(); };
+});
+function cb2Copy(fn, btn) {
+  var el = document.getElementById(fn + "-out");
+  if (!el) return;
+  var t = String(el.textContent || "").replace(/\s+/g, " ").trim();
+  if (t && t !== "Fill in the fields to see the result.") copyText(t, btn);
+}
+function cb2Reset() {
+  document.querySelectorAll(".panel input, .panel select").forEach(function (el) {
+    if (el.type === "checkbox" || el.type === "radio") { el.checked = false; return; }
+    el.value = "";
+  });
+  if (typeof window.CB2_FN === "string" && typeof window[window.CB2_FN] === "function") window[window.CB2_FN]();
+}
+(function () {
+  document.addEventListener("input", function (e) {
+    var tn = e && e.target && e.target.tagName;
+    if (tn !== "INPUT" && tn !== "SELECT") return;
+    if (typeof window.CB2_FN !== "string") return;
+    clearTimeout(window.__cb2t);
+    window.__cb2t = setTimeout(function () { window[window.CB2_FN](); }, 250);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (!e || e.key !== "Enter") return;
+    if (!e.target || e.target.tagName !== "INPUT") return;
+    if (typeof window.CB2_FN !== "string") return;
+    e.preventDefault();
+    window[window.CB2_FN]();
+  });
+})();
+
+/* ---------- UC2: preset values for the unit-converter engine (36 tools) ---------- */
+function ucPreset(v) {
+  var a = $("uc-in");
+  if (!a) return;
+  a.value = String(v);
+  ucRun();
+}

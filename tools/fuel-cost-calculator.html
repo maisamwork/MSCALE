@@ -45,7 +45,8 @@
   <div><label for="fc-d">Trip distance (km)</label><input type="number" id="fc-d" step="any" value="500" autocomplete="off" /></div><div><label for="fc-e">Consumption (L per 100 km)</label><input type="number" id="fc-e" step="any" value="8" autocomplete="off" /></div><div><label for="fc-p">Fuel price per liter</label><input type="number" id="fc-p" step="any" value="1.65" autocomplete="off" /></div>
   </div>
   <button class="btn" onclick="fuelCalc()">Calculate</button>
-  <div id="fuelCalc-out" class="result" aria-live="polite">Fill in the fields to see the result.</div>
+  <div id="fuelCalc-out" class="result" aria-live="polite">Fill in the fields to see the result.</div><div id="cb2-meta" class="jf-stats" style="margin-top:12px"></div><div class="lr2-actions" style="margin-top:6px"><button type="button" class="btn ghost" onclick="cb2Copy('fuelCalc', this)">Copy result</button><button type="button" class="btn ghost" onclick="cb2Reset()">Reset</button></div>
+  <script>window.CB2_FN="fuelCalc";</script>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

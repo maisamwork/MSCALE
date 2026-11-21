@@ -249,10 +249,15 @@ def calc_article(f):
 
 def calc_body(f):
     slug, name, short, about, formula, exline, uses, got, fn, extra = f
+    tail = ('<div id="cb2-meta" class="jf-stats" style="margin-top:12px"></div>'
+            '<div class="lr2-actions" style="margin-top:6px">'
+            '<button type="button" class="btn ghost" onclick="cb2Copy(\'' + fn + '\', this)">Copy result</button>'
+            '<button type="button" class="btn ghost" onclick="cb2Reset()">Reset</button></div>')
     return f'''<div class="panel">
   <div class="row">
   {extra}
   </div>
   <button class="btn" onclick="{fn}()">Calculate</button>
-  <div id="{fn}-out" class="result" aria-live="polite">Fill in the fields to see the result.</div>
+  <div id="{fn}-out" class="result" aria-live="polite">Fill in the fields to see the result.</div>{tail}
+  <script>window.CB2_FN="{fn}";</script>
 </div>'''

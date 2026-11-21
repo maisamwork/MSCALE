@@ -45,7 +45,8 @@
   <div class="row"><div><label for="hr-s">Start time</label><input type="text" id="hr-s" class="dt-input" readonly placeholder="09:00" /><input type="hidden" id="hr-sv" value="09:00" /></div><div><label for="hr-e">End time</label><input type="text" id="hr-e" class="dt-input" readonly placeholder="17:30" /><input type="hidden" id="hr-ev" value="17:30" /></div></div><div><label for="hr-br">Unpaid break (minutes)</label><input type="number" id="hr-br" step="any" value="30" autocomplete="off" /></div>
   </div>
   <button class="btn" onclick="hrsCalc()">Calculate</button>
-  <div id="hrsCalc-out" class="result" aria-live="polite">Fill in the fields to see the result.</div>
+  <div id="hrsCalc-out" class="result" aria-live="polite">Fill in the fields to see the result.</div><div id="cb2-meta" class="jf-stats" style="margin-top:12px"></div><div class="lr2-actions" style="margin-top:6px"><button type="button" class="btn ghost" onclick="cb2Copy('hrsCalc', this)">Copy result</button><button type="button" class="btn ghost" onclick="cb2Reset()">Reset</button></div>
+  <script>window.CB2_FN="hrsCalc";</script>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
