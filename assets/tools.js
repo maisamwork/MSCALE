@@ -706,14 +706,70 @@ function rgbToHsl(r, g, b) {
   }
   return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
 }
+function rgbToHsv(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min;
+  let h = 0;
+  if (d) {
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+  }
+  return [Math.round(h * 360), Math.round((max ? d / max : 0) * 100), Math.round(max * 100)];
+}
+function rgbToCmyk(r, g, b) {
+  const rr = r / 255, gg = g / 255, bb = b / 255;
+  const k = 1 - Math.max(rr, gg, bb);
+  if (k === 1) return [0, 0, 0, 100];
+  return [Math.round((1 - rr - k) / (1 - k) * 100), Math.round((1 - gg - k) / (1 - k) * 100), Math.round((1 - bb - k) / (1 - k) * 100), Math.round(k * 100)];
+}
+function hslToRgb(h, s, l) {
+  s /= 100; l /= 100;
+  const k = (n) => (n + h / 30) % 12;
+  const a = s * Math.min(l, 1 - l);
+  const f = (n) => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+  return [Math.round(f(0) * 255), Math.round(f(8) * 255), Math.round(f(4) * 255)];
+}
+function cc2Copy(txt, el) {
+  (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => {
+    const old = el.textContent;
+    el.classList.add("cc2-copied");
+    el.textContent = "Copied!";
+    setTimeout(() => { el.classList.remove("cc2-copied"); el.textContent = old; }, 1100);
+  }).catch(() => {});
+}
 function colorConvert() {
-  const rgb = hexToRgb($("col-in").value.trim());
+  const raw = $("col-in").value.trim();
+  const rgb = hexToRgb(raw);
   if (!rgb) { $("col-err").textContent = "Enter a valid hex color like #34d399"; return; }
   $("col-err").textContent = "";
-  const [h, s, l] = rgbToHsl(...rgb);
-  $("col-out").innerHTML = `HEX: <b>${$("col-in").value.trim()}</b><br>RGB: <b>rgb(${rgb.join(", ")})</b><br>HSL: <b>hsl(${h}, ${s}%, ${l}%)</b>`;
-  $("col-swatch").style.background = `rgb(${rgb.join(",")})`;
+  const [r, g, b] = rgb;
+  const [h, s, l] = rgbToHsl(r, g, b);
+  const [hv, sv, vv] = rgbToHsv(r, g, b);
+  const [c, m, y, k] = rgbToCmyk(r, g, b);
+  const hex = toHexStr(r, g, b);
+  $("col-cc").value = hex.toLowerCase().slice(0, 7);
+  const comp = hslToRgb((h + 180) % 360, s, l);
+  $("col-swatch").style.background = hex;
+  $("cc2-comp").style.background = toHexStr(...comp);
+  $("cc2-comp").title = "Complementary: " + toHexStr(...comp);
+  const fmts = [
+    ["HEX", hex],
+    ["RGB", `rgb(${r}, ${g}, ${b})`],
+    ["HSL", `hsl(${h}, ${s}%, ${l}%)`],
+    ["HSV", `hsv(${hv}, ${sv}%, ${vv}%)`],
+    ["CMYK", `cmyk(${c}%, ${m}%, ${y}%, ${k}%)`],
+  ];
+  $("col-out").innerHTML = fmts.map(([name, val]) =>
+    `<button class="cc2-fmt" onclick="cc2Copy('${val.replace(/'/g, "\\'")}', this)"><span class="cc2-fmt-name">${name}</span><span class="cc2-fmt-val">${val}</span></button>`).join("");
 }
+function cc2FromPicker() { $("col-in").value = $("col-cc").value; colorConvert(); }
+function cc2Random() {
+  const h = Math.floor(Math.random() * 360), s = 45 + Math.floor(Math.random() * 50), l = 35 + Math.floor(Math.random() * 40);
+  $("col-in").value = toHexStr(...hslToRgb(h, s, l));
+  colorConvert();
+}
+if ($("col-in")) colorConvert();
 
 /* ---------- Random ---------- */
 function randNums() {
@@ -772,30 +828,69 @@ function tipCalc() {
   out("tip-out", `Tip: <b>${tip.toFixed(2)}</b><br>Total: <b>${total.toFixed(2)}</b>${people > 1 ? `<br>Per person (${people}): <b>${(total / people).toFixed(2)}</b>` : ""}`);
 }
 
-function compoundCalc() {
-  const P = parseFloat($("ci-p").value), r = parseFloat($("ci-r").value) / 100;
-  const t = parseFloat($("ci-t").value), n = parseInt($("ci-n").value);
-  const monthly = parseFloat($("ci-monthly").value) || 0;
-  if (isNaN(P) || isNaN(r) || isNaN(t) || !n) return;
-  const periodRate = r / n;
+function ci2Series(P, r, t, n, monthly) {
+  const periodRate = r / 100 / n;
   const periods = Math.round(t * n);
   const contribPerPeriod = monthly * (n / 12);
   let bal = P, contributed = P;
-  for (let i = 0; i < periods; i++) { bal = bal * (1 + periodRate) + contribPerPeriod; contributed += contribPerPeriod; }
-  out("ci-out", `Future value: <b>${bal.toFixed(2)}</b><br>Total contributed: <b>${contributed.toFixed(2)}</b><br>Interest earned: <b>${(bal - contributed).toFixed(2)}</b>`);
-}
-
-function taxCalc(mode) {
-  const amt = parseFloat($("tax-amt").value), rate = parseFloat($("tax-rate").value);
-  if (isNaN(amt) || isNaN(rate)) return;
-  if (mode === "add") {
-    const tax = amt * rate / 100;
-    out("tax-out", `Tax amount: <b>${tax.toFixed(2)}</b><br>Gross total: <b>${(amt + tax).toFixed(2)}</b>`);
-  } else {
-    const net = amt / (1 + rate / 100);
-    out("tax-out", `Net (before tax): <b>${net.toFixed(2)}</b><br>Tax included: <b>${(amt - net).toFixed(2)}</b>`);
+  const yearly = [];
+  for (let i = 1; i <= periods; i++) {
+    bal = bal * (1 + periodRate) + contribPerPeriod;
+    contributed += contribPerPeriod;
+    if (i % n === 0 || i === periods) {
+      const year = Math.ceil(i / n);
+      if (!yearly.length || yearly[yearly.length - 1].year !== year) yearly.push({ year, bal, contributed });
+    }
   }
+  return { bal, contributed, interest: bal - contributed, yearly };
 }
+function ci2F(n) { return n.toLocaleString(undefined, { maximumFractionDigits: 2 }); }
+function ci2Live() {
+  const P = parseFloat($("ci-p").value), r = parseFloat($("ci-r").value);
+  const t = parseFloat($("ci-t").value), n = parseInt($("ci-n").value);
+  const monthly = parseFloat($("ci-monthly").value) || 0;
+  if (isNaN(P) || isNaN(r) || isNaN(t) || !n || t <= 0) { $("ci2-big").innerHTML = "\u2014"; return; }
+  const { bal, contributed, interest, yearly } = ci2Series(P, r, t, n, monthly);
+  $("ci2-big").innerHTML = `${ci2F(bal)}<span class="pct2-big-sub">future value after ${t} year${t === 1 ? "" : "s"}</span>`;
+  const max = Math.max(bal, contributed, 1);
+  $("ci2-bars").innerHTML = `
+    <div class="ci2-bar-row"><span>Total value</span><div class="wc-bar"><div class="wc-bar-fill" style="width:100%"></div></div><b>${ci2F(bal)}</b></div>
+    <div class="ci2-bar-row"><span>You contributed</span><div class="wc-bar"><div class="wc-bar-fill near" style="width:${(contributed / max * 100).toFixed(1)}%"></div></div><b>${ci2F(contributed)}</b></div>
+    <div class="ci2-bar-row"><span>Interest earned</span><div class="wc-bar"><div class="wc-bar-fill" style="width:${(interest / max * 100).toFixed(1)}%;background:#22c55e"></div></div><b>${ci2F(interest)}</b></div>`;
+  const freqs = [[1, "Yearly"], [4, "Quarterly"], [12, "Monthly"], [365, "Daily"]];
+  $("ci2-freq").innerHTML = freqs.map(([fn, name]) => {
+    const v = ci2Series(P, r, t, fn, monthly).bal;
+    return `<span class="pct2-chip">${name}: <b>${ci2F(v)}</b></span>`;
+  }).join("");
+  const yr = yearly.slice(0, 60);
+  $("ci2-table").innerHTML = `<table class="wc-table"><thead><tr><th>Year</th><th>Balance</th><th>Contributed</th><th>Interest</th></tr></thead><tbody>` +
+    yr.map((row) => `<tr><td>${row.year}</td><td><b>${ci2F(row.bal)}</b></td><td>${ci2F(row.contributed)}</td><td style="color:#22c55e">+${ci2F(row.bal - row.contributed)}</td></tr>`).join("") +
+    `</tbody></table>`;
+}
+if ($("ci-p")) ci2Live();
+
+let TX2_DIR = "add";
+function tx2Dir(d, btn) {
+  TX2_DIR = d;
+  $("tx2-add").classList.toggle("active", d === "add");
+  $("tx2-remove").classList.toggle("active", d === "remove");
+  $("tx2-amt-label").textContent = d === "add" ? "Net amount (before tax)" : "Gross amount (incl. tax)";
+  tx2Run();
+}
+function tx2Rate(r) { $("tax-rate").value = r; tx2Run(); }
+function tx2Run() {
+  const amt = parseFloat($("tax-amt").value), rate = parseFloat($("tax-rate").value);
+  const big = $("tx2-big");
+  if (isNaN(amt) || isNaN(rate)) { big.innerHTML = "\u2014"; $("tx2-net").textContent = $("tx2-tax").textContent = $("tx2-gross").textContent = "\u2014"; return; }
+  let net, tax, gross;
+  if (TX2_DIR === "add") { net = amt; tax = net * rate / 100; gross = net + tax; }
+  else { gross = amt; net = gross / (1 + rate / 100); tax = gross - net; }
+  big.innerHTML = `Tax: <span class="pct2-up">${tax.toFixed(2)}</span><span class="pct2-big-sub">${TX2_DIR === "add" ? `on ${net.toFixed(2)} at ${rate}%` : `inside ${gross.toFixed(2)} at ${rate}%`}</span>`;
+  $("tx2-net").textContent = net.toFixed(2);
+  $("tx2-tax").textContent = tax.toFixed(2);
+  $("tx2-gross").textContent = gross.toFixed(2);
+}
+if ($("tax-amt")) tx2Run();
 
 /* ---------- Text ---------- */
 function findReplace() {
@@ -1138,18 +1233,66 @@ function ir2Apply() {
 })();
 
 /* ---------- Color ---------- */
+let PG2_MODE = "shades", PG2_COLORS = [];
+function pg2Hsl() { const rgb = hexToRgb($("pal-in").value.trim()); if (!rgb) return null; return rgbToHsl(...rgb); }
+function pg2Mode(m, btn) {
+  PG2_MODE = m;
+  ["shades", "comp", "analog", "triad", "tetrad", "mono"].forEach(k => $("pg2-m-" + k).classList.toggle("active", k === m));
+  genPalette();
+}
+function pg2Palette() {
+  const hsl = pg2Hsl();
+  if (!hsl) return null;
+  const [h, s, l] = hsl;
+  if (PG2_MODE === "shades") {
+    const out = [];
+    for (const t of [0.8, 0.6, 0.4, 0.2]) out.push(hslToRgb(h, s, Math.min(100, l + (100 - l) * t)));
+    out.push(hslToRgb(h, s, l));
+    for (const t of [0.2, 0.4, 0.6, 0.8]) out.push(hslToRgb(h, s, l * (1 - t)));
+    return out;
+  }
+  if (PG2_MODE === "comp") return [hslToRgb(h, s, l), hslToRgb((h + 180) % 360, s, l), hslToRgb(h, Math.max(0, s - 30), Math.min(95, l + 25)), hslToRgb((h + 180) % 360, s, Math.max(15, l - 25)), hslToRgb(h, Math.max(10, s - 60), 92)];
+  if (PG2_MODE === "analog") return [(h + 330) % 360, (h + 345) % 360, h, (h + 15) % 360, (h + 30) % 360].map(x => hslToRgb(x % 360, s, l));
+  if (PG2_MODE === "triad") return [h, (h + 120) % 360, (h + 240) % 360].flatMap(x => [hslToRgb(x, s, l), hslToRgb(x, s, Math.min(95, l + 25))]);
+  if (PG2_MODE === "tetrad") return [h, (h + 90) % 360, (h + 180) % 360, (h + 270) % 360].map(x => hslToRgb(x, s, l)).flatMap(c => [c, hslToRgb(...rgbToHsl(...c), Math.min(95, l + 22))]).slice(0, 8);
+  return [5, 20, 35, 50, 65, 80, 95].map(x => hslToRgb(h, s, x));
+}
 function genPalette() {
-  const rgb = hexToRgb($("pal-in").value.trim());
+  const raw = $("pal-in").value.trim();
+  const rgb = hexToRgb(raw);
   if (!rgb) { $("pal-err").textContent = "Enter a valid hex color like #ff7000"; return; }
   $("pal-err").textContent = "";
-  const [r, g, b] = rgb;
-  const swatches = [];
-  for (const t of [0.8, 0.6, 0.4, 0.2]) swatches.push(toHexStr(r + (255 - r) * t, g + (255 - g) * t, b + (255 - b) * t));
-  swatches.push(toHexStr(r, g, b));
-  for (const t of [0.2, 0.4, 0.6, 0.8]) swatches.push(toHexStr(r * (1 - t), g * (1 - t), b * (1 - t)));
-  $("pal-out").innerHTML = swatches.map((h) =>
-    `<div class="pal-swatch" style="background:${h}" title="Click to copy ${h}" onclick="navigator.clipboard.writeText('${h}');this.querySelector('span').textContent='Copied!'"><span>${h}</span></div>`).join("");
+  $("pal-cc").value = toHexStr(...rgb).toLowerCase().slice(0, 7);
+  const cols = pg2Palette();
+  if (!cols) return;
+  PG2_COLORS = cols.map((c) => toHexStr(...c));
+  const lum = (hex) => { const [r, g, b] = hexToRgb(hex); return (0.299 * r + 0.587 * g + 0.114 * b) / 255; };
+  $("pal-out").innerHTML = PG2_COLORS.map((hx) =>
+    `<button class="pal-swatch" style="background:${hx};color:${lum(hx) > 0.6 ? "#111827" : "#ffffff"}" title="Click to copy ${hx}" onclick="cc2Copy('${hx}', this)"><span>${hx}</span></button>`).join("");
 }
+function pg2FromPicker() { $("pal-in").value = $("pal-cc").value; genPalette(); }
+function pg2Random() {
+  const h = Math.floor(Math.random() * 360), s = 45 + Math.floor(Math.random() * 50), l = 35 + Math.floor(Math.random() * 40);
+  $("pal-in").value = toHexStr(...hslToRgb(h, s, l));
+  genPalette();
+}
+function pg2CopyCss(btn) {
+  if (!PG2_COLORS.length) return;
+  const css = ":root {\n" + PG2_COLORS.map((c, i) => `  --color-${i + 1}: ${c};`).join("\n") + "\n}";
+  (navigator.clipboard ? navigator.clipboard.writeText(css) : Promise.reject()).then(() => {
+    btn.textContent = "CSS copied!"; setTimeout(() => { btn.textContent = "Copy CSS variables"; }, 1200);
+  }).catch(() => {});
+}
+function pg2CopyTailwind(btn) {
+  if (!PG2_COLORS.length) return;
+  const names = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"];
+  const n = PG2_COLORS.length;
+  const js = `colors: {\n  brand: {\n` + PG2_COLORS.map((c, i) => `    ${names[Math.round(i * 9 / Math.max(1, n - 1))]}: "${c}",`).join("\n") + `\n  },\n}`;
+  (navigator.clipboard ? navigator.clipboard.writeText(js) : Promise.reject()).then(() => {
+    btn.textContent = "Tailwind copied!"; setTimeout(() => { btn.textContent = "Copy Tailwind config"; }, 1200);
+  }).catch(() => {});
+}
+if ($("pal-in")) genPalette();
 
 /* ---------- Date & Time ---------- */
 function dateDiff() {

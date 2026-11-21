@@ -41,11 +41,30 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Color Palette Generator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Generate tints and shades from any hex color. Click a swatch to copy.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><h1>Color Palette Generator</h1></div><p>Generate tints and shades from any hex color. Click a swatch to copy.</p></div>
 
-<div class="panel">
-  <label>Base color (hex)</label>
-  <input type="text" id="pal-in" value="#ff7000" oninput="genPalette()" placeholder="#ff7000" />
-  <div id="pal-err" class="error"></div>
+<div class="panel pg3">
+  <div class="cc2-picker">
+    <input type="color" id="pal-cc" value="#ff7000" oninput="pg2FromPicker()" aria-label="Pick base color" />
+    <div class="cc2-picker-col">
+      <label>Base color (hex)</label>
+      <input type="text" id="pal-in" value="#ff7000" oninput="genPalette()" placeholder="#ff7000" class="cc2-hex" />
+      <div id="pal-err" class="error"></div>
+    </div>
+    <button class="btn ghost sm" onclick="pg2Random()">Random</button>
+  </div>
+  <div class="pg3-modes">
+    <button class="lr2-type active" id="pg2-m-shades" onclick="pg2Mode('shades', this)">Shades &amp; tints</button>
+    <button class="lr2-type" id="pg2-m-comp" onclick="pg2Mode('comp', this)">Complementary</button>
+    <button class="lr2-type" id="pg2-m-analog" onclick="pg2Mode('analog', this)">Analogous</button>
+    <button class="lr2-type" id="pg2-m-triad" onclick="pg2Mode('triad', this)">Triadic</button>
+    <button class="lr2-type" id="pg2-m-tetrad" onclick="pg2Mode('tetrad', this)">Tetradic</button>
+    <button class="lr2-type" id="pg2-m-mono" onclick="pg2Mode('mono', this)">Monochromatic</button>
+  </div>
+  <p class="tool-note">Click a swatch to copy its hex:</p>
   <div id="pal-out" class="pal-row"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost sm" onclick="pg2CopyCss(this)">Copy CSS variables</button>
+    <button class="btn ghost sm" onclick="pg2CopyTailwind(this)">Copy Tailwind config</button>
+  </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

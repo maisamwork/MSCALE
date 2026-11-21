@@ -902,12 +902,22 @@ TOOL_BODIES = {
   <div id="pg-multi" class="pg-multi"></div>
 </div>""",
 "color-converter": """
-<div class="panel">
-  <label>Hex color</label>
-  <input type="text" id="col-in" value="#ff7000" oninput="colorConvert()" placeholder="#ff7000" />
-  <div id="col-err" class="error"></div>
-  <div id="col-out" class="result"></div>
-  <div id="col-swatch" class="swatch"></div>
+<div class="panel cc2">
+  <div class="cc2-picker">
+    <input type="color" id="col-cc" value="#ff7000" oninput="cc2FromPicker()" aria-label="Pick color" />
+    <div class="cc2-picker-col">
+      <label>Hex color</label>
+      <input type="text" id="col-in" value="#ff7000" oninput="colorConvert()" placeholder="#ff7000" class="cc2-hex" />
+      <div id="col-err" class="error"></div>
+    </div>
+    <button class="btn ghost sm" onclick="cc2Random()">Random</button>
+  </div>
+  <div class="cc2-preview-row">
+    <div class="cc2-big" id="col-swatch"></div>
+    <div class="cc2-big cc2-comp" id="cc2-comp" title="Complementary"></div>
+  </div>
+  <p class="tool-note">Click any value to copy:</p>
+  <div id="col-out" class="cc2-fmts"></div>
 </div>""",
 "random-number-generator": """
 <div class="panel">
@@ -958,28 +968,49 @@ TOOL_BODIES = {
   <div id="tip-out" class="result">Enter the bill amount.</div>
 </div>""",
 "compound-interest-calculator": """
-<div class="panel">
+<div class="panel ci2">
   <div class="row">
-    <div><label>Initial amount</label><input type="number" id="ci-p" placeholder="1000" /></div>
-    <div><label>Annual rate (%)</label><input type="number" id="ci-r" placeholder="7" step="0.1" /></div>
-    <div><label>Years</label><input type="number" id="ci-t" placeholder="10" /></div>
+    <div><label>Initial amount</label><input type="number" id="ci-p" value="10000" oninput="ci2Live()" /></div>
+    <div><label>Annual rate (%)</label><input type="number" id="ci-r" value="7" step="0.1" oninput="ci2Live()" /></div>
+    <div><label>Years</label><input type="number" id="ci-t" value="10" oninput="ci2Live()" /></div>
   </div>
   <div class="row">
-    <div><label>Compounds per year</label><select id="ci-n"><option value="1">Yearly</option><option value="4">Quarterly</option><option value="12" selected>Monthly</option><option value="365">Daily</option></select></div>
-    <div><label>Monthly contribution — optional</label><input type="number" id="ci-monthly" placeholder="0" /></div>
+    <div><label>Compounds per year</label><select id="ci-n" onchange="ci2Live()"><option value="1">Yearly</option><option value="4">Quarterly</option><option value="12" selected>Monthly</option><option value="365">Daily</option></select></div>
+    <div><label>Monthly contribution \u2014 optional</label><input type="number" id="ci-monthly" value="200" oninput="ci2Live()" /></div>
   </div>
-  <button class="btn" onclick="compoundCalc()">Calculate</button>
-  <div id="ci-out" class="result">Enter your investment details.</div>
+  <div class="pct2-result" id="ci2-big">&mdash;</div>
+  <div class="ci2-bars" id="ci2-bars"></div>
+  <div class="uc2-cats tx2-rates"><span class="ir2-pl">Comparison of total by compounding frequency:</span><div id="ci2-freq" class="ci2-freq"></div></div>
+  <p class="tool-note">Year-by-year growth</p>
+  <div class="uc2-table" id="ci2-table"></div>
 </div>""",
 "gst-vat-calculator": """
-<div class="panel">
-  <div class="row">
-    <div><label>Amount</label><input type="number" id="tax-amt" placeholder="100" /></div>
-    <div><label>Tax rate (%)</label><input type="number" id="tax-rate" value="18" step="0.1" /></div>
+<div class="panel tx2">
+  <div class="lr2-types">
+    <button class="lr2-type active" id="tx2-add" onclick="tx2Dir('add', this)">Add tax (net \u2192 gross)</button>
+    <button class="lr2-type" id="tx2-remove" onclick="tx2Dir('remove', this)">Remove tax (gross \u2192 net)</button>
   </div>
-  <button class="btn" onclick="taxCalc('add')">Add tax →</button>
-  <button class="btn ghost" onclick="taxCalc('remove')">← Remove tax</button>
-  <div id="tax-out" class="result">Enter amount and rate.</div>
+  <div class="row">
+    <div><label id="tx2-amt-label">Net amount (before tax)</label><input type="number" id="tax-amt" value="1000" oninput="tx2Run()" /></div>
+    <div><label>Tax rate (%)</label><input type="number" id="tax-rate" value="18" step="0.1" oninput="tx2Run()" /></div>
+  </div>
+  <div class="uc2-cats tx2-rates">
+    <span class="ir2-pl">Common rates:</span>
+    <button class="ir2-preset" onclick="tx2Rate(5)">5%</button>
+    <button class="ir2-preset" onclick="tx2Rate(8)">8%</button>
+    <button class="ir2-preset" onclick="tx2Rate(10)">10%</button>
+    <button class="ir2-preset" onclick="tx2Rate(12)">12%</button>
+    <button class="ir2-preset" onclick="tx2Rate(18)">18%</button>
+    <button class="ir2-preset" onclick="tx2Rate(20)">20%</button>
+    <button class="ir2-preset" onclick="tx2Rate(25)">25%</button>
+  </div>
+  <div class="pct2-result" id="tx2-big">&mdash;</div>
+  <table class="wc-table tx2-table"><tbody>
+    <tr><th>Base (net)</th><td id="tx2-net">\u2014</td></tr>
+    <tr><th>Tax amount</th><td id="tx2-tax">\u2014</td></tr>
+    <tr><th>Total (gross)</th><td id="tx2-gross">\u2014</td></tr>
+  </tbody></table>
+  <p class="tool-note">Works for GST, VAT, sales tax \u2014 any percentage-based tax.</p>
 </div>""",
 "date-difference-calculator": """
 <div class="panel">
@@ -1162,11 +1193,30 @@ TOOL_BODIES = {
 </div>""",
 
 "palette-generator": """
-<div class="panel">
-  <label>Base color (hex)</label>
-  <input type="text" id="pal-in" value="#ff7000" oninput="genPalette()" placeholder="#ff7000" />
-  <div id="pal-err" class="error"></div>
+<div class="panel pg3">
+  <div class="cc2-picker">
+    <input type="color" id="pal-cc" value="#ff7000" oninput="pg2FromPicker()" aria-label="Pick base color" />
+    <div class="cc2-picker-col">
+      <label>Base color (hex)</label>
+      <input type="text" id="pal-in" value="#ff7000" oninput="genPalette()" placeholder="#ff7000" class="cc2-hex" />
+      <div id="pal-err" class="error"></div>
+    </div>
+    <button class="btn ghost sm" onclick="pg2Random()">Random</button>
+  </div>
+  <div class="pg3-modes">
+    <button class="lr2-type active" id="pg2-m-shades" onclick="pg2Mode('shades', this)">Shades &amp; tints</button>
+    <button class="lr2-type" id="pg2-m-comp" onclick="pg2Mode('comp', this)">Complementary</button>
+    <button class="lr2-type" id="pg2-m-analog" onclick="pg2Mode('analog', this)">Analogous</button>
+    <button class="lr2-type" id="pg2-m-triad" onclick="pg2Mode('triad', this)">Triadic</button>
+    <button class="lr2-type" id="pg2-m-tetrad" onclick="pg2Mode('tetrad', this)">Tetradic</button>
+    <button class="lr2-type" id="pg2-m-mono" onclick="pg2Mode('mono', this)">Monochromatic</button>
+  </div>
+  <p class="tool-note">Click a swatch to copy its hex:</p>
   <div id="pal-out" class="pal-row"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost sm" onclick="pg2CopyCss(this)">Copy CSS variables</button>
+    <button class="btn ghost sm" onclick="pg2CopyTailwind(this)">Copy Tailwind config</button>
+  </div>
 </div>""",
 }
 

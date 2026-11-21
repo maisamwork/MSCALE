@@ -41,18 +41,21 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Compound Interest Calculator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Calculate compound interest with contributions, yearly to daily compounding.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg><h1>Compound Interest Calculator</h1></div><p>Calculate compound interest with contributions, yearly to daily compounding.</p></div>
 
-<div class="panel">
+<div class="panel ci2">
   <div class="row">
-    <div><label>Initial amount</label><input type="number" id="ci-p" placeholder="1000" /></div>
-    <div><label>Annual rate (%)</label><input type="number" id="ci-r" placeholder="7" step="0.1" /></div>
-    <div><label>Years</label><input type="number" id="ci-t" placeholder="10" /></div>
+    <div><label>Initial amount</label><input type="number" id="ci-p" value="10000" oninput="ci2Live()" /></div>
+    <div><label>Annual rate (%)</label><input type="number" id="ci-r" value="7" step="0.1" oninput="ci2Live()" /></div>
+    <div><label>Years</label><input type="number" id="ci-t" value="10" oninput="ci2Live()" /></div>
   </div>
   <div class="row">
-    <div><label>Compounds per year</label><select id="ci-n"><option value="1">Yearly</option><option value="4">Quarterly</option><option value="12" selected>Monthly</option><option value="365">Daily</option></select></div>
-    <div><label>Monthly contribution — optional</label><input type="number" id="ci-monthly" placeholder="0" /></div>
+    <div><label>Compounds per year</label><select id="ci-n" onchange="ci2Live()"><option value="1">Yearly</option><option value="4">Quarterly</option><option value="12" selected>Monthly</option><option value="365">Daily</option></select></div>
+    <div><label>Monthly contribution — optional</label><input type="number" id="ci-monthly" value="200" oninput="ci2Live()" /></div>
   </div>
-  <button class="btn" onclick="compoundCalc()">Calculate</button>
-  <div id="ci-out" class="result">Enter your investment details.</div>
+  <div class="pct2-result" id="ci2-big">&mdash;</div>
+  <div class="ci2-bars" id="ci2-bars"></div>
+  <div class="uc2-cats tx2-rates"><span class="ir2-pl">Comparison of total by compounding frequency:</span><div id="ci2-freq" class="ci2-freq"></div></div>
+  <p class="tool-note">Year-by-year growth</p>
+  <div class="uc2-table" id="ci2-table"></div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
