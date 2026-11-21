@@ -2626,30 +2626,60 @@ function wmSave() {
 }
 
 /* ---- Favicon Generator ---- */
+let fv2Img = null, fv2IO = ["", "", ""], fv2Idx = 0;
+const FV2_SIZES = [[16, "favicon-16x16.png"], [32, "favicon-32x32.png"], [48, "favicon-48x48.png"], [64, "favicon-64x64.png"], [96, "favicon-96x96.png"], [128, "favicon-128x128.png"], [180, "apple-touch-icon.png"], [192, "favicon-192.png"], [256, "favicon-256.png"], [512, "favicon-512.png"]];
 function fvGen() {
   const f = document.getElementById("fv-file").files[0];
   if (!f) return;
   const img = new Image();
-  img.onload = () => {
-    const sizes = [16, 32, 180, 512];
-    const row = document.getElementById("fv-previews");
-    let tags = "";
-    row.innerHTML = "";
-    sizes.forEach((s) => {
-      const c = document.createElement("canvas");
-      c.width = c.height = s;
-      c.getContext("2d").drawImage(img, 0, 0, s, s);
-      const url = c.toDataURL("image/png");
-      const name = s === 180 ? "apple-touch-icon.png" : `favicon-${s}x${s}.png`;
-      row.insertAdjacentHTML("beforeend",
-        `<div class="fav-item"><img src="${url}" width="${Math.min(64, s)}" height="${Math.min(64, s)}"><span>${s} px</span><a class="btn ghost" download="${name}" href="${url}">Download</a></div>`);
-      tags += `<link rel="icon" type="image/png" sizes="${s}x${s}" href="/${name}">\n`;
-    });
-    document.getElementById("fv-tags").value = tags.trim();
-  };
+  img.onload = () => { fv2Img = img; fv2Render(); };
   img.src = URL.createObjectURL(f);
 }
-
+function fv2Redraw() { fv2Render(); }
+function fv2Render() {
+  const row = document.getElementById("fv-previews");
+  if (!row || !fv2Img || !fv2Img.width) return;
+  const bg = document.getElementById("fv-bg").value;
+  row.innerHTML = "";
+  FV2_SIZES.forEach(([s, name]) => {
+    const c = document.createElement("canvas");
+    c.width = c.height = s;
+    const x = c.getContext("2d");
+    x.fillStyle = bg; x.fillRect(0, 0, s, s);
+    x.drawImage(fv2Img, 0, 0, s, s);
+    const url = c.toDataURL("image/png");
+    const v = Math.min(72, Math.max(24, Math.round(s / 2)));
+    row.insertAdjacentHTML("beforeend",
+      `<div class="fv2-item"><img src="${url}" width="${v}" height="${v}" alt="${name} preview"><b>${s}\u00d7${s}</b><span>${name}</span><a class="btn ghost" download="${name}" href="${url}">Download</a></div>`);
+  });
+  const c32 = document.createElement("canvas");
+  c32.width = c32.height = 32;
+  const x32 = c32.getContext("2d");
+  x32.fillStyle = bg; x32.fillRect(0, 0, 32, 32);
+  x32.drawImage(fv2Img, 0, 0, 32, 32);
+  const u32 = c32.toDataURL("image/png");
+  const tab = document.getElementById("fv-tab");
+  if (tab) tab.src = u32;
+  fv2IO = [
+    '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">\n' +
+    '<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">\n' +
+    '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">\n' +
+    '<link rel="manifest" href="/site.webmanifest">',
+    '{\n  "name": "Your site",\n  "short_name": "Site",\n  "icons": [\n    { "src": "/favicon-192.png", "sizes": "192x192", "type": "image/png" },\n    { "src": "/favicon-512.png", "sizes": "512x512", "type": "image/png" }\n  ],\n  "theme_color": "#ffffff",\n  "background_color": "#ffffff",\n  "display": "standalone"\n}',
+    '<?xml version="1.0" encoding="utf-8"?>\n<browserconfig>\n  <msapplication>\n    <tile>\n      <square150x150logo src="/favicon-192.png"/>\n      <TileColor>#' + (document.getElementById("fv-bg").value.slice(1) || "ffffff") + '</TileColor>\n    </tile>\n  </msapplication>\n</browserconfig>'
+  ];
+  fv2Show();
+}
+function fv2Tab(i, btn) {
+  fv2Idx = i;
+  document.querySelectorAll(".uc2-cats .uc2-cat").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  fv2Show();
+}
+function fv2Show() {
+  const t = document.getElementById("fv-tags");
+  if (t) t.value = fv2IO[fv2Idx] || "";
+}
 /* ---- Base64 Image Encoder ---- */
 function b64Enc() {
   const f = document.getElementById("b64-file").files[0];
@@ -2686,24 +2716,68 @@ function swPause() {
   clearInterval(swTimer);
   document.getElementById("sw-start").textContent = "Start";
 }
+function swRender() {
+  const chips = document.getElementById("sw-chips");
+  const laps = document.getElementById("sw-laps");
+  if (!laps) return;
+  const exp = document.getElementById("sw2-export");
+  if (exp) exp.style.display = swLaps.length ? "flex" : "none";
+  const splits = swLaps.map((l) => l.split);
+  const best = splits.length > 1 ? Math.min(...splits) : null;
+  const worst = splits.length > 1 ? Math.max(...splits) : null;
+  if (chips) {
+    const avg = splits.length ? splits.reduce((a, b) => a + b, 0) / splits.length : 0;
+    chips.innerHTML =
+      '  <span class="jf-chip"><b>' + swLaps.length + "</b>laps</span>" +
+      '  <span class="jf-chip"><b>' + (best !== null ? swFmt(best) : "\u2014") + "</b>best lap</span>" +
+      '  <span class="jf-chip"><b>' + (worst !== null ? swFmt(worst) : "\u2014") + "</b>slowest</span>" +
+      '  <span class="jf-chip"><b>' + (splits.length ? swFmt(avg) : "\u2014") + "</b>average</span>";
+  }
+  if (!swLaps.length) { laps.innerHTML = ""; return; }
+  let h = '<table class="lap-table"><thead><tr><th>Lap</th><th>Split</th><th>Total</th></tr></thead><tbody>';
+  swLaps.slice().reverse().forEach((l, idx) => {
+    const n = swLaps.length - idx;
+    const isBest = splits.length > 1 && l.split === best;
+    const isWorst = splits.length > 1 && l.split === worst;
+    const cls = (isBest ? "sw2-best" : "") + (isWorst && !isBest ? " sw2-worst" : "");
+    h += `<tr class="${cls} bordered"><td>${n}</td><td>${swFmt(l.split)}</td><td>${swFmt(l.total)}</td></tr>`;
+  });
+  laps.innerHTML = h + "</tbody></table>";
+}
 function swLap() {
   const total = swNow();
   if (!total) return;
   const prev = swLaps.length ? swLaps[swLaps.length - 1].total : 0;
   swLaps.push({ split: total - prev, total });
-  let h = `<table class="lap-table"><thead><tr><th>Lap</th><th>Split</th><th>Total</th></tr></thead><tbody>`;
-  swLaps.slice().reverse().forEach((l, idx) => {
-    h += `<tr><td>${swLaps.length - idx}</td><td>${swFmt(l.split)}</td><td>${swFmt(l.total)}</td></tr>`;
-  });
-  document.getElementById("sw-laps").innerHTML = h + "</tbody></table>";
+  swRender();
 }
 function swReset() {
   swAcc = 0; swRun = false; swLaps = [];
   clearInterval(swTimer);
   document.getElementById("sw-display").textContent = "00:00.00";
-  document.getElementById("sw-laps").innerHTML = "";
-  document.getElementById("sw-start").textContent = "Start";
+  const btn = document.getElementById("sw-start");
+  if (btn) btn.textContent = "Start";
+  swRender();
 }
+function sw2Copy(btn) {
+  if (!swLaps.length) return;
+  const txt = swLaps.map((l, i) => "Lap " + (i + 1) + "\t" + swFmt(l.split) + "\t" + swFmt(l.total)).join("\n");
+  navigator.clipboard.writeText(txt).catch(() => {});
+  if (btn) { const old = btn.textContent; btn.textContent = "Copied!"; setTimeout(() => (btn.textContent = old), 1200); }
+}
+function sw2Csv() {
+  if (!swLaps.length) return;
+  const csv = "lap,split,total\n" + swLaps.map((l, i) => (i + 1) + "," + (l.split / 1000).toFixed(2) + "," + (l.total / 1000).toFixed(2)).join("\n");
+  dlBytes(csv, "stopwatch-laps.csv", "text/csv");
+}
+document.addEventListener("keydown", (e) => {
+  if (!document.getElementById("sw-display")) return;
+  const t = e.target, tag = ((t && t.tagName) || "").toLowerCase();
+  if (tag === "input" || tag === "textarea" || tag === "button" || tag === "select") return;
+  if (e.code === "Space") { e.preventDefault(); if (swRun) swPause(); else swStart(); }
+  else if (e.code === "KeyL") { if (swRun) swLap(); }
+});
+if (document.getElementById("sw-display")) swRender();
 
 /* ---- Countdown Timer ---- */
 let cdTarget = 0, cdTotal = 0, cdTimer = null;
@@ -2847,36 +2921,71 @@ function pwSecFmt(sec) {
 }
 function pwCheck() {
   const pw = document.getElementById("pw-in").value;
+  if (!document.getElementById("pw-fill")) return;
+  const comp = {
+    lower: (pw.match(/[a-z]/g) || []).length,
+    upper: (pw.match(/[A-Z]/g) || []).length,
+    digits: (pw.match(/[0-9]/g) || []).length,
+    symbols: (pw.match(/[^A-Za-z0-9]/g) || []).length
+  };
   let classes = 0;
-  if (/[a-z]/.test(pw)) classes++;
-  if (/[A-Z]/.test(pw)) classes++;
-  if (/[0-9]/.test(pw)) classes++;
-  if (/[^A-Za-z0-9]/.test(pw)) classes++;
+  if (comp.lower) classes++;
+  if (comp.upper) classes++;
+  if (comp.digits) classes++;
+  if (comp.symbols) classes++;
   const pool = { 0: 0, 1: 26, 2: 52, 3: 62, 4: 95 }[classes] || 0;
   const bits = pw ? Math.round(pw.length * Math.log2(pool || 2)) : 0;
   const sec = bits ? Math.pow(2, bits - 1) / 1e10 : 0;
   const lower = pw.toLowerCase();
   const issues = [];
   if (pw.length < 12) issues.push("Shorter than 12 characters \u2014 length is the cheapest entropy.");
-  if (!/[A-Z]/.test(pw)) issues.push("No uppercase letters.");
-  if (!/[0-9]/.test(pw)) issues.push("No digits.");
-  if (!/[^A-Za-z0-9]/.test(pw)) issues.push("No symbols.");
+  if (!comp.upper) issues.push("No uppercase letters.");
+  if (!comp.digits) issues.push("No digits.");
+  if (!comp.symbols) issues.push("No symbols.");
   if (/(.)\1{2,}/.test(pw)) issues.push("Contains repeated characters.");
   if (/(012|123|234|345|456|567|678|789|abc|bcd|cde|def|qwer|asdf)/i.test(pw)) issues.push("Contains a sequence or keyboard walk.");
+  const seqlen = 0;
   if (PW_COMMON.some((c) => lower.includes(c))) issues.push("Contains a commonly leaked word.");
   const score = Math.max(0, Math.min(100, bits * 1.4 - issues.length * 8));
   const fill = document.getElementById("pw-fill");
   fill.style.width = score + "%";
   fill.style.background = score < 40 ? "var(--err)" : score < 70 ? "#fbbf24" : "var(--ok)";
   document.getElementById("pw-stats").innerHTML =
-    `<div class="stat"><b>${bits}</b><span>Entropy (bits)</span></div>
-     <div class="stat"><b>${pool}</b><span>Charset pool</span></div>
-     <div class="stat"><b>${pwSecFmt(sec)}</b><span>Offline crack time</span></div>
-     <div class="stat"><b>${pw.length}</b><span>Length</span></div>`;
-  document.getElementById("pw-out").innerHTML = issues.length
+    `<div class="stat"><b>${comp.lower}</b><span>Lowercase</span></div>` +
+    `<div class="stat"><b>${comp.upper}</b><span>Uppercase</span></div>` +
+    `<div class="stat"><b>${comp.digits}</b><span>Digits</span></div>` +
+    `<div class="stat"><b>${comp.symbols}</b><span>Symbols</span></div>` +
+    `<div class="stat"><b>${bits}</b><span>Entropy bits</span></div>` +
+    `<div class="stat"><b>${pwSecFmt(sec)}</b><span>Crack time</span></div>`;
+  const checks = [
+    ["At least 8 characters", pw.length >= 8],
+    ["12+ characters recommended", pw.length >= 12],
+    ["Uppercase letter", comp.upper > 0],
+    ["Lowercase letter", comp.lower > 0],
+    ["Digit", comp.digits > 0],
+    ["Symbol", comp.symbols > 0],
+    ["No triple repeats", !/(.)\1{2,}/.test(pw)],
+    ["No sequences / keyboard walks", !/(012|123|234|345|456|567|678|789|abc|bcd|cde|def|qwer|asdf)/i.test(pw)],
+    ["Nothing commonly leaked", !PW_COMMON.some((c) => lower.includes(c))]
+  ];
+  const box = document.getElementById("pw2-checks");
+  if (box) box.innerHTML = checks.map(([t, ok]) =>
+    `<div class="pw2-item ${ok ? "pw2-ok" : "pw2-no"}"><span class="pw2-dot"></span>${t}</div>`).join("");
+  const out = document.getElementById("pw-out");
+  if (out) out.innerHTML = issues.length
     ? "<b>To improve:</b><ul>" + issues.map((i) => "<li>" + escHtml(i) + "</li>").join("") + "</ul>"
     : (pw ? "<b>Excellent.</b> No structural weaknesses detected \u2014 pair it with two-factor authentication." : "");
 }
+function pw2Mask(btn) {
+  const inp = document.getElementById("pw-in");
+  if (!inp) return;
+  const hidden = inp.type === "text";
+  inp.type = hidden ? "password" : "text";
+  if (btn) btn.textContent = hidden ? "Show" : "Hide";
+  inp.focus();
+}
+if (document.getElementById("pw-in")) pwCheck();
+
 
 /* ---- Cron Expression Explainer ---- */
 const CRON_DOW = { sun: 0, mon: 1, tue: 2, wed: 3, thu: 4, fri: 5, sat: 6 };
@@ -2906,9 +3015,11 @@ function cronSetLabel(set, min, max, names) {
 }
 function cronExplain() {
   const v = document.getElementById("cr-in").value.trim();
+  if (!document.getElementById("cr-out")) return;
   const parts = v.split(/\s+/);
-  const el = document.getElementById("cr-out"), nextEl = document.getElementById("cr-next");
-  nextEl.innerHTML = "";
+  const el = document.getElementById("cr-out"), nextEl = document.getElementById("cr-next"), sumEl = document.getElementById("cr2-sum");
+  if (nextEl) nextEl.innerHTML = "";
+  if (sumEl) sumEl.innerHTML = "";
   if (!v) { el.innerHTML = ""; return; }
   if (parts.length !== 5) { el.innerHTML = "<span class='error'>Enter exactly 5 fields: minute, hour, day-of-month, month, day-of-week.</span>"; return; }
   try {
@@ -2917,6 +3028,15 @@ function cronExplain() {
     const DOM = cronParseField(parts[2], 1, 31);
     const MON = cronParseField(parts[3], 1, 12, CRON_MON);
     const DOW = cronParseField(parts[4], 0, 6, CRON_DOW);
+    if (sumEl) {
+      const perDay = M.size * H.size;
+      const domR = parts[2] !== "*", dowR = parts[4] !== "*";
+      const daysPerWeek = domR && !dowR ? DOM.size : !domR && dowR ? DOW.size : domR && dowR ? DOM.size + DOW.size : 7;
+      sumEl.innerHTML =
+        '<span class="jf-chip"><b>' + perDay + "</b>runs per day</span>" +
+        '<span class="jf-chip"><b>' + perDay * daysPerWeek + "</b>runs per week</span>" +
+        (domR && dowR ? '<span class="jf-chip"><b>OR rule</b>day fields combined</span>' : "");
+    }
     const rows = [
       ["Minute", cronSetLabel(M, 0, 59, { unit: "minute" })],
       ["Hour", cronSetLabel(H, 0, 23, { unit: "hour" })],
@@ -2943,18 +3063,92 @@ function cronExplain() {
     el.innerHTML = "<span class='error'>Invalid value in field: " + escHtml(String(err.message)) + "</span>";
   }
 }
-
-/* ---- CSS Gradient Generator ---- */
-function grDraw() {
-  const c1 = document.getElementById("gr-c1").value, c2 = document.getElementById("gr-c2").value, a = document.getElementById("gr-ang").value;
-  document.getElementById("gr-angv").textContent = a;
-  document.getElementById("gr-prev").style.background = `linear-gradient(${a}deg, ${c1}, ${c2})`;
-  document.getElementById("gr-out").value = `background: linear-gradient(${a}deg, ${c1}, ${c2});`;
+function cr2Pre(expr) {
+  const inp = document.getElementById("cr-in");
+  if (!inp) return;
+  inp.value = expr;
+  cronExplain();
 }
 
-/* ---- Box Shadow Generator ---- */
+
+let cg2TypeI = 0, cg2Stops = [{ c: "#ff7000", p: 0 }, { c: "#7c3aed", p: 100 }];
+function grDraw() { cg2Sync(); }
+function cg2Sync() {
+  const g = (id) => document.getElementById(id);
+  if (!g("gr-prev") || !g("gr-out")) return;
+  const a = +(g("gr-ang") ? g("gr-ang").value : 135);
+  const av = document.getElementById("gr-angv");
+  if (av) av.textContent = a;
+  if (g("cg2-ang-wrap")) g("cg2-ang-wrap").style.display = cg2TypeI === 1 ? "none" : "flex";
+  const list = cg2Stops.slice().sort((p, q) => p.p - q.p || (p.c < q.c ? -1 : 1)).map((s) => `${s.c} ${s.p}%`).join(", ");
+  let css;
+  if (cg2TypeI === 0) css = `linear-gradient(${a}deg, ${list})`;
+  else if (cg2TypeI === 1) css = `radial-gradient(circle at center, ${list})`;
+  else css = `conic-gradient(from ${a}deg, ${list})`;
+  g("gr-prev").style.background = css;
+  g("gr-out").value = `background: ${css};`;
+}
+function cg2Type(i, btn) {
+  cg2TypeI = i;
+  document.querySelectorAll(".lr2-types .lr2-type").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  cg2Sync();
+}
+function cg2Seed() {
+  const wrap = document.getElementById("cg2-stops");
+  if (!wrap) return;
+  wrap.innerHTML = cg2Stops.map((s, i) =>
+    `<div class="cg2-stop">
+      <input type="color" value="${s.c.length === 7 ? s.c : "#ffffff"}" oninput="cg2StopColor(${i}, this.value)">
+      <input type="range" min="0" max="100" value="${s.p}" oninput="cg2StopPos(${i}, this.value, this)">
+      <b>${s.p}%</b>
+      <button type="button" class="btn ghost cg2-del" onclick="cg2DelStop(${i})" title="Remove stop" aria-label="Remove stop">&#10005;</button>
+    </div>`).join("");
+}
+function cg2StopColor(i, v) { cg2Stops[i].c = v; cg2Sync(); }
+function cg2StopPos(i, v, el) {
+  cg2Stops[i].p = +v;
+  const b = el.parentNode.querySelector("b");
+  if (b) b.textContent = v + "%";
+  cg2Sync();
+}
+function cg2DelStop(i) {
+  if (cg2Stops.length <= 2) return;
+  cg2Stops.splice(i, 1);
+  cg2Seed(); cg2Sync();
+}
+function cg2AddStop() {
+  if (cg2Stops.length >= 6) return;
+  const cols = cg2Stops.map((s) => s.c);
+  const next = ["#f59e0b", "#06b6d4", "#22c55e", "#ec4899"].find((c) => !cols.includes(c)) || "#64748b";
+  cg2Stops.push({ c: next, p: 50 });
+  cg2Seed(); cg2Sync();
+}
+function cg2Set(cols, ang) {
+  cg2Stops = cols.map((c, i) => ({ c, p: Math.round(i * 100 / (cols.length - 1)) }));
+  cg2Seed();
+  const a = document.getElementById("gr-ang");
+  if (a) a.value = ang;
+  cg2Sync();
+}
+function cg2Random() {
+  const pals = [["#f97316", "#7c3aed"], ["#06b6d4", "#3b82f6"], ["#22c55e", "#14b8a6"], ["#ec4899", "#f43f5e"], ["#eab308", "#ef4444"], ["#0ea5e9", "#8b5cf6"], ["#ef4444", "#f97316", "#eab308"], ["#14b8a6", "#3b82f6", "#8b5cf6"]];
+  const p = pals[Math.floor(Math.random() * pals.length)];
+  cg2Set(p, Math.floor(Math.random() * 360));
+}
+function cg2Tail(btn) {
+  const t = document.getElementById("gr-out");
+  if (!t) return;
+  const css = t.value.replace(/^background: /, "").replace(/;$/, "");
+  const cls = "bg-[" + css.replace(/ /g, "_") + "]";
+  navigator.clipboard.writeText(cls).catch(() => {});
+  if (btn) { const old = btn.textContent; btn.textContent = "Copied!"; setTimeout(() => (btn.textContent = old), 1200); }
+}
+
+
 function bsDraw() {
   const g = (id) => document.getElementById(id);
+  if (!g("bs-box") || !g("bs-out")) return;
   const x = g("bs-x").value, y = g("bs-y").value, bl = g("bs-bl").value, sp = g("bs-sp").value;
   g("bs-xv").textContent = x; g("bs-yv").textContent = y; g("bs-blv").textContent = bl; g("bs-spv").textContent = sp;
   const opv = g("bs-op").value; g("bs-opv").textContent = opv;
@@ -2963,6 +3157,15 @@ function bsDraw() {
   g("bs-box").style.boxShadow = v;
   g("bs-out").value = `box-shadow: ${v};`;
 }
+function bs2Pre(x, y, bl, sp, col, op, inset) {
+  const g = (id) => document.getElementById(id);
+  if (!g("bs-box")) return;
+  g("bs-x").value = x; g("bs-y").value = y; g("bs-bl").value = bl; g("bs-sp").value = sp;
+  g("bs-color").value = col; g("bs-op").value = op;
+  g("bs-inset").checked = !!inset;
+  bsDraw();
+}
+
 
 /* ---- Text to Speech ---- */
 let ttsVoices = [];
@@ -3268,7 +3471,7 @@ function up2Copy(btn) {
 
 /* Initial render for tools that need it */
 (function () {
-  if (document.getElementById("gr-prev")) grDraw();
+  if (document.getElementById("gr-prev")) { cg2Seed(); cg2Sync(); }
   if (document.getElementById("bs-box")) bsDraw();
   if (document.getElementById("ty-words")) ty2New();
 })();

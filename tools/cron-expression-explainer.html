@@ -42,12 +42,28 @@
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>Cron Expression Explainer</h1></div><p>Translate any 5-field cron expression into plain English and see its next five run times before it surprises you in production.</p></div>
 
 <div class="panel">
+  <label>Quick presets</label>
+  <div class="ir2-presets">
+    <button type="button" class="ir2-preset" onclick="cr2Pre('* * * * *')">Every minute</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('*/15 * * * *')">Every 15 min</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('30 * * * *')">Hourly at :30</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('0 0 * * *')">Daily midnight</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('0 9 * * 1-5')">Weekdays 9 am</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('0 */6 * * *')">Every 6 hours</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('0 0 1 * *')">Monthly on the 1st</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('0 12 * * 6,0')">Weekends noon</button>
+  </div>
   <label>Cron expression (5 fields)</label>
   <input id="cr-in" oninput="cronExplain()" placeholder="*/15 9-17 * * 1-5" autocomplete="off">
+  <div id="cr2-sum" class="jf-stats" style="margin:10px 0"></div>
   <div id="cr-out" class="result"></div>
   <label>Next 5 runs (your local time)</label>
   <div id="cr-next" class="result"></div>
+  <div class="row">
+    <button class="btn ghost" onclick="copyText(document.getElementById('cr-in').value, this)">Copy expression</button>
+  </div>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the Cron Expression Explainer?</h2>

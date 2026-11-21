@@ -43,14 +43,21 @@
 
 <div class="panel">
   <div id="sw-display" class="big-time">00:00.00</div>
+  <div id="sw-chips" class="jf-stats" style="justify-content:center;margin:8px 0 4px"></div>
   <div class="row">
     <button class="btn" id="sw-start" onclick="swStart()">Start</button>
     <button class="btn ghost" onclick="swLap()">Lap</button>
     <button class="btn ghost" onclick="swPause()">Pause</button>
     <button class="btn ghost" onclick="swReset()">Reset</button>
   </div>
+  <label>Laps <span class="tool-note">shortcuts — Space starts/pauses, L records a lap</span></label>
   <div id="sw-laps"></div>
+  <div id="sw2-export" class="row" style="display:none">
+    <button class="btn ghost" onclick="sw2Copy(this)">Copy laps</button>
+    <button class="btn ghost" onclick="sw2Csv()">Download CSV</button>
+  </div>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the Online Stopwatch?</h2>

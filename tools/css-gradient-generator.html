@@ -42,16 +42,37 @@
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg><h1>CSS Gradient Generator</h1></div><p>Design linear gradients with two colour pickers and an angle slider, live preview and copy-ready CSS output.</p></div>
 
 <div class="panel">
-  <div class="row">
-    <div><label>Start colour</label><input type="color" id="gr-c1" value="#ff7000" oninput="grDraw()"></div>
-    <div><label>End colour</label><input type="color" id="gr-c2" value="#7c3aed" oninput="grDraw()"></div>
-    <div><label>Angle: <span id="gr-angv">135</span>°</label><input type="range" id="gr-ang" min="0" max="360" value="135" oninput="grDraw()"></div>
+  <label>Gradient type</label>
+  <div class="lr2-types">
+    <button type="button" class="lr2-type active" onclick="cg2Type(0,this)">Linear</button>
+    <button type="button" class="lr2-type" onclick="cg2Type(1,this)">Radial</button>
+    <button type="button" class="lr2-type" onclick="cg2Type(2,this)">Conic</button>
+  </div>
+  <label>Colour stops</label>
+  <div id="cg2-stops"></div>
+  <button class="btn ghost" onclick="cg2AddStop()">+ Add stop</button>
+  <div id="cg2-ang-wrap" class="row" style="margin-top:12px">
+    <div style="flex:1"><label>Angle: <span id="gr-angv">135</span>°</label><input type="range" id="gr-ang" min="0" max="360" value="135" oninput="grDraw()"></div>
+  </div>
+  <label>Presets</label>
+  <div class="ir2-presets">
+    <button type="button" class="ir2-preset" onclick="cg2Set(['#ff512f','#dd2476'],180)">Sunset</button>
+    <button type="button" class="ir2-preset" onclick="cg2Set(['#2193b0','#6dd5ed'],90)">Ocean</button>
+    <button type="button" class="ir2-preset" onclick="cg2Set(['#ff7000','#7c3aed'],135)">Ember</button>
+    <button type="button" class="ir2-preset" onclick="cg2Set(['#00b09b','#96c93d'],120)">Mint</button>
+    <button type="button" class="ir2-preset" onclick="cg2Set(['#ffecd2','#fcb69f'],45)">Peach</button>
+    <button type="button" class="ir2-preset" onclick="cg2Set(['#e53935','#e35d5b','#f6d365'],110)">Volcano</button>
   </div>
   <div id="gr-prev" class="gr-prev"></div>
   <label>CSS</label>
   <textarea id="gr-out" readonly style="min-height:80px"></textarea>
-  <button class="btn ghost" onclick="copyText('gr-out')">Copy CSS</button>
+  <div class="row">
+    <button class="btn ghost" onclick="copyText(document.getElementById('gr-out').value, this)">Copy CSS</button>
+    <button class="btn ghost" onclick="cg2Tail(this)">Copy Tailwind class</button>
+    <button class="btn ghost" onclick="cg2Random()">Randomise</button>
+  </div>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the CSS Gradient Generator?</h2>

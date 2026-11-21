@@ -269,50 +269,107 @@ TOOL_BODIES = {
 "password-strength-checker": """
 <div class="panel">
   <label>Password to analyse</label>
-  <input type="text" id="pw-in" oninput="pwCheck()" placeholder="Type a test password \u2014 nothing is sent anywhere" autocomplete="off">
+  <div class="pw2-row">
+    <input type="text" id="pw-in" oninput="pwCheck()" placeholder="Type a test password — nothing is sent anywhere" autocomplete="off">
+    <button class="btn ghost" onclick="pw2Mask(this)">Hide</button>
+  </div>
   <div class="pw-meter"><div id="pw-fill"></div></div>
   <div id="pw-stats" class="stat-row"></div>
+  <label>Requirements</label>
+  <div id="pw2-checks" class="pw2-checks"></div>
   <div id="pw-out" class="result"></div>
-</div>""",
+</div>
+""",
 "cron-expression-explainer": """
 <div class="panel">
+  <label>Quick presets</label>
+  <div class="ir2-presets">
+    <button type="button" class="ir2-preset" onclick="cr2Pre('* * * * *')">Every minute</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('*/15 * * * *')">Every 15 min</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('30 * * * *')">Hourly at :30</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('0 0 * * *')">Daily midnight</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('0 9 * * 1-5')">Weekdays 9 am</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('0 */6 * * *')">Every 6 hours</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('0 0 1 * *')">Monthly on the 1st</button>
+    <button type="button" class="ir2-preset" onclick="cr2Pre('0 12 * * 6,0')">Weekends noon</button>
+  </div>
   <label>Cron expression (5 fields)</label>
   <input id="cr-in" oninput="cronExplain()" placeholder="*/15 9-17 * * 1-5" autocomplete="off">
+  <div id="cr2-sum" class="jf-stats" style="margin:10px 0"></div>
   <div id="cr-out" class="result"></div>
   <label>Next 5 runs (your local time)</label>
   <div id="cr-next" class="result"></div>
-</div>""",
+  <div class="row">
+    <button class="btn ghost" onclick="copyText(document.getElementById('cr-in').value, this)">Copy expression</button>
+  </div>
+</div>
+""",
 "css-gradient-generator": """
 <div class="panel">
-  <div class="row">
-    <div><label>Start colour</label><input type="color" id="gr-c1" value="#ff7000" oninput="grDraw()"></div>
-    <div><label>End colour</label><input type="color" id="gr-c2" value="#7c3aed" oninput="grDraw()"></div>
-    <div><label>Angle: <span id="gr-angv">135</span>\u00b0</label><input type="range" id="gr-ang" min="0" max="360" value="135" oninput="grDraw()"></div>
+  <label>Gradient type</label>
+  <div class="lr2-types">
+    <button type="button" class="lr2-type active" onclick="cg2Type(0,this)">Linear</button>
+    <button type="button" class="lr2-type" onclick="cg2Type(1,this)">Radial</button>
+    <button type="button" class="lr2-type" onclick="cg2Type(2,this)">Conic</button>
+  </div>
+  <label>Colour stops</label>
+  <div id="cg2-stops"></div>
+  <button class="btn ghost" onclick="cg2AddStop()">+ Add stop</button>
+  <div id="cg2-ang-wrap" class="row" style="margin-top:12px">
+    <div style="flex:1"><label>Angle: <span id="gr-angv">135</span>°</label><input type="range" id="gr-ang" min="0" max="360" value="135" oninput="grDraw()"></div>
+  </div>
+  <label>Presets</label>
+  <div class="ir2-presets">
+    <button type="button" class="ir2-preset" onclick="cg2Set(['#ff512f','#dd2476'],180)">Sunset</button>
+    <button type="button" class="ir2-preset" onclick="cg2Set(['#2193b0','#6dd5ed'],90)">Ocean</button>
+    <button type="button" class="ir2-preset" onclick="cg2Set(['#ff7000','#7c3aed'],135)">Ember</button>
+    <button type="button" class="ir2-preset" onclick="cg2Set(['#00b09b','#96c93d'],120)">Mint</button>
+    <button type="button" class="ir2-preset" onclick="cg2Set(['#ffecd2','#fcb69f'],45)">Peach</button>
+    <button type="button" class="ir2-preset" onclick="cg2Set(['#e53935','#e35d5b','#f6d365'],110)">Volcano</button>
   </div>
   <div id="gr-prev" class="gr-prev"></div>
   <label>CSS</label>
   <textarea id="gr-out" readonly style="min-height:80px"></textarea>
-  <button class="btn ghost" onclick="copyText('gr-out')">Copy CSS</button>
-</div>""",
+  <div class="row">
+    <button class="btn ghost" onclick="copyText(document.getElementById('gr-out').value, this)">Copy CSS</button>
+    <button class="btn ghost" onclick="cg2Tail(this)">Copy Tailwind class</button>
+    <button class="btn ghost" onclick="cg2Random()">Randomise</button>
+  </div>
+</div>
+""",
 "box-shadow-generator": """
 <div class="panel">
+  <label>Quick presets</label>
+  <div class="ir2-presets">
+    <button type="button" class="ir2-preset" onclick="bs2Pre(0,1,2,0,'#0f172a',10,0)">Subtle</button>
+    <button type="button" class="ir2-preset" onclick="bs2Pre(0,4,12,-2,'#0f172a',18,0)">Card</button>
+    <button type="button" class="ir2-preset" onclick="bs2Pre(0,18,40,-12,'#0f172a',25,0)">Floating</button>
+    <button type="button" class="ir2-preset" onclick="bs2Pre(0,0,24,4,'#7c3aed',45,0)">Glow</button>
+    <button type="button" class="ir2-preset" onclick="bs2Pre(6,6,0,0,'#111827',100,0)">Hard</button>
+    <button type="button" class="ir2-preset" onclick="bs2Pre(0,2,6,0,'#0f172a',25,1)">Inset panel</button>
+  </div>
+  <label>Preview</label>
+  <div class="bs-prev"><div id="bs-box"></div></div>
   <div class="row">
-    <div><label>X: <span id="bs-xv">0</span>px</label><input type="range" id="bs-x" min="-40" max="40" value="0" oninput="bsDraw()"></div>
-    <div><label>Y: <span id="bs-yv">10</span>px</label><input type="range" id="bs-y" min="-40" max="40" value="10" oninput="bsDraw()"></div>
+    <div><label>X offset: <span id="bs-xv">0</span>px</label><input type="range" id="bs-x" min="-40" max="40" value="0" oninput="bsDraw()"></div>
+    <div><label>Y offset: <span id="bs-yv">10</span>px</label><input type="range" id="bs-y" min="-40" max="40" value="10" oninput="bsDraw()"></div>
   </div>
   <div class="row">
     <div><label>Blur: <span id="bs-blv">30</span>px</label><input type="range" id="bs-bl" min="0" max="100" value="30" oninput="bsDraw()"></div>
     <div><label>Spread: <span id="bs-spv">-8</span>px</label><input type="range" id="bs-sp" min="-30" max="40" value="-8" oninput="bsDraw()"></div>
   </div>
   <div class="row">
-    <div><label>Colour</label><input type="color" id="bs-color" value="#000000" oninput="bsDraw()"></div>
-    <div><label>Opacity: <span id="bs-opv">18</span>%</label><input type="range" id="bs-op" min="0" max="100" value="18" oninput="bsDraw()"></div>
-    <div><label>Inset</label><input type="checkbox" id="bs-inset" onchange="bsDraw()"></div>
+    <div><label>Shadow colour</label><input type="color" id="bs-color" value="#0f172a" oninput="bsDraw()"></div>
+    <div><label>Opacity: <span id="bs-opv">55</span>%</label><input type="range" id="bs-op" min="0" max="100" value="55" oninput="bsDraw()"></div>
   </div>
-  <div class="bs-prev"><div id="bs-box"></div></div>
+  <label class="pg-switch"><input type="checkbox" id="bs-inset" onchange="bsDraw()"><span class="pg-track"></span> Inset shadow</label>
+  <label>CSS</label>
   <textarea id="bs-out" readonly style="min-height:80px"></textarea>
-  <button class="btn ghost" onclick="copyText('bs-out')">Copy CSS</button>
-</div>""",
+  <div class="row">
+    <button class="btn ghost" onclick="copyText(document.getElementById('bs-out').value, this)">Copy CSS</button>
+  </div>
+</div>
+""",
 "text-to-speech": """
 <div class="panel">
   <label>Text to read aloud</label>
@@ -482,11 +539,26 @@ TOOL_BODIES = {
 <div class="panel">
   <label>Logo image (PNG, JPG, SVG or WebP)</label>
   <input type="file" id="fv-file" accept="image/*" onchange="fvGen()">
-  <div id="fv-previews" class="fav-row"></div>
-  <label>Link tags for your &lt;head&gt;</label>
-  <textarea id="fv-tags" readonly style="min-height:130px"></textarea>
-  <button class="btn ghost" onclick="copyText('fv-tags')">Copy link tags</button>
-</div>""",
+  <div class="row">
+    <div><label>Background fill (used where the logo is transparent)</label><input type="color" id="fv-bg" value="#ffffff" oninput="fv2Redraw()"></div>
+    <div class="fv2-tab-prev">
+      <div class="fv2-tabshot"><img id="fv-tab" alt="Favicon preview at 32 px"><em>How it looks in a browser tab</em></div>
+    </div>
+  </div>
+  <label>Generated sizes — download each and keep the file name</label>
+  <div id="fv-previews" class="fv2-grid"></div>
+  <label>Install snippets</label>
+  <div class="uc2-cats jf-w100">
+    <button type="button" class="uc2-cat active" onclick="fv2Tab(0,this)">HTML head tags</button>
+    <button type="button" class="uc2-cat" onclick="fv2Tab(1,this)">site.webmanifest</button>
+    <button type="button" class="uc2-cat" onclick="fv2Tab(2,this)">browserconfig.xml</button>
+  </div>
+  <textarea id="fv-tags" readonly style="min-height:170px"></textarea>
+  <div class="row">
+    <button class="btn ghost" onclick="copyText(document.getElementById('fv-tags').value, this)">Copy snippet</button>
+  </div>
+</div>
+""",
 "base64-image-encoder": """
 <div class="panel">
   <label>Image file</label>
@@ -505,14 +577,21 @@ TOOL_BODIES = {
 "stopwatch-online": """
 <div class="panel">
   <div id="sw-display" class="big-time">00:00.00</div>
+  <div id="sw-chips" class="jf-stats" style="justify-content:center;margin:8px 0 4px"></div>
   <div class="row">
     <button class="btn" id="sw-start" onclick="swStart()">Start</button>
     <button class="btn ghost" onclick="swLap()">Lap</button>
     <button class="btn ghost" onclick="swPause()">Pause</button>
     <button class="btn ghost" onclick="swReset()">Reset</button>
   </div>
+  <label>Laps <span class="tool-note">shortcuts — Space starts/pauses, L records a lap</span></label>
   <div id="sw-laps"></div>
-</div>""",
+  <div id="sw2-export" class="row" style="display:none">
+    <button class="btn ghost" onclick="sw2Copy(this)">Copy laps</button>
+    <button class="btn ghost" onclick="sw2Csv()">Download CSV</button>
+  </div>
+</div>
+""",
 "countdown-timer": """
 <div class="panel">
   <label>Event name (optional)</label>

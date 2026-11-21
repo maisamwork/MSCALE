@@ -44,11 +44,26 @@
 <div class="panel">
   <label>Logo image (PNG, JPG, SVG or WebP)</label>
   <input type="file" id="fv-file" accept="image/*" onchange="fvGen()">
-  <div id="fv-previews" class="fav-row"></div>
-  <label>Link tags for your &lt;head&gt;</label>
-  <textarea id="fv-tags" readonly style="min-height:130px"></textarea>
-  <button class="btn ghost" onclick="copyText('fv-tags')">Copy link tags</button>
+  <div class="row">
+    <div><label>Background fill (used where the logo is transparent)</label><input type="color" id="fv-bg" value="#ffffff" oninput="fv2Redraw()"></div>
+    <div class="fv2-tab-prev">
+      <div class="fv2-tabshot"><img id="fv-tab" alt="Favicon preview at 32 px"><em>How it looks in a browser tab</em></div>
+    </div>
+  </div>
+  <label>Generated sizes — download each and keep the file name</label>
+  <div id="fv-previews" class="fv2-grid"></div>
+  <label>Install snippets</label>
+  <div class="uc2-cats jf-w100">
+    <button type="button" class="uc2-cat active" onclick="fv2Tab(0,this)">HTML head tags</button>
+    <button type="button" class="uc2-cat" onclick="fv2Tab(1,this)">site.webmanifest</button>
+    <button type="button" class="uc2-cat" onclick="fv2Tab(2,this)">browserconfig.xml</button>
+  </div>
+  <textarea id="fv-tags" readonly style="min-height:170px"></textarea>
+  <div class="row">
+    <button class="btn ghost" onclick="copyText(document.getElementById('fv-tags').value, this)">Copy snippet</button>
+  </div>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the Favicon Generator?</h2>
