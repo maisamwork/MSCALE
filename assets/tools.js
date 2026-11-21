@@ -2121,36 +2121,67 @@ function imgCrop() {
 }
 
 /* Meta Tag Generator */
+let mt2IO = ["", "", "", ""], mt2Idx = 3;
 function metaGen() {
-  const v = (id) => (document.getElementById(id).value || "").trim();
+  const v = (id) => { const el = document.getElementById(id); return el ? (el.value || "").trim() : ""; };
   const esc2 = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   const title = v("mt-title"), desc = v("mt-desc"), url = v("mt-url"), author = v("mt-author"), img = v("mt-img");
   const g = document.getElementById("mt-google");
-  g.innerHTML = `<div style="color:#1a0dab;font-size:18px;line-height:1.3">${esc2(title || "Your page title appears here")}</div>` +
+  if (g) g.innerHTML = `<div style="color:#1a0dab;font-size:18px;line-height:1.3">${esc2(title || "Your page title appears here")}</div>` +
     `<div style="color:#006621;font-size:13px">${esc2(url || "https://example.com")}</div>` +
-    `<div style="color:#545454;font-size:13.5px;line-height:1.45">${esc2(desc || "Your meta description appears here — aim for 140–160 characters.")}</div>`;
-  const lines = [
+    `<div style="color:#545454;font-size:13.5px;line-height:1.45">${esc2(desc || "Your meta description appears here \u2014 aim for 140\u2013160 characters.")}</div>`;
+  const st = document.getElementById("mt2-stats");
+  if (st) {
+    const tCl = title.length > 60 ? "jf-chip-bad" : "";
+    const dCl = desc.length > 160 ? "jf-chip-bad" : "";
+    st.innerHTML =
+      `<span class="jf-chip ${tCl}"><b>${title.length}</b>title chars (30\u201360 ideal)</span>` +
+      `<span class="jf-chip ${dCl}"><b>${desc.length}</b>description chars (70\u2013160 ideal)</span>`;
+  }
+  const soc = document.getElementById("mt2-social");
+  if (soc) soc.innerHTML =
+    (img ? `<div class="mt2-img" style="background-image:url('${esc2(img)}')"></div>`
+         : `<div class="mt2-img" style="background:linear-gradient(135deg,#ff7000,#7c3aed)"></div>`) +
+    `<div class="mt2-body"><span class="mt2-url">${esc2(url || "example.com")}</span>` +
+    `<b>${esc2(title || "Your page title appears here")}</b>` +
+    `<span>${esc2(desc || "The social share card preview appears here once you add a description.")}</span></div>`;
+  const basic = [
     `<!-- Primary meta tags -->`,
     `<title>${esc2(title)}</title>`,
     `<meta name="description" content="${esc2(desc)}" />`,
     author ? `<meta name="author" content="${esc2(author)}" />` : "",
-    url ? `<link rel="canonical" href="${esc2(url)}" />` : "",
-    ``,
+    url ? `<link rel="canonical" href="${esc2(url)}" />` : ""
+  ].filter(Boolean);
+  const og = [
     `<!-- Open Graph / Facebook / LinkedIn -->`,
     `<meta property="og:type" content="website" />`,
     url ? `<meta property="og:url" content="${esc2(url)}" />` : "",
     `<meta property="og:title" content="${esc2(title)}" />`,
     `<meta property="og:description" content="${esc2(desc)}" />`,
-    img ? `<meta property="og:image" content="${esc2(img)}" />` : "",
-    ``,
+    img ? `<meta property="og:image" content="${esc2(img)}" />` : ""
+  ].filter(Boolean);
+  const tw = [
     `<!-- Twitter -->`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${esc2(title)}" />`,
     `<meta name="twitter:description" content="${esc2(desc)}" />`,
-    img ? `<meta name="twitter:image" content="${esc2(img)}" />` : "",
-  ];
-  document.getElementById("mt-code").value = lines.filter((l) => l !== "").join("\n");
+    img ? `<meta name="twitter:image" content="${esc2(img)}" />` : ""
+  ].filter(Boolean);
+  mt2IO = [basic.join("\n"), og.join("\n"), tw.join("\n"), basic.concat([""], og, [""], tw).join("\n")];
+  mt2Show();
 }
+function mt2Tab(i, btn) {
+  mt2Idx = i;
+  document.querySelectorAll(".uc2-cats .uc2-cat").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  mt2Show();
+}
+function mt2Show() {
+  const t = document.getElementById("mt-code");
+  if (t) t.value = mt2IO[mt2Idx] || "";
+}
+if (document.getElementById("mt-code")) metaGen();
+
 
 /* Keyword Density Checker */
 const KD_STOP = new Set(("a,an,the,and,or,but,if,then,else,when,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,down,in,out,on,off,over,under,again,further,once,here,there,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,can,will,just,is,are,was,were,be,been,being,have,has,had,having,do,does,did,doing,would,should,could,of,it,its,this,that,these,those,i,you,he,she,we,they,them,his,her,their,our,your,my,me,as").split(","));
@@ -2192,29 +2223,54 @@ function kwDensity() {
 
 /* XML Sitemap Generator */
 function sitemapGen() {
-  const urls = [...new Set(document.getElementById("sm-urls").value.split(/\s+/).filter(Boolean))];
+  const lines = document.getElementById("sm-urls").value.split("\n").map((l) => l.trim()).filter(Boolean);
+  if (!document.getElementById("sm-out")) return;
+  const useLm = !document.getElementById("sm-use-lastmod") || document.getElementById("sm-use-lastmod").checked;
+  const lmIn = document.getElementById("sm-lastmod");
+  const lm = useLm && lmIn && /^\d{4}-\d{2}-\d{2}/.test(lmIn.value || "") ? lmIn.value.slice(0, 10) : new Date().toISOString().slice(0, 10);
   const freq = document.getElementById("sm-freq").value;
   const prio = document.getElementById("sm-prio").value;
-  const ok = urls.filter((u) => /^https?:\/\/.+\..+/.test(u));
-  const skipped = urls.length - ok.length;
-  const today = new Date().toISOString().slice(0, 10);
+  const seen = new Set(), ok = [], bad = [];
+  let dups = 0;
+  for (const u of lines) {
+    if (!/^https?:\/\/.+\..+/.test(u)) { bad.push(u); continue; }
+    const key = u.replace(/\/+$/, "") || u;
+    if (seen.has(key)) { dups++; continue; }
+    seen.add(key);
+    ok.push(u);
+  }
   const esc2 = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const body = ok.map((u) =>
-    `  <url>\n    <loc>${esc2(u)}</loc>\n    <lastmod>${today}</lastmod>` +
+    `  <url>\n    <loc>${esc2(u)}</loc>\n    <lastmod>${lm}</lastmod>` +
     (freq ? `\n    <changefreq>${freq}</changefreq>` : "") +
     (prio ? `\n    <priority>${prio}</priority>` : "") + `\n  </url>`).join("\n");
   const xml = ok.length ? `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>` : "";
   document.getElementById("sm-out").value = xml;
+  const st = document.getElementById("sm2-stats");
+  if (st) st.innerHTML =
+    '<span class="jf-chip"><b>' + ok.length + "</b>valid URLs</span>" +
+    '<span class="jf-chip"><b>' + bad.length + "</b>invalid skipped</span>" +
+    '<span class="jf-chip"><b>' + dups + "</b>duplicates removed</span>";
+  const badd = document.getElementById("sm2-bad");
+  if (badd) badd.innerHTML = bad.length
+    ? "<b>Lines that were skipped (need full https:// addresses):</b><ul>" + bad.slice(0, 8).map((b) => "<li>" + escHtml(b) + "</li>").join("") + "</ul>"
+    : "";
   const dl = document.getElementById("sm-dl");
-  if (ok.length) {
-    dl.href = URL.createObjectURL(new Blob([xml], { type: "application/xml" }));
-    dl.style.display = "inline-flex";
-  } else dl.style.display = "none";
-  const note = document.getElementById("sm-out");
-  note.placeholder = ok.length
-    ? `Generated ${ok.length} URL entries${skipped ? ` · ${skipped} invalid skipped (use full https:// addresses)` : ""}`
-    : "Paste at least one valid URL (starting with https://)";
+  if (dl) {
+    if (ok.length) {
+      if (dl.dataset.url) URL.revokeObjectURL(dl.dataset.url);
+      dl.dataset.url = URL.createObjectURL(new Blob([xml], { type: "application/xml" }));
+      dl.href = dl.dataset.url;
+      dl.style.display = "inline-flex";
+    } else dl.style.display = "none";
+  }
 }
+function sm2Robots(btn) {
+  const first = (document.getElementById("sm-urls").value.split("\n").map((l) => l.trim()).find((u) => /^https?:\/\//.test(u)) || "https://example.com").replace(/\/+$/, "");
+  navigator.clipboard.writeText("Sitemap: " + first + "/sitemap.xml").catch(() => {});
+  if (btn) { const old = btn.textContent; btn.textContent = "Copied!"; setTimeout(() => (btn.textContent = old), 1200); }
+}
+
 
 /* Slug Generator */
 function slugifyOne(t, sep, lower, stop, maxLen) {
@@ -2235,15 +2291,44 @@ function slugifyOne(t, sep, lower, stop, maxLen) {
   }
   return parts.join(sep);
 }
+let SL2_SEP = "-";
+function sl2Sep(s, btn) {
+  SL2_SEP = s;
+  document.querySelectorAll(".ir2-presets .ir2-preset").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  slugGen();
+}
 function slugGen() {
   const lines = document.getElementById("sl-in").value.split("\n").map((l) => l.trim()).filter(Boolean);
+  const st = document.getElementById("sl2-stats");
+  if (st) {
+    const lens = lines.map((l) => l.length);
+    const avg = lens.length ? Math.round(lens.reduce((a, b) => a + b, 0) / lens.length) : 0;
+    st.innerHTML =
+      '<span class="jf-chip"><b>' + lines.length + "</b>titles</span>" +
+      '<span class="jf-chip"><b>' + avg + "</b>avg char</span>" +
+      '<span class="jf-chip"><b>' + (lens.length ? Math.max(...lens) : 0) + "</b>longest</span>";
+  }
   if (!lines.length) { document.getElementById("sl-out").value = ""; return; }
-  const sep = document.getElementById("sl-sep").value;
   const lower = document.getElementById("sl-lower").checked;
   const stop = document.getElementById("sl-stop").checked;
   const maxLen = parseInt(document.getElementById("sl-len").value) || 0;
-  document.getElementById("sl-out").value = lines.map((l) => slugifyOne(l, sep, lower, stop, maxLen)).join("\n");
+  const outs = lines.map((l) => slugifyOne(l, SL2_SEP, lower, stop, maxLen));
+  document.getElementById("sl-out").value = outs.join("\n");
+  if (st) st.innerHTML +=
+    '<span class="jf-chip"><b>' + outs.filter(Boolean).length + "</b>slugs</span>";
 }
+function sl2Sample() {
+  const ta = document.getElementById("sl-in");
+  if (!ta) return;
+  ta.value = "10 Tips for Better Sleep\nCaf\u00e9 Culture in Z\u00fcrich: The Full Story!\nHow to Bake Sourdough Bread at Home in 2025";
+  slugGen();
+}
+function sl2Download() {
+  const v = document.getElementById("sl-out").value;
+  if (v) dlBytes(v, "slugs.txt", "text/plain");
+}
+
 
 /* Invoice Generator */
 function invAddRow() {
@@ -2549,6 +2634,7 @@ function df2Live() {
 if ($("diff-a")) df2Run();
 
 /* ---- Markdown Previewer ---- */
+/* ---- Markdown Previewer ---- */
 function mdRender() {
   const src = document.getElementById("md-in").value;
   const lines = src.split("\n");
@@ -2580,6 +2666,63 @@ function mdRender() {
   document.getElementById("md-out").innerHTML = html;
   document.getElementById("md-html").value = html;
 }
+/* ---- Markdown previewer extras ---- */
+let MD2_VIEW = 0;
+function md2Wrap(before, after) {
+  const ta = document.getElementById("md-in");
+  if (!ta) return;
+  const s = ta.selectionStart, e = ta.selectionEnd, t = ta.value;
+  ta.value = t.slice(0, s) + before + t.slice(s, e) + after + t.slice(e);
+  ta.selectionStart = s + before.length; ta.selectionEnd = e + before.length;
+  ta.focus(); mdRender();
+}
+function md2Line(prefix) {
+  const ta = document.getElementById("md-in");
+  if (!ta) return;
+  const s = ta.selectionStart, t = ta.value;
+  const ls = t.lastIndexOf("\n", s - 1) + 1;
+  ta.value = t.slice(0, ls) + prefix + t.slice(ls);
+  ta.selectionStart = ta.selectionEnd = s + prefix.length;
+  ta.focus(); mdRender();
+}
+function md2View(i, btn) {
+  MD2_VIEW = i;
+  document.querySelectorAll(".lr2-types .lr2-type").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  const col = document.getElementById("md2-prev-col"), out = document.getElementById("md-out"), ta = document.getElementById("md-html");
+  if (col) col.style.display = i === 0 ? "block" : "none";
+  if (ta) ta.style.display = i === 1 ? "block" : "none";
+}
+function md2Stats() {
+  const t = document.getElementById("md-in").value;
+  const el = document.getElementById("md2-stats");
+  if (!el) return;
+  const words = (t.trim().match(/\S+/g) || []).length;
+  const readMin = Math.max(1, Math.round(words / 200));
+  el.innerHTML =
+    '<span class="jf-chip"><b>' + words + "</b>words</span>" +
+    '<span class="jf-chip"><b>' + t.length + "</b>characters</span>" +
+    '<span class="jf-chip"><b>' + (t ? t.split("\n").length : 0) + "</b>lines</span>" +
+    '<span class="jf-chip"><b>~' + (words ? readMin : 0) + " min</b>reading time</span>";
+}
+function md2Download() {
+  const html = document.getElementById("md-html").value;
+  if (!html) return;
+  dlBytes('<!doctype html>\n<html><head><meta charset="utf-8"><title>Markdown export</title><style>body{font-family:system-ui,sans-serif;max-width:760px;margin:40px auto;padding:0 18px;line-height:1.6}code{background:rgba(127,127,127,.15);padding:1px 5px;border-radius:4px}pre code{display:block;padding:12px}blockquote{border-left:3px solid #ccc;margin:0;padding-left:14px;color:#555}</style></head><body>\n' + html + "\n</body></html>", "markdown-export.html", "text/html");
+}
+function md2Sample() {
+  const ta = document.getElementById("md-in");
+  if (!ta) return;
+  ta.value = "# Launch checklist\n\nShip the **landing page**, then verify these three things:\n\n- Form works with `@example.com` addresses\n- The *hero image* loads as WebP\n- Lighthouse score is above `90`\n\n1. Preview\n2. Publish\n3. Share\n\n> Ship small, ship often.\n\nRead the [full guide](https://example.com/launch).";
+  mdRender(); md2Stats();
+}
+function md2Clear() {
+  const ta = document.getElementById("md-in");
+  if (!ta) return;
+  ta.value = ""; mdRender(); md2Stats();
+}
+if (document.getElementById("md-out")) md2Stats();
+
 
 /* ---- Image Watermarker ---- */
 let wmImg = null;
@@ -2684,16 +2827,48 @@ function fv2Show() {
 function b64Enc() {
   const f = document.getElementById("b64-file").files[0];
   if (!f) return;
+  bi2Load(f);
+}
+function bi2Load(f) {
   const r = new FileReader();
   r.onload = () => {
-    const uri = r.result;
+    const uri = String(r.result);
     document.getElementById("b64-out").value = uri;
     document.getElementById("b64-html").value = `<img src="${uri}" alt="">`;
     document.getElementById("b64-css").value = `background-image: url(${uri});`;
-    out("b64-info", `<b>${escHtml(f.name)}</b> \u2014 ${(f.size / 1024).toFixed(1)} KB \u2192 ${(uri.length / 1024).toFixed(1)} KB encoded (+${Math.round((uri.length / f.size - 1) * 100)}%)`);
+    const img = new Image();
+    img.onload = () => {
+      const kb = (b) => (b < 1024 ? b + " B" : (b / 1024).toFixed(1) + " KB");
+      const pct = f.size ? Math.round((uri.length / f.size - 1) * 100) : 0;
+      const info = document.getElementById("b64-info");
+      if (info) info.innerHTML =
+        '<span class="jf-chip"><b>' + img.width + "\u00d7" + img.height + "</b>pixels</span>" +
+        '<span class="jf-chip"><b>' + kb(f.size) + "</b>file</span>" +
+        '<span class="jf-chip"><b>' + kb(uri.length) + "</b>data URI \u003cspan\u003e(+" + pct + "%)</span></span>";
+      const warn = document.getElementById("bi2-warn");
+      if (warn) warn.innerHTML = uri.length > 100 * 1024
+        ? "<b>Heads up:</b> this data URI is over 100 KB \u2014 for anything this large, hosting the image as a normal file usually parses faster and is cacheable. Data URIs shine for small icons and inline sprites."
+        : "";
+    };
+    img.src = uri;
+    const prev = document.getElementById("bi2-img");
+    if (prev) prev.src = uri;
   };
   r.readAsDataURL(f);
 }
+function bi2Txt() {
+  const v = document.getElementById("b64-out").value;
+  if (v) dlBytes(v, "image-data-uri.txt", "text/plain");
+}
+function bi2Drag(ev) { ev.preventDefault(); const d = document.getElementById("bi2-drop"); if (d) d.classList.add("bi2-over"); }
+function bi2Undrag(ev) { ev.preventDefault(); const d = document.getElementById("bi2-drop"); if (d) d.classList.remove("bi2-over"); }
+function bi2Drop(ev) {
+  bi2Undrag(ev);
+  const f = ev.dataTransfer && ev.dataTransfer.files && ev.dataTransfer.files[0];
+  if (!f) return;
+  bi2Load(f);
+}
+
 
 /* ---- Online Stopwatch (timestamp-based, drift-free) ---- */
 let swAcc = 0, swRun = false, swT0 = 0, swLaps = [], swTimer = null;
@@ -2780,7 +2955,7 @@ document.addEventListener("keydown", (e) => {
 if (document.getElementById("sw-display")) swRender();
 
 /* ---- Countdown Timer ---- */
-let cdTarget = 0, cdTotal = 0, cdTimer = null;
+let cdTarget = 0, cdTotal = 0, cdTimer = null, cd2Last = null;
 function cdStart() {
   const d = document.getElementById("cd-date").value;
   const tm = document.getElementById("cd-time-val").value || "09:00";
@@ -2788,8 +2963,16 @@ function cdStart() {
   cdTarget = new Date(d + "T" + tm).getTime();
   cdTotal = cdTarget - Date.now();
   if (cdTotal <= 0) { out("cd-msg", "<span class='error'>That moment is already in the past \u2014 pick a future date and time.</span>"); return; }
+  cd2Last = [d, tm];
   clearInterval(cdTimer);
   cdTimer = setInterval(cdTick, 250);
+  const t = new Date(cdTarget);
+  const names = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  out("cd2-tstat",
+    '<span class="jf-chip"><b>' + t.toLocaleString() + "</b>target moment</span>" +
+    '<span class="jf-chip"><b>' + names[t.getDay()] + "</b>day of week</span>" +
+    '<span class="jf-chip"><b>~' + Math.max(1, Math.round(cdTotal / 3600000)) + " h</b>from now</span>");
+  out("cd-msg", "");
   cdTick();
 }
 function cdTick() {
@@ -2801,7 +2984,11 @@ function cdTick() {
     document.getElementById("cd-units").innerHTML = label +
       `<div class="cd-unit"><b>0</b><span>Days</span></div><div class="cd-unit"><b>0</b><span>Hours</span></div><div class="cd-unit"><b>0</b><span>Minutes</span></div><div class="cd-unit"><b>0</b><span>Seconds</span></div>`;
     document.getElementById("cd-fill").style.width = "100%";
-    out("cd-msg", "<b>Time is up!</b> The countdown has finished.");
+    const ago = -left;
+    const agoTxt = ago < 60000 ? Math.round(ago / 1000) + " s" : Math.round(ago / 60000) + " min";
+    out("cd-msg", `<b>Time is up!</b> Finished <b>${agoTxt}</b> ago \u2014 <a style="cursor:pointer;text-decoration:underline" onclick="cd2Arm()">restart</a>`);
+    const snd = document.getElementById("cd2-sound");
+    if (snd && snd.checked) cd2Bip();
     return;
   }
   const d = Math.floor(left / 86400000), h = Math.floor(left % 86400000 / 3600000),
@@ -2810,6 +2997,36 @@ function cdTick() {
     `<div class="cd-unit"><b>${d}</b><span>Days</span></div><div class="cd-unit"><b>${h}</b><span>Hours</span></div><div class="cd-unit"><b>${m}</b><span>Minutes</span></div><div class="cd-unit"><b>${s}</b><span>Seconds</span></div>`;
   document.getElementById("cd-fill").style.width = ((1 - left / cdTotal) * 100).toFixed(2) + "%";
 }
+function cd2Bip() {
+  try {
+    const a = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.35, 0.7].forEach((t) => {
+      const o = a.createOscillator(), gn = a.createGain();
+      o.connect(gn); gn.connect(a.destination);
+      o.frequency.value = 880; o.type = "sine";
+      gn.gain.setValueAtTime(0.0001, a.currentTime + t);
+      gn.gain.exponentialRampToValueAtTime(0.25, a.currentTime + t + 0.02);
+      gn.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + t + 0.28);
+      o.start(a.currentTime + t); o.stop(a.currentTime + t + 0.3);
+    });
+  } catch (e) {}
+}
+function cd2Apply(t) {
+  const dv = document.getElementById("cd-date"), tv = document.getElementById("cd-time-val");
+  const iso = t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0") + "-" + String(t.getDate()).padStart(2, "0");
+  const tm = String(t.getHours()).padStart(2, "0") + ":" + String(t.getMinutes()).padStart(2, "0");
+  dv.value = iso;
+  if (tv) tv.value = tm;
+  cdStart();
+}
+function cd2PreMin(mins) { cd2Apply(new Date(Date.now() + mins * 60000)); }
+function cd2Tonight() {
+  const t = new Date(); t.setHours(18, 0, 0, 0);
+  if (t.getTime() <= Date.now()) t.setDate(t.getDate() + 1);
+  cd2Apply(t);
+}
+function cd2NY() { cd2Apply(new Date(new Date().getFullYear() + 1, 0, 1, 0, 0, 0)); }
+function cd2Arm() { if (cd2Last) { document.getElementById("cd-date").value = cd2Last[0]; document.getElementById("cd-time-val").value = cd2Last[1]; cdStart(); } }
 
 /* Render the word counter reference table on page load */
 (function () {
@@ -2895,7 +3112,7 @@ function attachTimePicker(dispId, hiddenId, def) {
   sync();
 }
 function initPickers() {
-  ["cd-date", "inv-date", "inv-due", "age-dob", "dd2-a", "dd2-b", "rd-a", "rd-b", "ad-date", "dw-date", "wn-date", "bd-a", "bd-b"].forEach(function (id) { if ($(id)) attachDatePicker(id); });
+  ["cd-date", "inv-date", "inv-due", "age-dob", "dd2-a", "dd2-b", "rd-a", "rd-b", "ad-date", "dw-date", "wn-date", "bd-a", "bd-b", "sm-lastmod"].forEach(function (id) { if ($(id)) attachDatePicker(id); });
   attachTimePicker("cd-time", "cd-time-val", "09:00");
   if ($("hr-s")) attachTimePicker("hr-s", "hr-sv", "09:00");
   if ($("hr-e")) attachTimePicker("hr-e", "hr-ev", "17:30");

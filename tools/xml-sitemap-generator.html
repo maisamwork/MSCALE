@@ -43,17 +43,25 @@
 
 <div class="panel">
   <label>Page URLs (one per line)</label>
-  <textarea id="sm-urls" placeholder="https://example.com/&#10;https://example.com/about&#10;https://example.com/blog/post-1"></textarea>
+  <textarea id="sm-urls" oninput="sitemapGen()" placeholder="https://example.com/&#10;https://example.com/about&#10;https://example.com/blog/post-1"></textarea>
+  <label class="pg-switch"><input type="checkbox" id="sm-use-lastmod" checked onchange="sitemapGen()"><span class="pg-track"></span> Include &lt;lastmod&gt; entries</label>
   <div class="row">
-    <div><label>Change frequency</label><select id="sm-freq"><option value="">omit</option><option value="daily">daily</option><option value="weekly" selected>weekly</option><option value="monthly">monthly</option><option value="yearly">yearly</option></select></div>
-    <div><label>Priority (0.1–1.0)</label><input type="number" id="sm-prio" min="0.1" max="1" step="0.1" placeholder="omit" /></div>
+    <div><label>Lastmod date</label><input type="text" id="sm-lastmod" readonly placeholder="Pick a date"></div>
+    <div><label>Change frequency</label><select id="sm-freq" onchange="sitemapGen()"><option value="">omit</option><option value="daily">daily</option><option value="weekly" selected>weekly</option><option value="monthly">monthly</option><option value="yearly">yearly</option></select></div>
+    <div><label>Priority (0.1–1.0)</label><input type="number" id="sm-prio" min="0.1" max="1" step="0.1" placeholder="omit" oninput="sitemapGen()" /></div>
   </div>
+  <div id="sm2-stats" class="jf-stats" style="margin:10px 0"></div>
   <button class="btn" onclick="sitemapGen()">Generate sitemap</button>
   <label>sitemap.xml</label>
   <textarea id="sm-out" style="min-height:220px" readonly></textarea>
-  <button class="btn" onclick="copyText('sm-out')">Copy XML</button>
-  <a id="sm-dl" class="btn ghost" style="display:none;margin-left:6px" download="sitemap.xml">Download sitemap.xml</a>
+  <div class="row" style="flex-wrap:wrap">
+    <button class="btn" onclick="copyText('sm-out')">Copy XML</button>
+    <a id="sm-dl" class="btn" href="javascript:void(0)" download="sitemap.xml" style="display:none">Download sitemap.xml</a>
+    <button class="btn ghost" onclick="sm2Robots(this)">Copy robots.txt line</button>
+  </div>
+  <div id="sm2-bad" class="result"></div>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the XML Sitemap Generator?</h2>

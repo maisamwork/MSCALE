@@ -42,17 +42,28 @@
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h1>Countdown Timer</h1></div><p>Count down to any date and time with a live days, hours, minutes and seconds display and progress bar.</p></div>
 
 <div class="panel">
+  <label>Quick presets</label>
+  <div class="ir2-presets">
+    <button type="button" class="ir2-preset" onclick="cd2PreMin(10)">+10 minutes</button>
+    <button type="button" class="ir2-preset" onclick="cd2PreMin(60)">+1 hour</button>
+    <button type="button" class="ir2-preset" onclick="cd2PreMin(180)">+3 hours</button>
+    <button type="button" class="ir2-preset" onclick="cd2Tonight()">Tonight 6 pm</button>
+    <button type="button" class="ir2-preset" onclick="cd2NY()">New Year</button>
+  </div>
   <label>Event name (optional)</label>
   <input id="cd-name" placeholder="Product launch">
   <div class="row">
     <div><label>Date</label><input type="text" id="cd-date" readonly placeholder="Pick a date"></div>
     <div><label>Time</label><input type="text" id="cd-time" readonly placeholder="Pick a time"><input type="hidden" id="cd-time-val" value="09:00"></div>
   </div>
-  <button class="btn" onclick="cdStart()">Start countdown</button>
+  <label class="pg-switch"><input type="checkbox" id="cd2-sound" checked><span class="pg-track"></span> Play a chime when time is up</label>
+  <div class="row"><button class="btn" onclick="cdStart()">Start countdown</button></div>
+  <div id="cd2-tstat" class="jf-stats" style="margin:12px 0"></div>
   <div id="cd-units" class="cd-units"></div>
   <div class="cd-bar"><div id="cd-fill"></div></div>
   <div id="cd-msg" class="result"></div>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the Countdown Timer?</h2>

@@ -52,12 +52,22 @@
     <div><label>Page URL</label><input type="text" id="mt-url" placeholder="https://example.com/page" oninput="metaGen()" /></div>
     <div><label>Social image URL</label><input type="text" id="mt-img" placeholder="https://example.com/card.jpg" oninput="metaGen()" /></div>
   </div>
-  <label>Google preview</label>
+  <div id="mt2-stats" class="jf-stats" style="margin:10px 0"></div>
+  <label>Google search preview</label>
   <div class="result" id="mt-google" style="white-space:normal;font-family:Arial,sans-serif"></div>
+  <label>Social share card preview</label>
+  <div class="mt2-social" id="mt2-social"></div>
   <label>Generated tags</label>
+  <div class="uc2-cats jf-w100">
+    <button type="button" class="uc2-cat active" onclick="mt2Tab(3,this)">All tags</button>
+    <button type="button" class="uc2-cat" onclick="mt2Tab(0,this)">Basic</button>
+    <button type="button" class="uc2-cat" onclick="mt2Tab(1,this)">Open Graph</button>
+    <button type="button" class="uc2-cat" onclick="mt2Tab(2,this)">Twitter</button>
+  </div>
   <textarea id="mt-code" style="min-height:220px" readonly></textarea>
   <button class="btn" onclick="copyText('mt-code')">Copy tags</button>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the Meta Tag Generator?</h2>

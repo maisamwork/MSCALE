@@ -42,15 +42,39 @@
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>Markdown Previewer</h1></div><p>Render Markdown live as you type with a clean preview and copy-ready HTML output. Free, no signup.</p></div>
 
 <div class="panel">
+  <label>View</label>
+  <div class="lr2-types">
+    <button type="button" class="lr2-type active" onclick="md2View(0,this)">Live preview</button>
+    <button type="button" class="lr2-type" onclick="md2View(1,this)">HTML source</button>
+  </div>
+  <label>Insert at cursor</label>
+  <div class="ir2-presets">
+    <button type="button" class="ir2-preset" onclick="md2Wrap('**','**')">Bold</button>
+    <button type="button" class="ir2-preset" onclick="md2Wrap('*','*')">Italic</button>
+    <button type="button" class="ir2-preset" onclick="md2Wrap('`','`')">Code</button>
+    <button type="button" class="ir2-preset" onclick="md2Wrap('[',' ](https://)')">Link</button>
+    <button type="button" class="ir2-preset" onclick="md2Line('## ')">H2</button>
+    <button type="button" class="ir2-preset" onclick="md2Line('- ')">Bullet</button>
+    <button type="button" class="ir2-preset" onclick="md2Line('1. ')">Numbered</button>
+    <button type="button" class="ir2-preset" onclick="md2Line('&gt; ')">Quote</button>
+  </div>
   <div class="row">
     <div style="flex:1;min-width:240px"><label>Markdown input</label>
-      <textarea id="md-in" oninput="mdRender()" style="min-height:280px" placeholder="# Heading&#10;&#10;Some **bold** and *italic* text with a [link](https://example.com)."></textarea></div>
-    <div style="flex:1;min-width:240px"><label>Live preview</label>
+      <textarea id="md-in" oninput="mdRender();md2Stats()" style="min-height:280px" placeholder="# Heading&#10;&#10;Some **bold** and *italic* text with a [link](https://example.com)."></textarea></div>
+    <div id="md2-prev-col" style="flex:1;min-width:240px"><label>Live preview</label>
       <div id="md-out" class="md-out"></div></div>
   </div>
-  <button class="btn ghost" onclick="copyText('md-html')">Copy generated HTML</button>
-  <textarea id="md-html" style="display:none"></textarea>
+  <div id="md2-stats" class="jf-stats" style="margin:12px 0"></div>
+  <label>HTML source</label>
+  <textarea id="md-html" readonly style="display:none;min-height:280px"></textarea>
+  <div class="row">
+    <button class="btn ghost" onclick="copyText('md-html')">Copy generated HTML</button>
+    <button class="btn ghost" onclick="md2Download()">Download .html</button>
+    <button class="btn ghost" onclick="md2Sample()">Sample</button>
+    <button class="btn ghost" onclick="md2Clear()">Clear</button>
+  </div>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the Markdown Previewer?</h2>

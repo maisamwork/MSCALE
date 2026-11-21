@@ -42,19 +42,28 @@
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>Base64 Image Encoder</h1></div><p>Convert images to Base64 data URIs with HTML img and CSS background snippets. Free and private.</p></div>
 
 <div class="panel">
-  <label>Image file</label>
-  <input type="file" id="b64-file" accept="image/*" onchange="b64Enc()">
-  <div id="b64-info" class="result"></div>
+  <div class="bi2-drop" id="bi2-drop" ondragover="bi2Drag(event)" ondragleave="bi2Undrag(event)" ondrop="bi2Drop(event)">
+    <b>Drop an image here</b>
+    <span>or</span>
+    <label class="btn" style="margin:0">Choose file<input type="file" id="b64-file" accept="image/*" onchange="b64Enc()" style="display:none"></label>
+  </div>
+  <div class="row" style="align-items:flex-start">
+    <div class="bi2-prev"><img id="bi2-img" alt="Preview of the uploaded image"></div>
+    <div id="b64-info" class="jf-stats" style="margin:0;flex:1"></div>
+  </div>
+  <div id="bi2-warn" class="result"></div>
   <label>Data URI</label>
   <textarea id="b64-out" readonly style="min-height:120px"></textarea>
-  <div class="row">
+  <div class="row" style="flex-wrap:wrap">
     <button class="btn ghost" onclick="copyText('b64-out')">Copy data URI</button>
     <button class="btn ghost" onclick="copyText('b64-html')">Copy HTML img tag</button>
     <button class="btn ghost" onclick="copyText('b64-css')">Copy CSS background</button>
+    <button class="btn ghost" onclick="bi2Txt()">Download .txt</button>
   </div>
   <textarea id="b64-html" style="display:none"></textarea>
   <textarea id="b64-css" style="display:none"></textarea>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the Base64 Image Encoder?</h2>

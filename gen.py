@@ -503,15 +503,39 @@ TOOL_BODIES = {
 
 "markdown-previewer": """
 <div class="panel">
+  <label>View</label>
+  <div class="lr2-types">
+    <button type="button" class="lr2-type active" onclick="md2View(0,this)">Live preview</button>
+    <button type="button" class="lr2-type" onclick="md2View(1,this)">HTML source</button>
+  </div>
+  <label>Insert at cursor</label>
+  <div class="ir2-presets">
+    <button type="button" class="ir2-preset" onclick="md2Wrap('**','**')">Bold</button>
+    <button type="button" class="ir2-preset" onclick="md2Wrap('*','*')">Italic</button>
+    <button type="button" class="ir2-preset" onclick="md2Wrap('`','`')">Code</button>
+    <button type="button" class="ir2-preset" onclick="md2Wrap('[',' ](https://)')">Link</button>
+    <button type="button" class="ir2-preset" onclick="md2Line('## ')">H2</button>
+    <button type="button" class="ir2-preset" onclick="md2Line('- ')">Bullet</button>
+    <button type="button" class="ir2-preset" onclick="md2Line('1. ')">Numbered</button>
+    <button type="button" class="ir2-preset" onclick="md2Line('&gt; ')">Quote</button>
+  </div>
   <div class="row">
     <div style="flex:1;min-width:240px"><label>Markdown input</label>
-      <textarea id="md-in" oninput="mdRender()" style="min-height:280px" placeholder="# Heading&#10;&#10;Some **bold** and *italic* text with a [link](https://example.com)."></textarea></div>
-    <div style="flex:1;min-width:240px"><label>Live preview</label>
+      <textarea id="md-in" oninput="mdRender();md2Stats()" style="min-height:280px" placeholder="# Heading&#10;&#10;Some **bold** and *italic* text with a [link](https://example.com)."></textarea></div>
+    <div id="md2-prev-col" style="flex:1;min-width:240px"><label>Live preview</label>
       <div id="md-out" class="md-out"></div></div>
   </div>
-  <button class="btn ghost" onclick="copyText('md-html')">Copy generated HTML</button>
-  <textarea id="md-html" style="display:none"></textarea>
-</div>""",
+  <div id="md2-stats" class="jf-stats" style="margin:12px 0"></div>
+  <label>HTML source</label>
+  <textarea id="md-html" readonly style="display:none;min-height:280px"></textarea>
+  <div class="row">
+    <button class="btn ghost" onclick="copyText('md-html')">Copy generated HTML</button>
+    <button class="btn ghost" onclick="md2Download()">Download .html</button>
+    <button class="btn ghost" onclick="md2Sample()">Sample</button>
+    <button class="btn ghost" onclick="md2Clear()">Clear</button>
+  </div>
+</div>
+""",
 "image-watermarker": """
 <div class="panel">
   <label>Choose an image</label>
@@ -561,19 +585,28 @@ TOOL_BODIES = {
 """,
 "base64-image-encoder": """
 <div class="panel">
-  <label>Image file</label>
-  <input type="file" id="b64-file" accept="image/*" onchange="b64Enc()">
-  <div id="b64-info" class="result"></div>
+  <div class="bi2-drop" id="bi2-drop" ondragover="bi2Drag(event)" ondragleave="bi2Undrag(event)" ondrop="bi2Drop(event)">
+    <b>Drop an image here</b>
+    <span>or</span>
+    <label class="btn" style="margin:0">Choose file<input type="file" id="b64-file" accept="image/*" onchange="b64Enc()" style="display:none"></label>
+  </div>
+  <div class="row" style="align-items:flex-start">
+    <div class="bi2-prev"><img id="bi2-img" alt="Preview of the uploaded image"></div>
+    <div id="b64-info" class="jf-stats" style="margin:0;flex:1"></div>
+  </div>
+  <div id="bi2-warn" class="result"></div>
   <label>Data URI</label>
   <textarea id="b64-out" readonly style="min-height:120px"></textarea>
-  <div class="row">
+  <div class="row" style="flex-wrap:wrap">
     <button class="btn ghost" onclick="copyText('b64-out')">Copy data URI</button>
     <button class="btn ghost" onclick="copyText('b64-html')">Copy HTML img tag</button>
     <button class="btn ghost" onclick="copyText('b64-css')">Copy CSS background</button>
+    <button class="btn ghost" onclick="bi2Txt()">Download .txt</button>
   </div>
   <textarea id="b64-html" style="display:none"></textarea>
   <textarea id="b64-css" style="display:none"></textarea>
-</div>""",
+</div>
+""",
 "stopwatch-online": """
 <div class="panel">
   <div id="sw-display" class="big-time">00:00.00</div>
@@ -594,17 +627,28 @@ TOOL_BODIES = {
 """,
 "countdown-timer": """
 <div class="panel">
+  <label>Quick presets</label>
+  <div class="ir2-presets">
+    <button type="button" class="ir2-preset" onclick="cd2PreMin(10)">+10 minutes</button>
+    <button type="button" class="ir2-preset" onclick="cd2PreMin(60)">+1 hour</button>
+    <button type="button" class="ir2-preset" onclick="cd2PreMin(180)">+3 hours</button>
+    <button type="button" class="ir2-preset" onclick="cd2Tonight()">Tonight 6 pm</button>
+    <button type="button" class="ir2-preset" onclick="cd2NY()">New Year</button>
+  </div>
   <label>Event name (optional)</label>
   <input id="cd-name" placeholder="Product launch">
   <div class="row">
     <div><label>Date</label><input type="text" id="cd-date" readonly placeholder="Pick a date"></div>
     <div><label>Time</label><input type="text" id="cd-time" readonly placeholder="Pick a time"><input type="hidden" id="cd-time-val" value="09:00"></div>
   </div>
-  <button class="btn" onclick="cdStart()">Start countdown</button>
+  <label class="pg-switch"><input type="checkbox" id="cd2-sound" checked><span class="pg-track"></span> Play a chime when time is up</label>
+  <div class="row"><button class="btn" onclick="cdStart()">Start countdown</button></div>
+  <div id="cd2-tstat" class="jf-stats" style="margin:12px 0"></div>
   <div id="cd-units" class="cd-units"></div>
   <div class="cd-bar"><div id="cd-fill"></div></div>
   <div id="cd-msg" class="result"></div>
-</div>""",
+</div>
+""",
 "json-to-csv-converter": """
 <div class="panel jc2">
   <div class="uc2-cats jf-stats" id="jc2-delims">
@@ -691,12 +735,22 @@ TOOL_BODIES = {
     <div><label>Page URL</label><input type="text" id="mt-url" placeholder="https://example.com/page" oninput="metaGen()" /></div>
     <div><label>Social image URL</label><input type="text" id="mt-img" placeholder="https://example.com/card.jpg" oninput="metaGen()" /></div>
   </div>
-  <label>Google preview</label>
+  <div id="mt2-stats" class="jf-stats" style="margin:10px 0"></div>
+  <label>Google search preview</label>
   <div class="result" id="mt-google" style="white-space:normal;font-family:Arial,sans-serif"></div>
+  <label>Social share card preview</label>
+  <div class="mt2-social" id="mt2-social"></div>
   <label>Generated tags</label>
+  <div class="uc2-cats jf-w100">
+    <button type="button" class="uc2-cat active" onclick="mt2Tab(3,this)">All tags</button>
+    <button type="button" class="uc2-cat" onclick="mt2Tab(0,this)">Basic</button>
+    <button type="button" class="uc2-cat" onclick="mt2Tab(1,this)">Open Graph</button>
+    <button type="button" class="uc2-cat" onclick="mt2Tab(2,this)">Twitter</button>
+  </div>
   <textarea id="mt-code" style="min-height:220px" readonly></textarea>
   <button class="btn" onclick="copyText('mt-code')">Copy tags</button>
-</div>""",
+</div>
+""",
 "keyword-density-checker": """
 <div class="panel kd2">
   <label>Text to analyse &mdash; updates live</label>
@@ -712,32 +766,54 @@ TOOL_BODIES = {
 "xml-sitemap-generator": """
 <div class="panel">
   <label>Page URLs (one per line)</label>
-  <textarea id="sm-urls" placeholder="https://example.com/&#10;https://example.com/about&#10;https://example.com/blog/post-1"></textarea>
+  <textarea id="sm-urls" oninput="sitemapGen()" placeholder="https://example.com/&#10;https://example.com/about&#10;https://example.com/blog/post-1"></textarea>
+  <label class="pg-switch"><input type="checkbox" id="sm-use-lastmod" checked onchange="sitemapGen()"><span class="pg-track"></span> Include &lt;lastmod&gt; entries</label>
   <div class="row">
-    <div><label>Change frequency</label><select id="sm-freq"><option value="">omit</option><option value="daily">daily</option><option value="weekly" selected>weekly</option><option value="monthly">monthly</option><option value="yearly">yearly</option></select></div>
-    <div><label>Priority (0.1–1.0)</label><input type="number" id="sm-prio" min="0.1" max="1" step="0.1" placeholder="omit" /></div>
+    <div><label>Lastmod date</label><input type="text" id="sm-lastmod" readonly placeholder="Pick a date"></div>
+    <div><label>Change frequency</label><select id="sm-freq" onchange="sitemapGen()"><option value="">omit</option><option value="daily">daily</option><option value="weekly" selected>weekly</option><option value="monthly">monthly</option><option value="yearly">yearly</option></select></div>
+    <div><label>Priority (0.1\u20131.0)</label><input type="number" id="sm-prio" min="0.1" max="1" step="0.1" placeholder="omit" oninput="sitemapGen()" /></div>
   </div>
+  <div id="sm2-stats" class="jf-stats" style="margin:10px 0"></div>
   <button class="btn" onclick="sitemapGen()">Generate sitemap</button>
   <label>sitemap.xml</label>
   <textarea id="sm-out" style="min-height:220px" readonly></textarea>
-  <button class="btn" onclick="copyText('sm-out')">Copy XML</button>
-  <a id="sm-dl" class="btn ghost" style="display:none;margin-left:6px" download="sitemap.xml">Download sitemap.xml</a>
-</div>""",
+  <div class="row" style="flex-wrap:wrap">
+    <button class="btn" onclick="copyText('sm-out')">Copy XML</button>
+    <a id="sm-dl" class="btn" href="javascript:void(0)" download="sitemap.xml" style="display:none">Download sitemap.xml</a>
+    <button class="btn ghost" onclick="sm2Robots(this)">Copy robots.txt line</button>
+  </div>
+  <div id="sm2-bad" class="result"></div>
+</div>
+""",
 "slug-generator": """
 <div class="panel">
   <label>Titles (one per line for batch mode)</label>
-  <textarea id="sl-in" placeholder="10 Tips for Better Sleep&#10;Café Culture in Zürich&#10;How to Bake Sourdough"></textarea>
-  <div class="row">
-    <div><label>Separator</label><select id="sl-sep"><option value="-">Hyphen (-)</option><option value="_">Underscore (_)</option></select></div>
-    <div><label>Max length (0 = no limit)</label><input type="number" id="sl-len" value="0" min="0" /></div>
+  <textarea id="sl-in" oninput="slugGen()" placeholder="10 Tips for Better Sleep&#10;Caf\u00e9 Culture in Z\u00fcrich&#10;How to Bake Sourdough"></textarea>
+  <label>Separator</label>
+  <div class="ir2-presets">
+    <button type="button" class="ir2-preset active" onclick="sl2Sep('-', this)">Hyphen (-)</button>
+    <button type="button" class="ir2-preset" onclick="sl2Sep('_', this)">Underscore (_)</button>
+    <button type="button" class="ir2-preset" onclick="sl2Sep('.', this)">Dot (.)</button>
+    <button type="button" class="ir2-preset" onclick="sl2Sep('', this)">None</button>
   </div>
-  <label style="text-transform:none;letter-spacing:0"><input type="checkbox" id="sl-lower" checked style="width:auto;margin-right:8px" /> Lowercase</label>
-  <label style="text-transform:none;letter-spacing:0"><input type="checkbox" id="sl-stop" checked style="width:auto;margin-right:8px" /> Remove stop words (a, the, of, to…)</label>
-  <button class="btn" onclick="slugGen()">Generate slugs</button>
+  <div class="row" style="align-items:flex-end">
+    <div><label>Max length (0 = unlimited)</label><input type="number" id="sl-len" value="0" min="0" oninput="slugGen()" /></div>
+    <div id="sl2-stats" class="jf-stats" style="margin:0 0 4px"></div>
+  </div>
+  <label class="pg-switch"><input type="checkbox" id="sl-lower" checked onchange="slugGen()"><span class="pg-track"></span> Lowercase</label>
+  <label class="pg-switch"><input type="checkbox" id="sl-stop" checked onchange="slugGen()"><span class="pg-track"></span> Remove stop words (a, the, of, to\u2026)</label>
+  <div class="row">
+    <button class="btn" onclick="slugGen()">Generate slugs</button>
+    <button class="btn ghost" onclick="sl2Sample()">Sample</button>
+  </div>
   <label>Slugs</label>
   <textarea id="sl-out" style="min-height:140px" readonly></textarea>
-  <button class="btn" onclick="copyText('sl-out')">Copy slugs</button>
-</div>""",
+  <div class="row">
+    <button class="btn ghost" onclick="copyText('sl-out')">Copy slugs</button>
+    <button class="btn ghost" onclick="sl2Download()">Download .txt</button>
+  </div>
+</div>
+""",
 "invoice-generator": """
 <div class="panel">
   <div class="row">
