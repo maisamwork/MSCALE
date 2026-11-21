@@ -43,13 +43,22 @@
 
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <div class="panel">
-  <label>PDF files (choose two or more, in order)</label>
-  <input type="file" id="pm-files" accept="application/pdf" multiple />
-  <div id="pm-list" style="margin-top:10px"></div>
+  <div class="bi2-drop" id="pm2-drop" ondragover="bi2Drag(event)" ondragleave="bi2Undrag(event)" ondrop="pm2Drop(event)">
+    <b>Drop PDF files here</b>
+    <span>or</span>
+    <label class="btn" style="margin:0">Choose files<input type="file" id="pm-files" accept="application/pdf" multiple style="display:none"></label>
+  </div>
+  <label>Merge order — reorder with ↑/↓, remove with ✕</label>
+  <div id="pm-list" class="pm2-list"></div>
+  <div id="pm2-stats" class="jf-stats" style="margin:10px 0"></div>
   <div class="row"><div><label>Output file name</label><input type="text" id="pm-name" value="merged.pdf" /></div></div>
-  <button class="btn" onclick="pdfMerge()">Merge PDFs</button>
-  <div id="pm-out" class="result">Select two or more PDF files to merge.</div>
+  <div class="row">
+    <button class="btn" onclick="pdfMerge()">Merge PDFs</button>
+    <button class="btn ghost" onclick="pm2Clear()">Clear all</button>
+  </div>
+  <div id="pm-out" class="result">Drop two or more PDF files to merge.</div>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the PDF Merge?</h2>

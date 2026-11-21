@@ -1426,3 +1426,14 @@ ul.refs a { color: var(--accent2); }
 .bi2-drop span { font-size: 12px; color: var(--muted); }
 .bi2-prev img { max-width: 190px; max-height: 120px; border-radius: 10px; border: 1px solid var(--line, var(--border)); background: var(--bg2); }
 .bi2-prev:empty::before { content: "—"; color: var(--muted); }
+
+
+/* ===== Batch 9: pdf merge/split, compressor, cropper ===== */
+.pm2-row { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 10px; background: var(--card2, rgba(255, 255, 255, .04)); margin: 6px 0; font-size: 14px; }
+.pm2-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pm2-meta { font-size: 12px; color: var(--soft); white-space: nowrap; }
+.bi2-prev em { display: block; margin-top: 6px; font-size: 12px; font-style: normal; color: var(--soft); text-align: center; }
+.bi2-prev em b { color: var(--text); }
+#icr2-wrap { position: relative; display: inline-block; max-width: 100%; }
+#icr2-wrap img { max-width: 100%; display: block; cursor: crosshair; user-select: none; }
+.icr2-box { position: absolute; border: 2px dashed var(--accent); background: rgba(255, 112, 0, .13); display: none; pointer-events: none; }

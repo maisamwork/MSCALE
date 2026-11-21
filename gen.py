@@ -673,56 +673,113 @@ TOOL_BODIES = {
 "pdf-merge": """
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <div class="panel">
-  <label>PDF files (choose two or more, in order)</label>
-  <input type="file" id="pm-files" accept="application/pdf" multiple />
-  <div id="pm-list" style="margin-top:10px"></div>
+  <div class="bi2-drop" id="pm2-drop" ondragover="bi2Drag(event)" ondragleave="bi2Undrag(event)" ondrop="pm2Drop(event)">
+    <b>Drop PDF files here</b>
+    <span>or</span>
+    <label class="btn" style="margin:0">Choose files<input type="file" id="pm-files" accept="application/pdf" multiple style="display:none"></label>
+  </div>
+  <label>Merge order \u2014 reorder with \u2191/\u2193, remove with \u2715</label>
+  <div id="pm-list" class="pm2-list"></div>
+  <div id="pm2-stats" class="jf-stats" style="margin:10px 0"></div>
   <div class="row"><div><label>Output file name</label><input type="text" id="pm-name" value="merged.pdf" /></div></div>
-  <button class="btn" onclick="pdfMerge()">Merge PDFs</button>
-  <div id="pm-out" class="result">Select two or more PDF files to merge.</div>
-</div>""",
+  <div class="row">
+    <button class="btn" onclick="pdfMerge()">Merge PDFs</button>
+    <button class="btn ghost" onclick="pm2Clear()">Clear all</button>
+  </div>
+  <div id="pm-out" class="result">Drop two or more PDF files to merge.</div>
+</div>
+""",
 "pdf-split": """
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <div class="panel">
-  <label>PDF file</label>
-  <input type="file" id="ps-file" accept="application/pdf" />
-  <label>Pages to keep (e.g. 1-3,5,8-10)</label>
-  <input type="text" id="ps-range" placeholder="1-3,5" />
+  <div class="bi2-drop" id="ps2-drop" ondragover="bi2Drag(event)" ondragleave="bi2Undrag(event)" ondrop="ps2Drop(event)">
+    <b>Drop a PDF here</b>
+    <span>or</span>
+    <label class="btn" style="margin:0">Choose file<input type="file" id="ps-file" accept="application/pdf" style="display:none"></label>
+  </div>
+  <div id="ps2-stats" class="jf-stats" style="margin:12px 0"></div>
+  <label>Mode</label>
+  <div class="lr2-types">
+    <button type="button" class="lr2-type active" onclick="ps2Mode(0,this)">Extract a range</button>
+    <button type="button" class="lr2-type" onclick="ps2Mode(1,this)">Split every N pages</button>
+  </div>
+  <div id="ps2-range-wrap">
+    <label>Pages to keep (e.g. 1-3,5,8-10) \u2014 blank keeps everything</label>
+    <input type="text" id="ps-range" placeholder="1-3,5" oninput="ps2Check()">
+  </div>
+  <div id="ps2-n-wrap" style="display:none">
+    <label>Pages per output file</label>
+    <input type="number" id="ps-n" value="1" min="1" oninput="ps2Check()">
+  </div>
+  <div id="ps2-range-info" class="jf-stats" style="margin:10px 0"></div>
   <div class="row"><div><label>Output file name</label><input type="text" id="ps-name" value="extracted.pdf" /></div></div>
   <button class="btn" onclick="pdfSplit()">Extract pages</button>
-  <div id="ps-out" class="result">Select a PDF and type the pages to keep.</div>
-</div>""",
+  <div id="ps2-multi" style="margin:10px 0"></div>
+  <div id="ps-out" class="result">Drop a PDF to begin.</div>
+</div>
+""",
 "image-compressor": """
 <div class="panel">
-  <label>Image</label>
-  <input type="file" id="ic-file" accept="image/*" />
-  <div class="row">
-    <div><label>Format</label><select id="ic-fmt"><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option><option value="image/png">PNG</option></select></div>
-    <div><label>Quality: <span id="ic-qv">75</span>%</label><input type="range" id="ic-q" min="10" max="100" value="75" style="padding:0" oninput="document.getElementById('ic-qv').textContent=this.value" /></div>
-    <div><label>Max width (px, optional)</label><input type="number" id="ic-w" placeholder="original" /></div>
+  <div class="bi2-drop" id="ic2-drop" ondragover="bi2Drag(event)" ondragleave="bi2Undrag(event)" ondrop="ic2Drop(event)">
+    <b>Drop an image here</b>
+    <span>or</span>
+    <label class="btn" style="margin:0">Choose file<input type="file" id="ic-file" accept="image/*" style="display:none"></label>
   </div>
-  <button class="btn" onclick="imgCompress()">Compress</button>
+  <label>Output format</label>
+  <div class="ir2-presets ic2-fmts">
+    <button type="button" class="ir2-preset active" onclick="ic2Fmt('image/jpeg', this)">JPEG</button>
+    <button type="button" class="ir2-preset" onclick="ic2Fmt('image/webp', this)">WebP</button>
+    <button type="button" class="ir2-preset" onclick="ic2Fmt('image/png', this)">PNG</button>
+  </div>
+  <div class="row">
+    <div><label>Quality: <span id="ic-qv">75</span>%</label><input type="range" id="ic-q" min="10" max="100" value="75" style="padding:0" oninput="document.getElementById('ic-qv').textContent=this.value;imgCompress()" /></div>
+    <div><label>Max width (px, blank = original)</label><input type="number" id="ic-w" placeholder="original" oninput="imgCompress()" /></div>
+  </div>
+  <input type="hidden" id="ic-fmt" value="image/jpeg">
+  <button class="btn" onclick="imgCompress()">Compress again</button>
+  <div id="ic2-stats" class="jf-stats" style="margin:12px 0"></div>
+  <div id="ic2-compare" class="row" style="display:none">
+    <div class="bi2-prev"><img id="ic2-a" alt="Original image"><em>original \u00b7 <b id="ic2-asz"></b></em></div>
+    <div class="bi2-prev"><img id="ic2-b" alt="Compressed image"><em>compressed \u00b7 <b id="ic2-bsz"></b> \u00b7 <span id="ic2-save"></span></em></div>
+  </div>
   <div id="ic-out" class="result">Select an image to compress.</div>
-  <img id="ic-preview" alt="Preview" style="max-width:100%;margin-top:12px;display:none;border-radius:8px" />
-  <a id="ic-dl" class="btn ghost" style="display:none;margin-top:10px" download>Download compressed image</a>
-</div>""",
+  <a id="ic-dl" class="btn" style="display:none;margin-top:10px" download>Download compressed image</a>
+</div>
+""",
 "image-cropper": """
 <div class="panel">
-  <label>Image</label>
-  <input type="file" id="icr-file" accept="image/*" />
-  <p id="icr-dims" class="tools-count">No image loaded.</p>
+  <div class="bi2-drop" id="icr2-drop" ondragover="bi2Drag(event)" ondragleave="bi2Undrag(event)" ondrop="icr2Drop(event)">
+    <b>Drop an image here</b>
+    <span>or</span>
+    <label class="btn" style="margin:0">Choose file<input type="file" id="icr-file" accept="image/*" style="display:none"></label>
+  </div>
+  <div id="icr-dims" class="jf-stats" style="margin:10px 0"></div>
+  <div class="icr2-wrap" id="icr2-wrap">
+    <img id="icr-imgel" alt="Cropping preview \u2014 drag on the image to select an area" onmousedown="icr2Down(event)">
+    <div id="icr-box" class="icr2-box"></div>
+  </div>
+  <label>Aspect presets</label>
+  <div class="ir2-presets">
+    <button type="button" class="ir2-preset" onclick="icr2Pre(0, this)">Free</button>
+    <button type="button" class="ir2-preset" onclick="icr2Pre(1, this)">1:1</button>
+    <button type="button" class="ir2-preset" onclick="icr2Pre(4 / 3, this)">4:3</button>
+    <button type="button" class="ir2-preset" onclick="icr2Pre(16 / 9, this)">16:9</button>
+    <button type="button" class="ir2-preset" onclick="icr2Pre(3 / 2, this)">3:2</button>
+  </div>
   <div class="row">
-    <div><label>X</label><input type="number" id="icr-x" value="0" /></div>
-    <div><label>Y</label><input type="number" id="icr-y" value="0" /></div>
-    <div><label>Width</label><input type="number" id="icr-w" placeholder="to edge" /></div>
-    <div><label>Height</label><input type="number" id="icr-h" placeholder="to edge" /></div>
-    <div><label>Output width (optional)</label><input type="number" id="icr-ow" placeholder="original" /></div>
+    <div><label>X</label><input type="number" id="icr-x" value="0" oninput="icr2Draw()" /></div>
+    <div><label>Y</label><input type="number" id="icr-y" value="0" oninput="icr2Draw()" /></div>
+    <div><label>Width</label><input type="number" id="icr-w" placeholder="to edge" oninput="icr2Draw()" /></div>
+    <div><label>Height</label><input type="number" id="icr-h" placeholder="to edge" oninput="icr2Draw()" /></div>
+    <div><label>Output width</label><input type="number" id="icr-ow" placeholder="original" /></div>
   </div>
   <div class="row"><div><label>Format</label><select id="icr-fmt"><option value="image/png">PNG</option><option value="image/jpeg">JPEG</option></select></div></div>
   <button class="btn" onclick="imgCrop()">Apply crop</button>
-  <div id="icr-out" class="result">Load an image and set the crop area.</div>
-  <img id="icr-preview" alt="Preview" style="max-width:100%;margin-top:12px;display:none;border-radius:8px" />
-  <a id="icr-dl" class="btn ghost" style="display:none;margin-top:10px" download>Download cropped image</a>
-</div>""",
+  <div id="icr-out" class="result">Load an image, then drag on it or use the fields.</div>
+  <img id="icr-preview" alt="Cropped result preview" style="max-width:100%;margin-top:12px;display:none;border-radius:8px" />
+  <a id="icr-dl" class="btn" style="display:none;margin-top:10px" download>Download cropped image</a>
+</div>
+""",
 "meta-tag-generator": """
 <div class="panel">
   <div class="row">

@@ -1978,24 +1978,64 @@ function dlBytes(bytes, name, type) {
 }
 
 /* PDF Merge */
-let pmFiles = [];
+let pmFiles = [], pm2Pages = [];
 function pmRender() {
   const el = document.getElementById("pm-list");
-  el.innerHTML = pmFiles.map((f, i) =>
-    `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:14px">` +
-    `<b style="color:var(--accent);min-width:18px">${i + 1}.</b> <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${f.name}</span>` +
-    `<button class="btn ghost" style="margin:0;padding:3px 9px;font-size:12px" onclick="pmMove(${i},-1)">↑</button>` +
-    `<button class="btn ghost" style="margin:0;padding:3px 9px;font-size:12px" onclick="pmMove(${i},1)">↓</button>` +
-    `<button class="btn ghost" style="margin:0;padding:3px 9px;font-size:12px" onclick="pmDel(${i})">✕</button></div>`).join("");
+  if (!el) return;
+  el.innerHTML = pmFiles.map((f, i) => {
+    const pg = pm2Pages[i];
+    const pgTxt = pg === undefined ? "counting\u2026" : pg === null || pg === "?" ? "?" : pg + (pg === 1 ? " page" : " pages");
+    return `<div class="pm2-row">` +
+      `<b style="color:var(--accent);min-width:20px">${i + 1}.</b>` +
+      `<span class="pm2-name">${escHtml(f.name)}</span>` +
+      `<span class="pm2-meta">${(f.size / 1024).toFixed(0)} KB \u00b7 ${pgTxt}</span>` +
+      `<button class="btn ghost" style="margin:0;padding:3px 9px;font-size:12px" onclick="pmMove(${i},-1)" aria-label="Move up">\u2191</button>` +
+      `<button class="btn ghost" style="margin:0;padding:3px 9px;font-size:12px" onclick="pmMove(${i},1)" aria-label="Move down">\u2193</button>` +
+      `<button class="btn ghost" style="margin:0;padding:3px 9px;font-size:12px" onclick="pmDel(${i})" aria-label="Remove">\u2715</button></div>`;
+  }).join("");
+  const st = document.getElementById("pm2-stats");
+  if (st) {
+    const kb = pmFiles.reduce((s, f) => s + f.size, 0) / 1024;
+    const known = pm2Pages.filter((p) => typeof p === "number");
+    st.innerHTML = pmFiles.length
+      ? '<span class="jf-chip"><b>' + pmFiles.length + "</b>files</span>" +
+        '<span class="jf-chip"><b>' + (known.length ? "~" + known.reduce((a, b) => a + b, 0) : "\u2014") + "</b>total pages</span>" +
+        '<span class="jf-chip"><b>' + kb.toFixed(0) + " KB</b>combined size</span>"
+      : "";
+  }
 }
-function pmMove(i, d) { const j = i + d; if (j < 0 || j >= pmFiles.length) return; [pmFiles[i], pmFiles[j]] = [pmFiles[j], pmFiles[i]]; pmRender(); }
-function pmDel(i) { pmFiles.splice(i, 1); pmRender(); }
+async function pm2Count(f) {
+  try {
+    if (!window.PDFLib) return null;
+    const doc = await window.PDFLib.PDFDocument.load(await f.arrayBuffer(), { ignoreEncryption: true });
+    return doc.getPageCount();
+  } catch (e) { return null; }
+}
+async function pm2Added() {
+  pm2Pages = [];
+  pmRender();
+  for (let i = 0; i < pmFiles.length; i++) {
+    pm2Pages[i] = await pm2Count(pmFiles[i]);
+    pmRender();
+  }
+}
+function pm2Drop(ev) {
+  bi2Undrag(ev);
+  const files = [...((ev.dataTransfer && ev.dataTransfer.files) || [])].filter((f) => f.type === "application/pdf" || /\.pdf$/i.test(f.name));
+  if (!files.length) { out("pm-out", "<span class='error'>Only PDF files can be merged.</span>"); return; }
+  pmFiles = pmFiles.concat(files);
+  pm2Added();
+  out("pm-out", "");
+}
+function pm2Clear() { pmFiles = []; pm2Pages = []; pmRender(); out("pm-out", "List cleared \u2014 drop PDFs to start again."); }
+function pmMove(i, d) { const j = i + d; if (j < 0 || j >= pmFiles.length) return; [pmFiles[i], pmFiles[j]] = [pmFiles[j], pmFiles[i]]; [pm2Pages[i], pm2Pages[j]] = [pm2Pages[j], pm2Pages[i]]; pmRender(); }
+function pmDel(i) { pmFiles.splice(i, 1); pm2Pages.splice(i, 1); pmRender(); }
 document.addEventListener("change", (e) => {
-  if (e.target && e.target.id === "pm-files") { pmFiles = [...e.target.files]; pmRender(); }
+  if (e.target && e.target.id === "pm-files") { pmFiles = [...e.target.files]; pm2Added(); }
 });
 async function pdfMerge() {
   if (pmFiles.length < 2) { out("pm-out", "Select at least two PDF files."); return; }
-  if (!window.PDFLib) { out("pm-out", '<span class="error">PDF library still loading — try again in a second.</span>'); return; }
+  if (!window.PDFLib) { out("pm-out", '<span class="error">PDF library still loading \u2014 try again in a second.</span>'); return; }
   try {
     const { PDFDocument } = window.PDFLib;
     const merged = await PDFDocument.create();
@@ -2017,7 +2057,7 @@ function parseRanges(str, max) {
   for (const part of str.split(",")) {
     const t = part.trim();
     if (!t) continue;
-    const m = t.match(/^(\d+)-(\d+)$/);
+    const m = t.match(/^(\d+)\s*-\s*(\d+)$/);
     if (m) {
       let a = +m[1], b = +m[2];
       if (a > b) [a, b] = [b, a];
@@ -2030,72 +2070,271 @@ function parseRanges(str, max) {
   }
   return [...pages].sort((a, b) => a - b);
 }
-async function pdfSplit() {
+let PS2_MODE = 0, ps2Doc = null, ps2File = null;
+function ps2Mode(i, btn) {
+  PS2_MODE = i;
+  document.querySelectorAll(".lr2-types .lr2-type").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  const rw = document.getElementById("ps2-range-wrap"), nw = document.getElementById("ps2-n-wrap");
+  if (rw) rw.style.display = i === 0 ? "block" : "none";
+  if (nw) nw.style.display = i === 1 ? "block" : "none";
+}
+async function ps2Load() {
   const f = document.getElementById("ps-file").files[0];
-  if (!f) { out("ps-out", "Select a PDF file first."); return; }
-  if (!window.PDFLib) { out("ps-out", '<span class="error">PDF library still loading — try again in a second.</span>'); return; }
+  if (!f) return;
+  ps2File = f; ps2Doc = null;
+  out("ps-out", "Reading PDF\u2026");
+  out("ps2-stats", "");
+  try {
+    if (!window.PDFLib) throw new Error("lib loading");
+    ps2Doc = await window.PDFLib.PDFDocument.load(await f.arrayBuffer(), { ignoreEncryption: true });
+    out("ps2-stats",
+      '<span class="jf-chip"><b>' + ps2Doc.getPageCount() + "</b>pages</span>" +
+      '<span class="jf-chip"><b>' + (f.size / 1024).toFixed(0) + " KB</b>file</span>" +
+      '<span class="jf-chip"><b>' + escHtml(f.name) + "</b></span>");
+    out("ps-out", "");
+    ps2Check();
+  } catch (err) {
+    out("ps-out", '<span class="error">Could not read that PDF' + (String(err.message).indexOf("lib") === 0 ? " \u2014 the library is still loading, try again in a second." : ". Is it a valid, non-encrypted file?") + '</span>');
+  }
+}
+function ps2Check() {
+  const info = document.getElementById("ps2-range-info");
+  if (!info) return;
+  const total = ps2Doc ? ps2Doc.getPageCount() : 0;
+  if (PS2_MODE === 1) {
+    const n = Math.max(1, parseInt(document.getElementById("ps-n").value) || 1);
+    info.innerHTML = total ? '<span class="jf-chip"><b>' + Math.ceil(total / n) + "</b>output files</span>" +
+      '<span class="jf-chip"><b>' + n + "</b>pages each</span>" : "";
+    return;
+  }
+  const spec = document.getElementById("ps-range").value.trim();
+  if (!total) { info.innerHTML = ""; return; }
+  if (!spec) { info.innerHTML = '<span class="jf-chip"><b>' + total + "</b>pages (all)</span>"; return; }
+  const idx = parseRanges(spec, total);
+  info.innerHTML = idx
+    ? '<span class="jf-chip"><b>' + idx.length + "</b>pages kept</span>"
+    : '<span class="jf-chip jf-chip-bad"><b>invalid</b>range \u2014 use 1 to ' + total + "</span>";
+}
+function ps2Drop(ev) {
+  bi2Undrag(ev);
+  const f = ((ev.dataTransfer && ev.dataTransfer.files) || [])[0];
+  if (!f) return;
+  if (!(f.type === "application/pdf" || /\.pdf$/i.test(f.name))) { out("ps-out", "<span class='error'>That is not a PDF file.</span>"); return; }
+  const inp = document.getElementById("ps-file");
+  Object.defineProperty(inp, "files", { value: [f], configurable: true });
+  ps2Load();
+}
+document.addEventListener("change", (e) => {
+  if (e.target && e.target.id === "ps-file") ps2Load();
+});
+async function pdfSplit() {
+  if (!ps2File) { out("ps-out", "Select a PDF file first."); return; }
+  if (!window.PDFLib) { out("ps-out", '<span class="error">PDF library still loading \u2014 try again in a second.</span>'); return; }
   try {
     const { PDFDocument } = window.PDFLib;
-    const src = await PDFDocument.load(await f.arrayBuffer(), { ignoreEncryption: true });
-    const max = src.getPageCount();
-    const idx = parseRanges(document.getElementById("ps-range").value, max);
-    if (!idx || !idx.length) { out("ps-out", `<span class="error">Invalid range. This file has ${max} pages — use numbers from 1 to ${max}, like 1-3,5.</span>`); return; }
-    const doc = await PDFDocument.create();
-    (await doc.copyPages(src, idx)).forEach((p) => doc.addPage(p));
-    const name = (document.getElementById("ps-name").value || "extracted.pdf").replace(/\.pdf$/i, "") + ".pdf";
-    dlBytes(await doc.save(), name, "application/pdf");
-    out("ps-out", `Extracted <b>${idx.length}</b> of ${max} pages. Your download has started.`);
+    if (!ps2Doc) ps2Doc = await PDFDocument.load(await ps2File.arrayBuffer(), { ignoreEncryption: true });
+    const max = ps2Doc.getPageCount();
+    const base = (document.getElementById("ps-name").value || "extracted").replace(/\.pdf$/i, "");
+    const multi = document.getElementById("ps2-multi");
+    if (multi) multi.innerHTML = "";
+    if (PS2_MODE === 0) {
+      const spec = document.getElementById("ps-range").value.trim();
+      const idx = spec ? parseRanges(spec, max) : Array.from({ length: max }, (_, i) => i);
+      if (!idx || !idx.length) { out("ps-out", `<span class="error">Invalid range. This file has ${max} pages \u2014 use numbers from 1 to ${max}, like 1-3,5.</span>`); return; }
+      const doc = await PDFDocument.create();
+      (await doc.copyPages(ps2Doc, idx)).forEach((p) => doc.addPage(p));
+      dlBytes(await doc.save(), base + ".pdf", "application/pdf");
+      out("ps-out", `Extracted <b>${idx.length}</b> of ${max} pages. Your download has started.`);
+    } else {
+      const n = Math.max(1, parseInt(document.getElementById("ps-n").value) || 1);
+      const links = [];
+      for (let start = 0, part = 1; start < max; start += n, part++) {
+        const idx = Array.from({ length: Math.min(n, max - start) }, (_, i) => start + i);
+        const doc = await PDFDocument.create();
+        (await doc.copyPages(ps2Doc, idx)).forEach((p) => doc.addPage(p));
+        const bytes = await doc.save();
+        const url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
+        links.push(`<a class="btn ghost" download="${base}-part${part}.pdf" href="${url}">Download part ${part} \u00b7 pages ${start + 1}\u2013${start + idx.length}</a>`);
+      }
+      out("ps-out", `Split <b>${max}</b> pages into <b>${links.length}</b> files \u2014 download each below.`);
+      if (multi) multi.innerHTML = links.join("<br>");
+      else links.forEach((l) => out("ps-out", l));
+    }
   } catch (err) {
     out("ps-out", '<span class="error">Could not read the file. Is it a valid, non-encrypted PDF?</span>');
   }
 }
 
 /* Image Compressor */
-function imgCompress() {
-  const f = document.getElementById("ic-file").files[0];
-  if (!f) { out("ic-out", "Select an image first."); return; }
+let IC2_IMG = null, IC2_FILE = null;
+function ic2Load(f) {
+  if (!f) return;
+  IC2_FILE = f;
   const img = new Image();
-  img.onload = () => {
-    const maxW = parseInt(document.getElementById("ic-w").value) || img.width;
-    const scale = Math.min(1, maxW / img.width);
-    const c = document.createElement("canvas");
-    c.width = Math.max(1, Math.round(img.width * scale));
-    c.height = Math.max(1, Math.round(img.height * scale));
-    c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-    const fmt = document.getElementById("ic-fmt").value;
-    const q = parseInt(document.getElementById("ic-q").value) / 100;
-    c.toBlob((b) => {
-      if (!b) { out("ic-out", '<span class="error">Could not encode in this format — try JPEG.</span>'); return; }
-      const kb1 = (f.size / 1024).toFixed(1), kb2 = (b.size / 1024).toFixed(1);
-      const pct = Math.max(0, Math.round((1 - b.size / f.size) * 100));
-      out("ic-out", `Original: <b>${kb1} KB</b> → Compressed: <b>${kb2} KB</b> (${pct}% smaller, ${c.width}×${c.height}px)`);
-      const url = URL.createObjectURL(b);
-      const pv = document.getElementById("ic-preview"); pv.src = url; pv.style.display = "block";
-      const dl = document.getElementById("ic-dl"); dl.href = url; dl.style.display = "inline-flex";
-      dl.download = f.name.replace(/\.\w+$/, "") + "-compressed." + (fmt === "image/png" ? "png" : fmt === "image/webp" ? "webp" : "jpg");
-    }, fmt, q);
-  };
-  img.onerror = () => out("ic-out", '<span class="error">Could not read that image file.</span>');
+  img.onload = () => { IC2_IMG = img; imgCompress(); };
   img.src = URL.createObjectURL(f);
+}
+function ic2Fmt(v, btn) {
+  const sel = document.getElementById("ic-fmt");
+  if (sel) sel.value = v;
+  document.querySelectorAll(".ic2-fmts .ir2-preset").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  imgCompress();
+}
+function ic2Drop(ev) {
+  bi2Undrag(ev);
+  const f = ((ev.dataTransfer && ev.dataTransfer.files) || [])[0];
+  if (!f) return;
+  if (!/^image\//.test(f.type)) { out("ic-out", "<span class='error'>That is not an image file.</span>"); return; }
+  const inp = document.getElementById("ic-file");
+  Object.defineProperty(inp, "files", { value: [f], configurable: true });
+  ic2Load(f);
+}
+document.addEventListener("change", (e) => {
+  if (e.target && e.target.id === "ic-file") ic2Load(e.target.files[0]);
+});
+function imgCompress() {
+  if (!IC2_IMG || !IC2_FILE) { out("ic-out", "Select an image to compress."); return; }
+  const img = IC2_IMG, f = IC2_FILE;
+  const maxW = parseInt(document.getElementById("ic-w").value) || img.width;
+  const scale = Math.min(1, maxW / img.width);
+  const c = document.createElement("canvas");
+  c.width = Math.max(1, Math.round(img.width * scale));
+  c.height = Math.max(1, Math.round(img.height * scale));
+  c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+  const fmt = document.getElementById("ic-fmt").value;
+  const q = parseInt(document.getElementById("ic-q").value) / 100;
+  c.toBlob((b) => {
+    if (!b) { out("ic-out", '<span class="error">Could not encode in this format \u2014 try JPEG.</span>'); return; }
+    const kb = (z) => (z / 1024).toFixed(1) + " KB";
+    const saved = Math.round((1 - b.size / f.size) * 100);
+    out("ic-out", `${c.width}\u00d7${c.height}px \u00b7 saved <b>${saved}%</b> \u00b7 quality ${Math.round(q * 100)}%`);
+    const st = document.getElementById("ic2-stats");
+    if (st) st.innerHTML =
+      '<span class="jf-chip"><b>' + kb(f.size) + "</b>original</span>" +
+      '<span class="jf-chip"><b>' + kb(b.size) + "</b>compressed</span>" +
+      '<span class="jf-chip"><b>' + (saved > 0 ? saved + "% smaller" : "no gain \u2014 try WebP or a lower quality") + "</b></span>" +
+      '<span class="jf-chip"><b>' + c.width + "\u00d7" + c.height + "</b>pixels</span>";
+    const cmp = document.getElementById("ic2-compare");
+    const a = document.getElementById("ic2-a"), bz = document.getElementById("ic2-b");
+    const au = URL.createObjectURL(f), bu = URL.createObjectURL(b);
+    if (a) a.src = au;
+    if (bz) bz.src = bu;
+    const asz = document.getElementById("ic2-asz"), bsz = document.getElementById("ic2-bsz"), sv = document.getElementById("ic2-save");
+    if (asz) asz.textContent = kb(f.size);
+    if (bsz) bsz.textContent = kb(b.size);
+    if (sv) { sv.textContent = saved > 0 ? "\u2212" + saved + "%" : "\u00b1" + Math.abs(saved) + "%"; sv.style.color = saved > 0 ? "var(--ok)" : "var(--err)"; }
+    if (cmp) cmp.style.display = "flex";
+    const dl = document.getElementById("ic-dl");
+    if (dl) {
+      if (dl.dataset.url) URL.revokeObjectURL(dl.dataset.url);
+      dl.dataset.url = bu;
+      dl.href = bu;
+      dl.style.display = "inline-flex";
+      dl.download = f.name.replace(/\.\w+$/, "") + "-compressed." + (fmt === "image/png" ? "png" : fmt === "image/webp" ? "webp" : "jpg");
+    }
+  }, fmt, q);
 }
 
 /* Image Cropper */
 let icrImg = null;
+function icrLoad() {
+  const f = document.getElementById("icr-file").files[0];
+  if (!f) return;
+  const img = new Image();
+  img.onload = () => {
+    icrImg = img;
+    const el = document.getElementById("icr-imgel");
+    if (el) { el.src = URL.createObjectURL(f); el.style.display = "block"; }
+    const dims = document.getElementById("icr-dims");
+    if (dims) dims.innerHTML = '<span class="jf-chip"><b>' + img.width + "\u00d7" + img.height + "</b>pixels</span>" +
+      '<span class="jf-chip"><b>' + (f.size / 1024).toFixed(0) + " KB</b>file</span>" +
+      '<span class="jf-chip"><b>drag on the image</b>to select</span>';
+    document.getElementById("icr-w").value = "";
+    document.getElementById("icr-h").value = "";
+    document.getElementById("icr-ow").value = "";
+    icr2Draw();
+    out("icr-out", "Image loaded. Drag a selection on it, or type the crop area.");
+  };
+  img.src = URL.createObjectURL(f);
+}
+function icr2Drop(ev) {
+  bi2Undrag(ev);
+  const f = ((ev.dataTransfer && ev.dataTransfer.files) || [])[0];
+  if (!f) return;
+  if (!/^image\//.test(f.type)) { out("icr-out", "<span class='error'>That is not an image file.</span>"); return; }
+  const inp = document.getElementById("icr-file");
+  Object.defineProperty(inp, "files", { value: [f], configurable: true });
+  icrLoad();
+}
 document.addEventListener("change", (e) => {
-  if (e.target && e.target.id === "icr-file") {
-    const f = e.target.files[0];
-    if (!f) return;
-    const img = new Image();
-    img.onload = () => {
-      icrImg = img;
-      document.getElementById("icr-dims").textContent = `Original: ${img.width} × ${img.height} px`;
-      document.getElementById("icr-w").value = img.width;
-      document.getElementById("icr-h").value = img.height;
-      out("icr-out", `Image loaded (${img.width}×${img.height}). Set the crop area and click Apply crop.`);
-    };
-    img.src = URL.createObjectURL(f);
-  }
+  if (e.target && e.target.id === "icr-file") icrLoad();
 });
+function icr2Pre(ratio, btn) {
+  if (!icrImg) return;
+  const W = icrImg.width, H = icrImg.height;
+  document.querySelectorAll(".ir2-presets .ir2-preset").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  let w = W, h = H;
+  if (ratio > 0) {
+    h = Math.round(W / ratio);
+    if (h > H) { h = H; w = Math.round(H * ratio); }
+  }
+  document.getElementById("icr-x").value = ratio ? Math.max(0, Math.round((W - w) / 2)) : 0;
+  document.getElementById("icr-y").value = ratio ? Math.max(0, Math.round((H - h) / 2)) : 0;
+  document.getElementById("icr-w").value = ratio ? w : "";
+  document.getElementById("icr-h").value = ratio ? h : "";
+  document.getElementById("icr-ow").value = "";
+  icr2Draw();
+}
+function icr2Draw() {
+  const el = document.getElementById("icr-imgel"), box = document.getElementById("icr-box");
+  if (!el || !box || !icrImg || !el.clientWidth) { if (box) box.style.display = "none"; return; }
+  const W = icrImg.width, H = icrImg.height;
+  let x = parseInt(document.getElementById("icr-x").value) || 0;
+  let y = parseInt(document.getElementById("icr-y").value) || 0;
+  let w = parseInt(document.getElementById("icr-w").value) || (W - x);
+  let h = parseInt(document.getElementById("icr-h").value) || (H - y);
+  x = Math.max(0, Math.min(x, W - 1)); y = Math.max(0, Math.min(y, H - 1));
+  w = Math.max(1, Math.min(w, W - x)); h = Math.max(1, Math.min(h, H - y));
+  const sx = el.clientWidth / W, sy = el.clientHeight / H;
+  box.style.display = "block";
+  box.style.left = x * sx + "px";
+  box.style.top = y * sy + "px";
+  box.style.width = w * sx + "px";
+  box.style.height = h * sy + "px";
+}
+let icr2DragOn = null;
+function icr2Down(ev) {
+  const el = document.getElementById("icr-imgel");
+  if (!el || !icrImg) return;
+  ev.preventDefault();
+  const rect = el.getBoundingClientRect();
+  const sx = icrImg.width / rect.width;
+  const sy = icrImg.height / rect.height;
+  const d = { x: Math.max(0, Math.round((ev.clientX - rect.left) * sx)), y: Math.max(0, Math.round((ev.clientY - rect.top) * sy)), rect, sx, sy };
+  document.getElementById("icr-x").value = d.x;
+  document.getElementById("icr-y").value = d.y;
+  document.getElementById("icr-w").value = "0";
+  document.getElementById("icr-h").value = "0";
+  icr2DragOn = d;
+  icr2Move(ev);
+}
+function icr2Move(ev) {
+  if (!icr2DragOn) return;
+  const d = icr2DragOn;
+  const cx = Math.min(d.rect.width, Math.max(0, ev.clientX - d.rect.left));
+  const cy = Math.min(d.rect.height, Math.max(0, ev.clientY - d.rect.top));
+  const x2 = Math.round(cx * d.sx), y2 = Math.round(cy * d.sy);
+  document.getElementById("icr-x").value = Math.min(d.x, x2);
+  document.getElementById("icr-y").value = Math.min(d.y, y2);
+  document.getElementById("icr-w").value = Math.abs(x2 - d.x);
+  document.getElementById("icr-h").value = Math.abs(y2 - d.y);
+  icr2Draw();
+}
+document.addEventListener("mousemove", icr2Move);
+document.addEventListener("mouseup", () => { if (icr2DragOn) { icr2DragOn = null; imgCrop(); } });
 function imgCrop() {
   if (!icrImg) { out("icr-out", "Load an image first."); return; }
   const W = icrImg.width, H = icrImg.height;
@@ -2112,7 +2351,7 @@ function imgCrop() {
   c.getContext("2d").drawImage(icrImg, x, y, w, h, 0, 0, c.width, c.height);
   const fmt = document.getElementById("icr-fmt").value;
   c.toBlob((b) => {
-    out("icr-out", `Cropped to <b>${w}×${h}</b> from (${x}, ${y})` + (ow !== w ? `, resized to <b>${c.width}×${c.height}</b>` : "") + ".");
+    out("icr-out", `Cropped to <b>${w}\u00d7${h}</b> from (${x}, ${y})` + (ow !== w ? `, resized to <b>${c.width}\u00d7${c.height}</b>` : "") + ".");
     const url = URL.createObjectURL(b);
     const pv = document.getElementById("icr-preview"); pv.src = url; pv.style.display = "block";
     const dl = document.getElementById("icr-dl"); dl.href = url; dl.style.display = "inline-flex";

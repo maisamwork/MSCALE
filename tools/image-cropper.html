@@ -42,22 +42,38 @@
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><h1>Image Cropper</h1></div><p>Crop images to exact pixel coordinates in your browser, with optional resize. Private, free and no watermarks.</p></div>
 
 <div class="panel">
-  <label>Image</label>
-  <input type="file" id="icr-file" accept="image/*" />
-  <p id="icr-dims" class="tools-count">No image loaded.</p>
+  <div class="bi2-drop" id="icr2-drop" ondragover="bi2Drag(event)" ondragleave="bi2Undrag(event)" ondrop="icr2Drop(event)">
+    <b>Drop an image here</b>
+    <span>or</span>
+    <label class="btn" style="margin:0">Choose file<input type="file" id="icr-file" accept="image/*" style="display:none"></label>
+  </div>
+  <div id="icr-dims" class="jf-stats" style="margin:10px 0"></div>
+  <div class="icr2-wrap" id="icr2-wrap">
+    <img id="icr-imgel" alt="Cropping preview — drag on the image to select an area" onmousedown="icr2Down(event)">
+    <div id="icr-box" class="icr2-box"></div>
+  </div>
+  <label>Aspect presets</label>
+  <div class="ir2-presets">
+    <button type="button" class="ir2-preset" onclick="icr2Pre(0, this)">Free</button>
+    <button type="button" class="ir2-preset" onclick="icr2Pre(1, this)">1:1</button>
+    <button type="button" class="ir2-preset" onclick="icr2Pre(4 / 3, this)">4:3</button>
+    <button type="button" class="ir2-preset" onclick="icr2Pre(16 / 9, this)">16:9</button>
+    <button type="button" class="ir2-preset" onclick="icr2Pre(3 / 2, this)">3:2</button>
+  </div>
   <div class="row">
-    <div><label>X</label><input type="number" id="icr-x" value="0" /></div>
-    <div><label>Y</label><input type="number" id="icr-y" value="0" /></div>
-    <div><label>Width</label><input type="number" id="icr-w" placeholder="to edge" /></div>
-    <div><label>Height</label><input type="number" id="icr-h" placeholder="to edge" /></div>
-    <div><label>Output width (optional)</label><input type="number" id="icr-ow" placeholder="original" /></div>
+    <div><label>X</label><input type="number" id="icr-x" value="0" oninput="icr2Draw()" /></div>
+    <div><label>Y</label><input type="number" id="icr-y" value="0" oninput="icr2Draw()" /></div>
+    <div><label>Width</label><input type="number" id="icr-w" placeholder="to edge" oninput="icr2Draw()" /></div>
+    <div><label>Height</label><input type="number" id="icr-h" placeholder="to edge" oninput="icr2Draw()" /></div>
+    <div><label>Output width</label><input type="number" id="icr-ow" placeholder="original" /></div>
   </div>
   <div class="row"><div><label>Format</label><select id="icr-fmt"><option value="image/png">PNG</option><option value="image/jpeg">JPEG</option></select></div></div>
   <button class="btn" onclick="imgCrop()">Apply crop</button>
-  <div id="icr-out" class="result">Load an image and set the crop area.</div>
-  <img id="icr-preview" alt="Preview" style="max-width:100%;margin-top:12px;display:none;border-radius:8px" />
-  <a id="icr-dl" class="btn ghost" style="display:none;margin-top:10px" download>Download cropped image</a>
+  <div id="icr-out" class="result">Load an image, then drag on it or use the fields.</div>
+  <img id="icr-preview" alt="Cropped result preview" style="max-width:100%;margin-top:12px;display:none;border-radius:8px" />
+  <a id="icr-dl" class="btn" style="display:none;margin-top:10px" download>Download cropped image</a>
 </div>
+
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
 <h2 class="section">What Is the Image Cropper?</h2>
