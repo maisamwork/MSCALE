@@ -121,7 +121,11 @@ def tx_body(conf, extra="", ph="Paste or type your text here\u2026"):
     <button class="btn" onclick="txRun()">{TX_SVG} Process</button>
     <button class="btn ghost" onclick="txCopyOut()">Copy result</button>
     <button class="btn ghost" onclick="txClear()">Clear</button>
+    <button class="btn ghost" onclick="tx2Sample()">Load sample</button>
+    <button class="btn ghost" onclick="tx2Download()">Download result</button>
+    <button class="btn ghost" onclick="tx2Swap()">Use result as input</button>
   </div>
+  <div id="tx2-stats" class="jf-stats" style="margin:10px 0"></div>
   <label for="tx-out">Result</label>
   <textarea id="tx-out" rows="7" readonly placeholder="Result appears here\u2026"></textarea>
 </div>

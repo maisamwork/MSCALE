@@ -4989,3 +4989,58 @@ function dtBizDays() {
       dt2Chip(biz > 0 ? Math.ceil(biz / 5) : 0, "working weeks (5-day)");
   }
 }
+
+
+/* ---------- TX2: shared upgrades for the text engine tools ---------- */
+var TX2_SAMPLE = "Meeting notes 2026-11-21:\nBudget  review  postponed  to  January (that is  42  days away).\nContact:  ana.torres@example.com  or  +44 20 7946 0958.\nDocs live at https://example.com/roadmap and http://github.com/example/repo.\nCosts:  1,250.50 +  340  +  12.5  GBP \u2014 still  under the 2,000 cap.\nAttendees: Ana, Bruno, Chen, Dalia.\nNote the  trailing double space  above and this  line with  lots of  extra  spaces.";
+function tx2Count(t) {
+  var words = (t.match(/\S+/g) || []).length;
+  var lines = t === "" ? 0 : t.split("\n").length;
+  return { w: words, c: t.length, l: lines };
+}
+function tx2Chip(b, label, ok) { return '<span class="jf-chip' + (ok ? " ok" : "") + '"><b>' + b + "</b>" + label + "</span>"; }
+function tx2Stats() {
+  var st = document.getElementById("tx2-stats");
+  if (!st || !$("tx-in")) return;
+  var i = $("tx-in").value, o = $("tx-out") ? $("tx-out").value : "";
+  if (!i.trim()) { st.innerHTML = ""; return; }
+  var ci = tx2Count(i), co = tx2Count(o);
+  var diff = i.length - o.length;
+  var diffTxt = diff > 0 ? diff.toLocaleString() + " chars removed" : diff < 0 ? "+" + Math.abs(diff).toLocaleString() + " chars added" : "same length";
+  st.innerHTML =
+    tx2Chip(ci.w.toLocaleString(), "words in") +
+    tx2Chip(ci.c.toLocaleString(), "chars in") +
+    tx2Chip(ci.l.toLocaleString(), "lines in") +
+    tx2Chip(co.w.toLocaleString(), "words out") +
+    tx2Chip(co.l.toLocaleString(), "lines out") +
+    tx2Chip(diffTxt, diff > 0 ? "shorter" : "longer", diff > 0);
+}
+function tx2Run2() { if (window.TX_CONF) { txRun(); tx2Stats(); } }
+function tx2Sample() {
+  if (!$("tx-in")) return;
+  $("tx-in").value = TX2_SAMPLE;
+  tx2Run2();
+}
+function tx2Swap() {
+  if (!$("tx-in")) return;
+  var o = $("tx-out") ? $("tx-out").value : "";
+  if (!o) return;
+  $("tx-in").value = o;
+  if ($("tx-out")) $("tx-out").value = "";
+  tx2Run2();
+}
+function tx2Download() {
+  var o = $("tx-out");
+  if (!o || !o.value) return;
+  dlBytes(o.value, "result.txt", "text/plain");
+}
+(function () {
+  var LIVE = ["tx-in", "tx-pre", "tx-suf", "tx-find", "tx-delim", "tx-sep", "tx-len"];
+  document.addEventListener("input", function (e) {
+    var id = e && e.target && e.target.id;
+    if (!id || LIVE.indexOf(id) === -1) return;
+    if (id !== "tx-in" && !window.TX_CONF) return;
+    clearTimeout(window.__tx2t);
+    window.__tx2t = setTimeout(tx2Run2, 220);
+  });
+})();

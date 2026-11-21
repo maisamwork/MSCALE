@@ -48,7 +48,11 @@
     <button class="btn" onclick="txRun()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/></svg> Process</button>
     <button class="btn ghost" onclick="txCopyOut()">Copy result</button>
     <button class="btn ghost" onclick="txClear()">Clear</button>
+    <button class="btn ghost" onclick="tx2Sample()">Load sample</button>
+    <button class="btn ghost" onclick="tx2Download()">Download result</button>
+    <button class="btn ghost" onclick="tx2Swap()">Use result as input</button>
   </div>
+  <div id="tx2-stats" class="jf-stats" style="margin:10px 0"></div>
   <label for="tx-out">Result</label>
   <textarea id="tx-out" rows="7" readonly placeholder="Result appears here…"></textarea>
 </div>
