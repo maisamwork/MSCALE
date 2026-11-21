@@ -784,18 +784,51 @@ function uc2Run() {
 }
 if ($("uc2-val")) { uc2Cats(); uc2Fill(); uc2Run(); }
 
-function tsToDate() {
-  const v = $("ts-in").value.trim();
-  if (!v) return;
-  const ms = v.length > 10 ? parseInt(v) : parseInt(v) * 1000;
-  const d = new Date(ms);
-  out("ts-out", isNaN(d) ? "Invalid timestamp" :
-    d.toISOString() + `<br><small>Local: ${d.toString()}</small>`);
+let TM2_UNIT = "s";
+function tm2Unit(u) {
+  TM2_UNIT = u;
+  $("tm2-s").classList.toggle("active", u === "s");
+  $("tm2-ms").classList.toggle("active", u === "ms");
 }
-function dateToTs() {
+function tm2Now() {
+  $("ts-in").value = TM2_UNIT === "s" ? Math.floor(Date.now() / 1000) : Date.now();
+  tm2Run();
+}
+function tm2Random() {
+  const lo = new Date(2000, 0, 1).getTime(), hi = Date.now();
+  const t = Math.floor(lo + Math.random() * (hi - lo));
+  $("ts-in").value = TM2_UNIT === "s" ? Math.floor(t / 1000) : t;
+  tm2Run();
+}
+function tm2Type(d) {
+  const t = $("ts-in").value.trim();
+  if (!t) return;
+  const ms = /^\d{11,}$/.test(t) ? parseInt(t) : parseInt(t) * 1000;
+  const dd = new Date(ms);
+  if (isNaN(dd)) { $("tm2-iso").textContent = "Invalid timestamp"; $("tm2-utc").textContent = $("tm2-local").textContent = $("tm2-dow").textContent = $("tm2-rel").textContent = "\u2014"; $("tm2-stats").innerHTML = ""; return; }
+  const diff = dd - new Date();
+  const ad = Math.abs(diff);
+  const rel = diff < 0
+    ? (ad < 3600000 ? Math.round(ad / 60000) + " min ago" : ad < 86400000 ? Math.round(ad / 3600000) + " h ago" : Math.floor(ad / 86400000).toLocaleString() + " days ago")
+    : (ad < 3600000 ? "in " + Math.round(ad / 60000) + " min" : ad < 86400000 ? "in " + Math.round(ad / 3600000) + " h" : "in " + Math.floor(ad / 86400000).toLocaleString() + " days");
+  $("tm2-iso").textContent = dd.toISOString();
+  $("tm2-utc").textContent = dd.toUTCString();
+  $("tm2-local").textContent = dd.toString();
+  $("tm2-dow").textContent = dd.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+  $("tm2-rel").textContent = rel;
+  $("tm2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + t.length + "</b>digits</span>" +
+    '<span class="jf-chip"><b>' + (/^\d{11,}$/.test(t) ? "milliseconds" : "seconds") + "</b>detected</span>" +
+    '<span class="jf-chip"><b>' + Math.round(ms / 1000) + "</b>seconds</span>";
+}
+function tm2Run() { if ($("ts-in")) tm2Type(); }
+function tm2Date() {
   const d = new Date($("ts-date").value);
-  if (isNaN(d)) return;
-  out("ts-out2", `Seconds: <b>${Math.floor(d.getTime() / 1000)}</b><br>Milliseconds: <b>${d.getTime()}</b>`);
+  if (isNaN(d)) { $("tm2-dstat").innerHTML = ""; return; }
+  $("tm2-dstat").innerHTML =
+    '<span class="jf-chip"><b>' + Math.floor(d.getTime() / 1000) + "</b>seconds</span>" +
+    '<span class="jf-chip"><b>' + d.getTime() + "</b>milliseconds</span>" +
+    '<span class="jf-chip"><b>' + d.toISOString().slice(0, 19).replace("T", " ") + "Z</b>UTC</span>";
 }
 setInterval(() => {
   const n = $("ts-now");
@@ -984,19 +1017,53 @@ function cc2Random() {
 if ($("col-in")) colorConvert();
 
 /* ---------- Random ---------- */
+let RN2_LAST = [];
+function rn2Rand(min, max) {
+  const range = max - min + 1;
+  const a = new Uint32Array(1);
+  crypto.getRandomValues(a);
+  return min + (a[0] % range);
+}
 function randNums() {
   const min = parseInt($("rn-min").value), max = parseInt($("rn-max").value);
   const count = Math.min(parseInt($("rn-count").value) || 1, 1000);
   const unique = $("rn-unique").checked;
-  if (isNaN(min) || isNaN(max) || max < min) { out("rn-out", "Invalid range", "error"); return; }
-  if (unique && max - min + 1 < count) { out("rn-out", "Range too small for unique values", "error"); return; }
+  if (isNaN(min) || isNaN(max) || max < min) { $("rn2-big").innerHTML = '<span class="error">Check min &le; max</span>'; $("rn-out").innerHTML = ""; RN2_LAST = []; return; }
+  const span = max - min + 1;
+  if (unique && span < count) { $("rn2-big").innerHTML = '<span class="error">Range too small for ' + count + " unique values</span>"; $("rn-out").innerHTML = ""; RN2_LAST = []; return; }
   const set = new Set(), res = [];
   while (res.length < count) {
-    const v = Math.floor(Math.random() * (max - min + 1)) + min;
+    const v = rn2Rand(min, max);
     if (!unique || !set.has(v)) { if (unique) set.add(v); res.push(v); }
   }
-  out("rn-out", res.join(", "));
+  RN2_LAST = res;
+  rn2Render();
 }
+function rn2Render() {
+  if (!$("rn2-big")) return;
+  const vals = $("rn2-sort").checked ? RN2_LAST.slice().sort((a, b) => a - b) : RN2_LAST;
+  const pad = $("rn2-justify") && $("rn2-justify").checked;
+  const fmt = (v) => pad ? String(v).padStart(String(Math.max(Math.abs(parseInt($("rn-min").value)), Math.abs(parseInt($("rn-max").value)))).length, "0") : String(v);
+  const sum = vals.reduce((a, b) => a + b, 0);
+  const avg = vals.length ? sum / vals.length : 0;
+  $("rn2-big").innerHTML = vals.length === 1 ? String(vals[0]) : vals.length + '<span class="pct2-big-sub">numbers &middot; avg ' + (Math.round(avg * 100) / 100) + "</span>";
+  $("rn-out").innerHTML = vals.map((v) => '<span class="jf-chip"><b>' + fmt(v) + "</b></span>").join("");
+  if (vals.length > 1) {
+    $("rn2-stats").innerHTML =
+      '<span class="jf-chip"><b>' + vals.length + "</b>count</span>" +
+      '<span class="jf-chip"><b>' + fmt(Math.min(...vals)) + "</b>min</span>" +
+      '<span class="jf-chip"><b>' + fmt(Math.max(...vals)) + "</b>max</span>" +
+      '<span class="jf-chip"><b>' + sum.toLocaleString() + "</b>sum</span>" +
+      '<span class="jf-chip"><b>' + (Math.round(avg * 100) / 100) + "</b>average</span>";
+  } else $("rn2-stats").innerHTML = "";
+}
+function rn2Copy(btn) {
+  if (!RN2_LAST.length) return;
+  navigator.clipboard.writeText(RN2_LAST.join(", ")).catch(() => {});
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy all"), 1200);
+}
+if ($("rn-min")) randNums();
 
 function flipCoin() {
   const n = Math.min(parseInt($("coin-n").value) || 1, 1000);
@@ -1476,28 +1543,128 @@ function csvParseRows(text, delim) {
   if (cur !== "" || row.length) { row.push(cur); rows.push(row); }
   return rows;
 }
+let CJ2_DELIM = ",";
+function cj2Delim(d, btn) {
+  CJ2_DELIM = d;
+  (btn.parentNode || document).querySelectorAll && btn.parentNode.querySelectorAll(".uc2-cat").forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
+  csvToJson();
+}
+function cj2Typed(v) {
+  const t = $("cj2-trim").checked ? v.trim() : v;
+  if (!$("cj2-types").checked) return t;
+  if (t === "") return null;
+  if (/^-?\d+$/.test(t) && t.length < 16) return parseInt(t);
+  if (/^-?\d*\.\d+$/.test(t)) return parseFloat(t);
+  if (/^(true|false)$/i.test(t)) return t.toLowerCase() === "true";
+  if (/^(null|nil)$/i.test(t)) return null;
+  return t;
+}
 function csvToJson() {
-  const delim = $("csv-delim").value === "tab" ? "\t" : $("csv-delim").value;
-  const rows = csvParseRows($("csv-in").value.trim(), delim);
-  if (!rows.length) return out("csv-out", "No data", "error");
-  const headers = rows[0].map((h, i) => h.trim() || "column_" + (i + 1));
-  const rows2 = rows.slice(1).filter((r) => r.some((c) => c !== "")).map((r) => Object.fromEntries(headers.map((h, i) => [h, r[i] ?? ""])));
-  out("csv-out", JSON.stringify(rows2, null, 2), "mono");
-  $("csv-count").textContent = rows2.length + " row(s) converted";
+  const inEl = $("csv-in");
+  if (!inEl || !$("csv-out")) return;
+  const delim = CJ2_DELIM === "tab" ? "\t" : CJ2_DELIM;
+  const rows = csvParseRows(inEl.value, delim);
+  if (!rows.length) { $("csv-out").value = ""; $("cj2-stats").innerHTML = '<span class="jf-chip"><b>0</b>rows</span>'; return; }
+  const hasHeader = $("cj2-header").checked;
+  const headers = hasHeader ? rows[0].map((h, i) => (h.trim() || "column_" + (i + 1))) : rows[0].map((_, i) => "column_" + (i + 1));
+  const dataRows = hasHeader ? rows.slice(1) : rows;
+  const out = dataRows.filter((r) => r.some((c) => (c || "").trim() !== "")).map((r) => Object.fromEntries(headers.map((h, i) => [h, cj2Typed(r[i] ?? "")])));
+  const pretty = JSON.stringify(out, null, 2);
+  $("csv-out").value = pretty;
+  const nNum = out.flatMap((o) => Object.values(o)).filter((v) => typeof v === "number").length;
+  $("cj2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + out.length + "</b>rows</span>" +
+    '<span class="jf-chip"><b>' + headers.length + "</b>columns</span>" +
+    '<span class="jf-chip"><b>' + new TextEncoder().encode(pretty).length + "</b>bytes</span>" +
+    '<span class="jf-chip"><b>' + nNum + "</b>typed values</span>";
 }
+function cj2Copy(btn) {
+  if (!$("csv-out").value) return;
+  navigator.clipboard.writeText($("csv-out").value).catch(() => {});
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy JSON"), 1200);
+}
+function cj2Download() {
+  if (!$("csv-out").value) return;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([$("csv-out").value], { type: "application/json" }));
+  a.download = "data.json";
+  a.click();
+}
+if ($("csv-in")) csvToJson();
 
-function htmlEnc(op) {
-  const t = $("henc-in").value;
-  if (op === "enc") out("henc-out", t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"), "mono");
-  else { const d = document.createElement("div"); d.innerHTML = t; out("henc-out", d.textContent, "mono"); }
+let HE2_MODE = "enc";
+function he2Mode(m) {
+  HE2_MODE = m;
+  $("he2-enc").classList.toggle("active", m === "enc");
+  $("he2-dec").classList.toggle("active", m === "dec");
+  he2Live();
 }
+function he2Live() {
+  if (!$("henc-out")) return;
+  const t = $("henc-in").value;
+  let r = "";
+  if (HE2_MODE === "enc") {
+    r = t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    if ($("he2-quotes").checked) r = r.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  } else {
+    r = t.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&#0?39;/g, "'")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+      .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(parseInt(d, 10)))
+      .replace(/&amp;/g, "&");
+  }
+  $("henc-out").value = r;
+  $("he2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + t.length + "</b>chars in</span>" +
+    '<span class="jf-chip"><b>' + r.length + "</b>chars out</span>" +
+    '<span class="jf-chip"><b>' + (HE2_MODE === "enc" ? "entities" : "unescaped") + "</b>mode</span>";
+}
+function he2Swap() { $("henc-in").value = $("henc-out").value; he2Mode(HE2_MODE === "enc" ? "dec" : "enc"); }
+function he2Copy(btn) {
+  if (!$("henc-out").value) return;
+  navigator.clipboard.writeText($("henc-out").value).catch(() => {});
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy output"), 1200);
+}
+if ($("henc-in")) he2Mode("enc");
 
 /* ---------- Converters ---------- */
+let NB2_FROM = 10;
+function nb2Base(b, btn) {
+  NB2_FROM = b;
+  document.querySelectorAll("#nb2-bases .uc2-cat").forEach((c) => {
+    const on = parseInt(c.dataset.b) === b;
+    c.classList.toggle("active", on);
+  });
+  baseConvert();
+}
 function baseConvert() {
-  const v = $("nb-in").value.trim(), from = parseInt($("nb-from").value);
-  const n = parseInt(v, from);
-  if (isNaN(n) || !/^[0-9a-fA-F]+$/.test(v)) return out("nb-out", "Invalid number for base " + from, "error");
-  out("nb-out", `Binary: <b>${n.toString(2)}</b><br>Octal: <b>${n.toString(8)}</b><br>Decimal: <b>${n.toString(10)}</b><br>Hex: <b>${n.toString(16).toUpperCase()}</b>`);
+  if (!$("nb2-b2")) return;
+  const v = $("nb-in").value.trim().replace(/^0[bxo]/i, "");
+  const re = { 2: /^[01]+$/, 8: /^[0-7]+$/, 10: /^\d+$/, 16: /^[0-9a-fA-F]+$/, 36: /^[0-9a-zA-Z]+$/ }[NB2_FROM];
+  if (!re || !re.test(v)) { ["nb2-b2","nb2-b8","nb2-b10","nb2-b16","nb2-b32","nb2-b36"].forEach((id) => { $(id).textContent = "\u2014"; }); $("nb2-stats").innerHTML = ""; return; }
+  const n = parseInt(v, NB2_FROM);
+  if (isNaN(n)) return;
+  $("nb2-b2").textContent = n.toString(2);
+  $("nb2-b8").textContent = n.toString(8);
+  $("nb2-b10").textContent = n.toString(10);
+  $("nb2-b16").textContent = n.toString(16).toUpperCase();
+  $("nb2-b32").textContent = n.toString(32).toUpperCase();
+  $("nb2-b36").textContent = n.toString(36).toUpperCase();
+  const bits = Math.max(1, n.toString(2).length);
+  $("nb2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + bits + "</b>bits</span>" +
+    '<span class="jf-chip"><b>' + Math.ceil(bits / 8) + "</b>bytes</span>" +
+    '<span class="jf-chip"><b>' + n.toString(16).length + "</b>hex digits</span>" +
+    '<span class="jf-chip"><b>' + n.toLocaleString() + "</b>decimal</span>";
+}
+function nb2Copy() {
+  if (!$("nb2-b10").textContent || $("nb2-b10").textContent === "\u2014") return;
+  const all = "BIN: " + $("nb2-b2").textContent + "\nOCT: " + $("nb2-b8").textContent + "\nDEC: " + $("nb2-b10").textContent + "\nHEX: " + $("nb2-b16").textContent;
+  navigator.clipboard.writeText(all).catch(() => {});
 }
 
 function romanToArabic(s) {
@@ -1517,17 +1684,37 @@ function arabicToRoman(n) {
   for (const [v, s] of table) while (n >= v) { r += s; n -= v; }
   return r;
 }
-function romanConvert(mode) {
-  if (mode === "to") {
-    const n = parseInt($("roman-in").value);
-    if (!n || n < 1 || n > 3999) return out("roman-out", "Enter a number from 1 to 3999", "error");
-    out("roman-out", `${n} = <b>${arabicToRoman(n)}</b>`);
+function romanConvert(mode) { ro2Live(); }
+function ro2Live() {
+  if (!$("ro2-big")) return;
+  const v = $("roman-in").value.trim();
+  if (!v) { $("ro2-big").innerHTML = "&mdash;"; $("ro2-break").innerHTML = ""; return; }
+  if (/^\d+$/.test(v)) {
+    const n = parseInt(v);
+    if (n < 1 || n > 3999) { $("ro2-big").innerHTML = '<span class="error">Numbers run 1 &ndash; 3999</span>'; $("ro2-break").innerHTML = ""; return; }
+    const r = arabicToRoman(n);
+    const parts = [];
+    let rest = n;
+    [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]].forEach(([val, sym]) => {
+      while (rest >= val) { parts.push(sym + "=" + val); rest -= val; }
+    });
+    $("ro2-big").innerHTML = `${n.toLocaleString()} <span class="pct2-big-sub-inline">=</span> <b>${r}</b>`;
+    $("ro2-break").innerHTML = parts.map((p) => '<span class="jf-chip"><b>' + p.split("=")[0] + "</b>" + p.split("=")[1] + "</span>").join("");
   } else {
-    const v = romanToArabic($("roman-in").value.trim());
-    if (isNaN(v)) return out("roman-out", "Invalid Roman numeral", "error");
-    out("roman-out", `${$("roman-in").value.trim().toUpperCase()} = <b>${v}</b>`);
+    const n = romanToArabic(v);
+    if (isNaN(n) || n < 1) { $("ro2-big").innerHTML = '<span class="error">Invalid Roman numeral (I&ndash;MMMCMXCIX)</span>'; $("ro2-break").innerHTML = ""; return; }
+    $("ro2-big").innerHTML = `<b>${escHtml(v.toUpperCase())}</b> <span class="pct2-big-sub-inline">=</span> ${n.toLocaleString()}`;
+    $("ro2-break").innerHTML = '<span class="jf-chip"><b>canonical</b>' + arabicToRoman(n) + "</span>";
   }
 }
+function ro2Copy(btn) {
+  const t = $("ro2-big").textContent.trim();
+  if (!t || t === "\u2014") return;
+  navigator.clipboard.writeText(t).catch(() => {});
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy result"), 1200);
+}
+if ($("roman-in")) ro2Live();
 
 /* ---------- Image ---------- */
 let IR2_IMG = null, IR2_ORIG_SIZE = 0, IR2_ORIG_NAME = "image";

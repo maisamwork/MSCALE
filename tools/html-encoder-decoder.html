@@ -41,14 +41,22 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "HTML Encoder / Decoder", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Escape text to HTML entities or decode HTML back to plain text.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>HTML Encoder / Decoder</h1></div><p>Escape text to HTML entities or decode HTML back to plain text.</p></div>
 
-<div class="panel">
-  <label>Text or HTML</label>
-  <textarea id="henc-in" placeholder='<div class="hello">…'></textarea>
-  <div>
-    <button class="btn" onclick="htmlEnc('enc')">Encode →</button>
-    <button class="btn ghost" onclick="htmlEnc('dec')">← Decode</button>
+<div class="panel he2">
+  <div class="lr2-types">
+    <button class="lr2-type active" id="he2-enc" onclick="he2Mode('enc')">Encode &rarr;</button>
+    <button class="lr2-type" id="he2-dec" onclick="he2Mode('dec')">&larr; Decode</button>
+    <span class="ir2-pl" style="margin-left:auto">Escape quotes</span>
+    <label class="pg-switch"><input type="checkbox" id="he2-quotes" checked onchange="he2Live()" /><span class="pg-track"></span></label>
   </div>
-  <div id="henc-out" class="result mono"></div>
+  <div class="b64-io">
+    <div><label>Input</label><textarea id="henc-in" oninput="he2Live()" placeholder="&lt;div class=&quot;hello&quot;&gt;Hi &amp; bye&lt;/div&gt;"><div class="hello">Hi & bye</div></textarea></div>
+    <button class="btn ghost sm" onclick="he2Swap()" title="Move output back into input">&#8644;</button>
+    <div><label>Output</label><textarea id="henc-out" readonly></textarea></div>
+  </div>
+  <div class="jf-stats" id="he2-stats"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="he2Copy(this)">Copy output</button>
+  </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

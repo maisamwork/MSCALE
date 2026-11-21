@@ -950,17 +950,31 @@ TOOL_BODIES = {
 </div>""",
 
 "timestamp-converter": """
-<div class="panel">
-  <p>Current Unix time: <b id="ts-now">…</b></p>
-  <label>Unix timestamp → date</label>
-  <input type="text" id="ts-in" placeholder="1735689600" />
-  <button class="btn" onclick="tsToDate()">Convert</button>
-  <div id="ts-out" class="result mono"></div>
-  <label>Date → timestamp</label>
-  <input type="datetime-local" id="ts-date" />
-  <button class="btn" onclick="dateToTs()">Convert</button>
-  <div id="ts-out2" class="result mono"></div>
+<div class="panel tm2">
+  <div class="pct2-result" id="tm2-now">&mdash;</div>
+  <p class="tool-note">Current Unix time (updates every second)</p>
+  <div class="lr2-types">
+    <button class="lr2-type active" id="tm2-s" onclick="tm2Unit('s')">Seconds</button>
+    <button class="lr2-type" id="tm2-ms" onclick="tm2Unit('ms')">Milliseconds</button>
+    <span style="flex:1"></span>
+    <button class="btn ghost sm" onclick="tm2Now()">Use current time &rarr;</button>
+    <button class="btn ghost sm" onclick="tm2Random()">Random</button>
+  </div>
+  <label>Unix timestamp &rarr; date</label>
+  <input type="text" id="ts-in" value="1764000000" oninput="tm2Run()" placeholder="1735689600 or 1735689600000" />
+  <div class="jf-stats" id="tm2-stats"></div>
+  <table class="wc-table"><tbody>
+    <tr><th>ISO 8601 (UTC)</th><td id="tm2-iso">&mdash;</td></tr>
+    <tr><th>UTC string</th><td id="tm2-utc">&mdash;</td></tr>
+    <tr><th>Local time</th><td id="tm2-local">&mdash;</td></tr>
+    <tr><th>Day of week</th><td id="tm2-dow">&mdash;</td></tr>
+    <tr><th>Relative</th><td id="tm2-rel">&mdash;</td></tr>
+  </tbody></table>
+  <label>Date &rarr; timestamp</label>
+  <input type="datetime-local" id="ts-date" oninput="tm2Date()" />
+  <div class="jf-stats" id="tm2-dstat"></div>
 </div>""",
+
 "password-generator": """
 <div class="panel pg-panel">
   <div class="pg-tabs" id="pg-tabs">
@@ -1014,16 +1028,27 @@ TOOL_BODIES = {
   <div id="col-out" class="cc2-fmts"></div>
 </div>""",
 "random-number-generator": """
-<div class="panel">
+<div class="panel rn2">
   <div class="row">
-    <div><label>Min</label><input type="number" id="rn-min" value="1" /></div>
-    <div><label>Max</label><input type="number" id="rn-max" value="100" /></div>
-    <div><label>How many</label><input type="number" id="rn-count" value="1" min="1" max="1000" /></div>
+    <div><label>Min</label><input type="number" id="rn-min" value="1" oninput="randNums()" /></div>
+    <div><label>Max</label><input type="number" id="rn-max" value="100" oninput="randNums()" /></div>
+    <div><label>How many</label><input type="number" id="rn-count" value="6" min="1" max="1000" oninput="randNums()" /></div>
   </div>
-  <label><input type="checkbox" id="rn-unique" style="width:auto" /> Unique values only</label>
-  <button class="btn" onclick="randNums()">Generate</button>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="rn-unique" onchange="randNums()" /><span class="pg-track"></span> Unique only</label>
+    <label class="pg-switch"><input type="checkbox" id="rn2-sort" onchange="rn2Render()" /><span class="pg-track"></span> Sort ascending</label>
+    <label class="pg-switch"><input type="checkbox" id="rn2-justify" onchange="rn2Render()" /><span class="pg-track"></span> Zero-pad</label>
+  </div>
+  <div class="pct2-result" id="rn2-big">&mdash;</div>
+  <p class="tool-note">All numbers</p>
   <div id="rn-out" class="result"></div>
+  <div class="jf-stats" id="rn2-stats"></div>
+  <div class="lr2-actions">
+    <button class="btn" onclick="randNums()">Re-roll</button>
+    <button class="btn ghost" onclick="rn2Copy(this)">Copy all</button>
+  </div>
 </div>""",
+
 "dice-roller": """
 <div class="panel">
   <div class="row">
@@ -1271,44 +1296,92 @@ TOOL_BODIES = {
 </div>""",
 
 "csv-to-json-converter": """
-<div class="panel">
-  <div class="row">
-    <div><label>Delimiter</label><select id="csv-delim"><option value=",">Comma</option><option value=";">Semicolon</option><option value="tab">Tab</option><option value="|">Pipe</option></select></div>
+<div class="panel cj2">
+  <div class="uc2-cats jf-stats" id="cj2-delims">
+    <span class="ir2-pl">Delimiter:</span>
+    <button class="uc2-cat active" onclick="cj2Delim(',', this)">Comma</button>
+    <button class="uc2-cat" onclick="cj2Delim(';', this)">Semicolon</button>
+    <button class="uc2-cat" onclick="cj2Delim('\t', this)">Tab</button>
+    <button class="uc2-cat" onclick="cj2Delim('|', this)">Pipe</button>
   </div>
-  <label>CSV input (first row = headers)</label>
-  <textarea id="csv-in" placeholder="name,age&#10;Alice,30&#10;Bob,25"></textarea>
-  <button class="btn" onclick="csvToJson()">Convert →</button>
-  <span id="csv-count" style="color:var(--muted);font-size:13px"></span>
-  <div id="csv-out" class="result mono"></div>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="cj2-header" checked onchange="csvToJson()" /><span class="pg-track"></span> First row is headers</label>
+    <label class="pg-switch"><input type="checkbox" id="cj2-types" checked onchange="csvToJson()" /><span class="pg-track"></span> Detect numbers / booleans / null</label>
+    <label class="pg-switch"><input type="checkbox" id="cj2-trim" checked onchange="csvToJson()" /><span class="pg-track"></span> Trim cells</label>
+  </div>
+  <label>CSV input</label>
+  <textarea id="csv-in" oninput="csvToJson()" placeholder="name,age&#10;Alice,30&#10;Bob,25">name,age,active,score&#10;Alice,30,true,91.5&#10;Bob,25,false,88&#10;Carol,41,,95.2</textarea>
+  <div class="jf-stats" id="cj2-stats"></div>
+  <label>JSON output</label>
+  <textarea id="csv-out" readonly></textarea>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="cj2Copy(this)">Copy JSON</button>
+    <button class="btn ghost" onclick="cj2Download()">Download .json</button>
+  </div>
 </div>""",
+
 "html-encoder-decoder": """
-<div class="panel">
-  <label>Text or HTML</label>
-  <textarea id="henc-in" placeholder='<div class="hello">…'></textarea>
-  <div>
-    <button class="btn" onclick="htmlEnc('enc')">Encode →</button>
-    <button class="btn ghost" onclick="htmlEnc('dec')">← Decode</button>
+<div class="panel he2">
+  <div class="lr2-types">
+    <button class="lr2-type active" id="he2-enc" onclick="he2Mode('enc')">Encode &rarr;</button>
+    <button class="lr2-type" id="he2-dec" onclick="he2Mode('dec')">&larr; Decode</button>
+    <span class="ir2-pl" style="margin-left:auto">Escape quotes</span>
+    <label class="pg-switch"><input type="checkbox" id="he2-quotes" checked onchange="he2Live()" /><span class="pg-track"></span></label>
   </div>
-  <div id="henc-out" class="result mono"></div>
+  <div class="b64-io">
+    <div><label>Input</label><textarea id="henc-in" oninput="he2Live()" placeholder="&lt;div class=&quot;hello&quot;&gt;Hi &amp; bye&lt;/div&gt;"><div class="hello">Hi & bye</div></textarea></div>
+    <button class="btn ghost sm" onclick="he2Swap()" title="Move output back into input">&#8644;</button>
+    <div><label>Output</label><textarea id="henc-out" readonly></textarea></div>
+  </div>
+  <div class="jf-stats" id="he2-stats"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="he2Copy(this)">Copy output</button>
+  </div>
 </div>""",
+
 "number-base-converter": """
-<div class="panel">
-  <div class="row">
-    <div style="flex:2"><label>Number</label><input type="text" id="nb-in" value="255" oninput="baseConvert()" /></div>
-    <div><label>Input base</label><select id="nb-from" onchange="baseConvert()"><option value="2">Binary (2)</option><option value="8">Octal (8)</option><option value="10" selected>Decimal (10)</option><option value="16">Hex (16)</option></select></div>
+<div class="panel nb2">
+  <div class="uc2-cats jf-stats" id="nb2-bases">
+    <span class="ir2-pl">Input base:</span>
+    <button class="uc2-cat" data-b="2" onclick="nb2Base(2, this)">BIN</button>
+    <button class="uc2-cat" data-b="8" onclick="nb2Base(8, this)">OCT</button>
+    <button class="uc2-cat active" data-b="10" onclick="nb2Base(10, this)">DEC</button>
+    <button class="uc2-cat" data-b="16" onclick="nb2Base(16, this)">HEX</button>
+    <button class="uc2-cat" data-b="36" onclick="nb2Base(36, this)">36</button>
   </div>
-  <div id="nb-out" class="result"></div>
+  <label>Number</label>
+  <input type="text" id="nb-in" value="255" oninput="baseConvert()" placeholder="Enter in the selected base&hellip;" />
+  <div class="jf-stats" id="nb2-stats"></div>
+  <table class="wc-table"><tbody>
+    <tr><th>Binary (base 2)</th><td id="nb2-b2" class="mono">&mdash;</td></tr>
+    <tr><th>Octal (base 8)</th><td id="nb2-b8" class="mono">&mdash;</td></tr>
+    <tr><th>Decimal (base 10)</th><td id="nb2-b10" class="mono">&mdash;</td></tr>
+    <tr><th>Hex (base 16)</th><td id="nb2-b16" class="mono">&mdash;</td></tr>
+    <tr><th>Base 32</th><td id="nb2-b32" class="mono">&mdash;</td></tr>
+    <tr><th>Base 36</th><td id="nb2-b36" class="mono">&mdash;</td></tr>
+  </tbody></table>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="nb2Copy()">Copy all conversions</button>
+  </div>
 </div>""",
+
 "roman-numeral-converter": """
-<div class="panel">
-  <label>Number (1–3999) or Roman numeral</label>
-  <input type="text" id="roman-in" placeholder="2024 or MMXXIV" />
-  <div>
-    <button class="btn" onclick="romanConvert('to')">Number → Roman</button>
-    <button class="btn ghost" onclick="romanConvert('from')">Roman → Number</button>
+<div class="panel ro2">
+  <label>Number (1&ndash;3999) or Roman numeral &mdash; converted live as you type</label>
+  <input type="text" id="roman-in" value="2024" oninput="ro2Live()" placeholder="2024 or MMXXIV" />
+  <div class="pct2-result" id="ro2-big">&mdash;</div>
+  <div class="jf-stats" id="ro2-break"></div>
+  <table class="wc-table ro2-table"><tbody>
+    <tr><th>I</th><td>1</td><th>V</th><td>5</td></tr>
+    <tr><th>X</th><td>10</td><th>L</th><td>50</th></tr>
+    <tr><th>C</th><td>100</td><th>D</th><td>500</th></tr>
+    <tr><th>M</th><td>1000</td><th colspan="2">largest: MMMCMXCIX = 3999</td></tr>
+  </tbody></table>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="ro2Copy(this)">Copy result</button>
   </div>
-  <div id="roman-out" class="result big"></div>
 </div>""",
+
 "image-resizer": """
 <div class="panel ir2">
   <div class="ir2-drop" id="ir2-drop" onclick="document.getElementById('ir2-file').click()">

@@ -41,15 +41,25 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Random Number Generator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Generate random numbers in any range, with optional unique values.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/></svg><h1>Random Number Generator</h1></div><p>Generate random numbers in any range, with optional unique values.</p></div>
 
-<div class="panel">
+<div class="panel rn2">
   <div class="row">
-    <div><label>Min</label><input type="number" id="rn-min" value="1" /></div>
-    <div><label>Max</label><input type="number" id="rn-max" value="100" /></div>
-    <div><label>How many</label><input type="number" id="rn-count" value="1" min="1" max="1000" /></div>
+    <div><label>Min</label><input type="number" id="rn-min" value="1" oninput="randNums()" /></div>
+    <div><label>Max</label><input type="number" id="rn-max" value="100" oninput="randNums()" /></div>
+    <div><label>How many</label><input type="number" id="rn-count" value="6" min="1" max="1000" oninput="randNums()" /></div>
   </div>
-  <label><input type="checkbox" id="rn-unique" style="width:auto" /> Unique values only</label>
-  <button class="btn" onclick="randNums()">Generate</button>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="rn-unique" onchange="randNums()" /><span class="pg-track"></span> Unique only</label>
+    <label class="pg-switch"><input type="checkbox" id="rn2-sort" onchange="rn2Render()" /><span class="pg-track"></span> Sort ascending</label>
+    <label class="pg-switch"><input type="checkbox" id="rn2-justify" onchange="rn2Render()" /><span class="pg-track"></span> Zero-pad</label>
+  </div>
+  <div class="pct2-result" id="rn2-big">&mdash;</div>
+  <p class="tool-note">All numbers</p>
   <div id="rn-out" class="result"></div>
+  <div class="jf-stats" id="rn2-stats"></div>
+  <div class="lr2-actions">
+    <button class="btn" onclick="randNums()">Re-roll</button>
+    <button class="btn ghost" onclick="rn2Copy(this)">Copy all</button>
+  </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
