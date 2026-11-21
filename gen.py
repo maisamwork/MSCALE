@@ -784,28 +784,47 @@ TOOL_BODIES = {
 </div>""",
 
 "case-converter": """
-<div class="panel">
-  <label>Your text</label>
-  <textarea id="case-in" placeholder="Paste text here…"></textarea>
-  <div>
-    <button class="btn ghost" onclick="convertCase('upper')">UPPERCASE</button>
-    <button class="btn ghost" onclick="convertCase('lower')">lowercase</button>
-    <button class="btn ghost" onclick="convertCase('title')">Title Case</button>
-    <button class="btn ghost" onclick="convertCase('sentence')">Sentence case</button>
-    <button class="btn ghost" onclick="convertCase('camel')">camelCase</button>
-    <button class="btn ghost" onclick="convertCase('snake')">snake_case</button>
-    <button class="btn ghost" onclick="convertCase('kebab')">kebab-case</button>
+<div class="panel cv2">
+  <label>Enter your text</label>
+  <textarea id="case-in" oninput="cv2Run()" placeholder="Type or paste text&hellip;">The quick brown fox jumps over the lazy dog</textarea>
+  <div class="lr2-types" id="cv2-modes">
+    <button class="lr2-type active" onclick="cv2Set('upper', this)">UPPER CASE</button>
+    <button class="lr2-type" onclick="cv2Set('lower', this)">lowercase</button>
+    <button class="lr2-type" onclick="cv2Set('title', this)">Title Case</button>
+    <button class="lr2-type" onclick="cv2Set('sentence', this)">Sentence case</button>
+    <button class="lr2-type" onclick="cv2Set('camel', this)">camelCase</button>
+    <button class="lr2-type" onclick="cv2Set('pascal', this)">PascalCase</button>
+    <button class="lr2-type" onclick="cv2Set('snake', this)">snake_case</button>
+    <button class="lr2-type" onclick="cv2Set('kebab', this)">kebab-case</button>
+  </div>
+  <label>Result</label>
+  <textarea id="cv2-out" readonly placeholder="Result appears here live&hellip;"></textarea>
+  <div class="jf-stats" id="cv2-stats"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="cv2Copy(this)">Copy result</button>
+    <button class="btn ghost" onclick="cv2Swap()">Use result as input</button>
   </div>
 </div>""",
+
 "remove-duplicate-lines": """
-<div class="panel">
-  <label>Lines</label>
-  <textarea id="dd-in" placeholder="One item per line…"></textarea>
-  <label><input type="checkbox" id="dd-case" style="width:auto" /> Ignore case</label>
-  <label><input type="checkbox" id="dd-trim" checked style="width:auto" /> Trim whitespace</label>
-  <button class="btn" onclick="dedupeLines()">Remove duplicates</button>
-  <div id="dd-out" class="result mono"></div>
+<div class="panel dd2">
+  <label>Lines &mdash; duplicates removed live</label>
+  <textarea id="dd-in" oninput="dedupeLines()" placeholder="One item per line&hellip;">apple&#10;banana&#10;apple&#10;Apple&#10;cherry&#10;banana</textarea>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="dd-case" onchange="dedupeLines()" /><span class="pg-track"></span> Ignore case</label>
+    <label class="pg-switch"><input type="checkbox" id="dd-trim" checked onchange="dedupeLines()" /><span class="pg-track"></span> Trim whitespace</label>
+    <label class="pg-switch"><input type="checkbox" id="dd2-noempty" checked onchange="dedupeLines()" /><span class="pg-track"></span> Remove empty lines</label>
+    <label class="pg-switch"><input type="checkbox" id="dd2-sort" onchange="dedupeLines()" /><span class="pg-track"></span> Sort result A&ndash;Z</label>
+  </div>
+  <div class="jf-stats" id="dd2-stats"></div>
+  <label>Clean result</label>
+  <textarea id="dd2-out" readonly></textarea>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="dd2Copy(this)">Copy result</button>
+    <button class="btn ghost" onclick="dd2Use()">Replace input</button>
+  </div>
 </div>""",
+
 "reverse-text": """
 <div class="panel">
   <label>Text</label>
@@ -847,15 +866,27 @@ TOOL_BODIES = {
 </div>""",
 
 "base64-encoder-decoder": """
-<div class="panel">
-  <label>Text or Base64</label>
-  <textarea id="b64-in"></textarea>
-  <div>
-    <button class="btn" onclick="b64('enc')">Encode →</button>
-    <button class="btn ghost" onclick="b64('dec')">← Decode</button>
+<div class="panel b64p">
+  <div class="lr2-types">
+    <button class="lr2-type active" id="b64-enc" onclick="b64Mode('enc')">Encode &rarr;</button>
+    <button class="lr2-type" id="b64-dec" onclick="b64Mode('dec')">&larr; Decode</button>
+    <span class="ir2-pl" style="margin-left:auto">URL-safe alphabet</span>
+    <label class="pg-switch"><input type="checkbox" id="b64-urlsafe" onchange="b64Live()" /><span class="pg-track"></span></label>
   </div>
-  <div id="b64-out" class="result mono"></div>
+  <div class="b64-io">
+    <div><label>Input</label><textarea id="b64-in" oninput="b64Live()" placeholder="Hello MSCALE"></textarea></div>
+    <button class="btn ghost sm" onclick="b64Swap()" title="Move output back into input">&#8644;</button>
+    <div><label>Output</label><textarea id="b64-out" readonly></textarea></div>
+  </div>
+  <div class="jf-stats" id="b64-stats"></div>
+  <div id="b64-err" class="error" style="display:none"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="b64Copy(this)">Copy output</button>
+    <button class="btn ghost" onclick="b64Download()">Download .txt</button>
+    <button class="btn ghost" onclick="b64Sample()">Sample</button>
+  </div>
 </div>""",
+
 "url-encoder-decoder": """
 <div class="panel">
   <label>Text or URL</label>
@@ -1068,31 +1099,55 @@ TOOL_BODIES = {
   <div id="dd2-out" class="result">Pick two dates.</div>
 </div>""",
 "find-and-replace": """
-<div class="panel">
+<div class="panel fr2">
   <label>Text</label>
-  <textarea id="fr-in" placeholder="Paste your text…"></textarea>
+  <textarea id="fr-in" oninput="fr2Run()" placeholder="Paste your text&hellip;">The old robot picked the old box. The old cat liked the old robot.</textarea>
   <div class="row">
-    <div><label>Find</label><input type="text" id="fr-find" placeholder="old" /></div>
-    <div><label>Replace with</label><input type="text" id="fr-repl" placeholder="new" /></div>
+    <div><label>Find</label><input type="text" id="fr-find" value="old" oninput="fr2Run()" placeholder="text to find" /></div>
+    <div><label>Replace with</label><input type="text" id="fr-repl" value="new" oninput="fr2Run()" placeholder="replacement" /></div>
   </div>
-  <label><input type="checkbox" id="fr-case" style="width:auto" /> Case sensitive</label>
-  <label><input type="checkbox" id="fr-regex" style="width:auto" /> Regular expression</label>
-  <button class="btn" onclick="findReplace()">Replace all</button>
-  <span id="fr-count" style="color:var(--muted);font-size:13px"></span>
-  <div id="fr-out" class="result mono"></div>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="fr-case" onchange="fr2Run()" /><span class="pg-track"></span> Case sensitive</label>
+    <label class="pg-switch"><input type="checkbox" id="fr-regex" onchange="fr2Run()" /><span class="pg-track"></span> Regular expression</label>
+  </div>
+  <div class="jf-stats" id="fr2-stats"></div>
+  <label>Preview &mdash; matches highlighted</label>
+  <div id="fr2-preview" class="result mono fr2-prev"></div>
+  <div class="lr2-actions">
+    <button class="btn" onclick="fr2All(this)">Replace all</button>
+    <button class="btn ghost" onclick="fr2Undo()">Undo replace</button>
+    <button class="btn ghost" onclick="fr2Copy(this)">Copy text</button>
+  </div>
 </div>""",
+
 "text-sorter": """
-<div class="panel">
-  <label>Lines to sort</label>
-  <textarea id="sort-in" placeholder="banana&#10;apple&#10;cherry"></textarea>
-  <div>
-    <button class="btn" onclick="sortLines('az')">A → Z</button>
-    <button class="btn ghost" onclick="sortLines('za')">Z → A</button>
-    <button class="btn ghost" onclick="sortLines('len')">Short → Long</button>
-    <button class="btn ghost" onclick="sortLines('len2')">Long → Short</button>
-    <button class="btn ghost" onclick="sortLines('shuffle')">Shuffle</button>
+<div class="panel ts2">
+  <label>Lines &mdash; sorted live, input never destroyed</label>
+  <textarea id="sort-in" oninput="ts2Run()" placeholder="banana&#10;apple&#10;cherry">banana&#10;apple&#10;Cherry&#10;dragonfruit&#10;10&#10;2&#10;apple</textarea>
+  <div class="lr2-types" id="ts2-modes">
+    <button class="lr2-type active" onclick="ts2Mode('az', this)">A &rarr; Z</button>
+    <button class="lr2-type" onclick="ts2Mode('za', this)">Z &rarr; A</button>
+    <button class="lr2-type" onclick="ts2Mode('len', this)">Shortest first</button>
+    <button class="lr2-type" onclick="ts2Mode('len2', this)">Longest first</button>
+    <button class="lr2-type" onclick="ts2Mode('nat', this)">Natural 1 &lt; 2 &lt; 10</button>
+    <button class="lr2-type" onclick="ts2Mode('rev', this)">Reverse</button>
+    <button class="lr2-type" onclick="ts2Mode('shuffle', this)">Shuffle</button>
+  </div>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="ts2-ci" checked onchange="ts2Run()" /><span class="pg-track"></span> Ignore case</label>
+    <label class="pg-switch"><input type="checkbox" id="ts2-noempty" checked onchange="ts2Run()" /><span class="pg-track"></span> Remove empty lines</label>
+    <label class="pg-switch"><input type="checkbox" id="ts2-dedupe" onchange="ts2Run()" /><span class="pg-track"></span> Remove duplicates</label>
+  </div>
+  <div class="jf-stats" id="ts2-stats"></div>
+  <label>Sorted result</label>
+  <textarea id="ts2-out" readonly></textarea>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="ts2Copy(this)">Copy result</button>
+    <button class="btn ghost" onclick="ts2Download()">Download .txt</button>
+    <button class="btn ghost" onclick="ts2Use()">Use as input</button>
   </div>
 </div>""",
+
 "lorem-ipsum-generator": """
 <div class="panel lr2">
   <div class="lr2-types">
@@ -1117,12 +1172,24 @@ TOOL_BODIES = {
 </div>""",
 
 "word-frequency-counter": """
-<div class="panel">
+<div class="panel wf2">
   <label>Text to analyze</label>
-  <textarea id="wf-in" oninput="wordFreq()" placeholder="Paste an article, essay or any text…"></textarea>
-  <p id="wf-total" style="color:var(--muted);font-size:13px"></p>
+  <textarea id="wf-in" oninput="wordFreq()" placeholder="Paste an article, essay or any text&hellip;">Press the sample button and word frequency analysis begins immediately. The bar chart updates as you type, so you can find the words you rely on and vary them. Search engines reward varied vocabulary, and strong writing avoids repeating the same words in every sentence.</textarea>
+  <div class="lr2-types" id="wf2-modes">
+    <span class="ir2-pl">Show:</span>
+    <button class="lr2-type active" id="wf2-top-10" onclick="wf2Top(10)">Top 10</button>
+    <button class="lr2-type" id="wf2-top-25" onclick="wf2Top(25)">Top 25</button>
+    <button class="lr2-type" id="wf2-top-50" onclick="wf2Top(50)">Top 50</button>
+  </div>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="wf2-stop" checked onchange="wordFreq()" /><span class="pg-track"></span> Exclude common words</label>
+    <label class="pg-switch"><input type="checkbox" id="wf2-case" onchange="wordFreq()" /><span class="pg-track"></span> Case sensitive</label>
+    <label class="pg-switch"><input type="checkbox" id="wf2-pairs" onchange="wordFreq()" /><span class="pg-track"></span> 2-word phrases</label>
+  </div>
+  <div class="jf-stats" id="wf2-stats"></div>
   <div id="wf-out" class="result"></div>
 </div>""",
+
 "hash-generator": """
 <div class="panel">
   <label>Text to hash</label>

@@ -41,17 +41,25 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Case Converter", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Convert text between UPPERCASE, lowercase, Title Case, Sentence case, camelCase, snake_case and kebab-case.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg><h1>Case Converter</h1></div><p>Convert text between UPPERCASE, lowercase, Title Case, Sentence case, camelCase, snake_case and kebab-case.</p></div>
 
-<div class="panel">
-  <label>Your text</label>
-  <textarea id="case-in" placeholder="Paste text here…"></textarea>
-  <div>
-    <button class="btn ghost" onclick="convertCase('upper')">UPPERCASE</button>
-    <button class="btn ghost" onclick="convertCase('lower')">lowercase</button>
-    <button class="btn ghost" onclick="convertCase('title')">Title Case</button>
-    <button class="btn ghost" onclick="convertCase('sentence')">Sentence case</button>
-    <button class="btn ghost" onclick="convertCase('camel')">camelCase</button>
-    <button class="btn ghost" onclick="convertCase('snake')">snake_case</button>
-    <button class="btn ghost" onclick="convertCase('kebab')">kebab-case</button>
+<div class="panel cv2">
+  <label>Enter your text</label>
+  <textarea id="case-in" oninput="cv2Run()" placeholder="Type or paste text&hellip;">The quick brown fox jumps over the lazy dog</textarea>
+  <div class="lr2-types" id="cv2-modes">
+    <button class="lr2-type active" onclick="cv2Set('upper', this)">UPPER CASE</button>
+    <button class="lr2-type" onclick="cv2Set('lower', this)">lowercase</button>
+    <button class="lr2-type" onclick="cv2Set('title', this)">Title Case</button>
+    <button class="lr2-type" onclick="cv2Set('sentence', this)">Sentence case</button>
+    <button class="lr2-type" onclick="cv2Set('camel', this)">camelCase</button>
+    <button class="lr2-type" onclick="cv2Set('pascal', this)">PascalCase</button>
+    <button class="lr2-type" onclick="cv2Set('snake', this)">snake_case</button>
+    <button class="lr2-type" onclick="cv2Set('kebab', this)">kebab-case</button>
+  </div>
+  <label>Result</label>
+  <textarea id="cv2-out" readonly placeholder="Result appears here live&hellip;"></textarea>
+  <div class="jf-stats" id="cv2-stats"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="cv2Copy(this)">Copy result</button>
+    <button class="btn ghost" onclick="cv2Swap()">Use result as input</button>
   </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>

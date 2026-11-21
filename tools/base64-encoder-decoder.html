@@ -41,14 +41,25 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Base64 Encode / Decode", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Encode text to Base64 or decode Base64 to text. UTF-8 safe, runs in your browser.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>Base64 Encode / Decode</h1></div><p>Encode text to Base64 or decode Base64 to text. UTF-8 safe, runs in your browser.</p></div>
 
-<div class="panel">
-  <label>Text or Base64</label>
-  <textarea id="b64-in"></textarea>
-  <div>
-    <button class="btn" onclick="b64('enc')">Encode →</button>
-    <button class="btn ghost" onclick="b64('dec')">← Decode</button>
+<div class="panel b64p">
+  <div class="lr2-types">
+    <button class="lr2-type active" id="b64-enc" onclick="b64Mode('enc')">Encode &rarr;</button>
+    <button class="lr2-type" id="b64-dec" onclick="b64Mode('dec')">&larr; Decode</button>
+    <span class="ir2-pl" style="margin-left:auto">URL-safe alphabet</span>
+    <label class="pg-switch"><input type="checkbox" id="b64-urlsafe" onchange="b64Live()" /><span class="pg-track"></span></label>
   </div>
-  <div id="b64-out" class="result mono"></div>
+  <div class="b64-io">
+    <div><label>Input</label><textarea id="b64-in" oninput="b64Live()" placeholder="Hello MSCALE"></textarea></div>
+    <button class="btn ghost sm" onclick="b64Swap()" title="Move output back into input">&#8644;</button>
+    <div><label>Output</label><textarea id="b64-out" readonly></textarea></div>
+  </div>
+  <div class="jf-stats" id="b64-stats"></div>
+  <div id="b64-err" class="error" style="display:none"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="b64Copy(this)">Copy output</button>
+    <button class="btn ghost" onclick="b64Download()">Download .txt</button>
+    <button class="btn ghost" onclick="b64Sample()">Sample</button>
+  </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

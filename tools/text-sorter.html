@@ -41,15 +41,30 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Line Sorter", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Sort text lines alphabetically, by length, or shuffle them randomly.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg><h1>Line Sorter</h1></div><p>Sort text lines alphabetically, by length, or shuffle them randomly.</p></div>
 
-<div class="panel">
-  <label>Lines to sort</label>
-  <textarea id="sort-in" placeholder="banana&#10;apple&#10;cherry"></textarea>
-  <div>
-    <button class="btn" onclick="sortLines('az')">A → Z</button>
-    <button class="btn ghost" onclick="sortLines('za')">Z → A</button>
-    <button class="btn ghost" onclick="sortLines('len')">Short → Long</button>
-    <button class="btn ghost" onclick="sortLines('len2')">Long → Short</button>
-    <button class="btn ghost" onclick="sortLines('shuffle')">Shuffle</button>
+<div class="panel ts2">
+  <label>Lines &mdash; sorted live, input never destroyed</label>
+  <textarea id="sort-in" oninput="ts2Run()" placeholder="banana&#10;apple&#10;cherry">banana&#10;apple&#10;Cherry&#10;dragonfruit&#10;10&#10;2&#10;apple</textarea>
+  <div class="lr2-types" id="ts2-modes">
+    <button class="lr2-type active" onclick="ts2Mode('az', this)">A &rarr; Z</button>
+    <button class="lr2-type" onclick="ts2Mode('za', this)">Z &rarr; A</button>
+    <button class="lr2-type" onclick="ts2Mode('len', this)">Shortest first</button>
+    <button class="lr2-type" onclick="ts2Mode('len2', this)">Longest first</button>
+    <button class="lr2-type" onclick="ts2Mode('nat', this)">Natural 1 &lt; 2 &lt; 10</button>
+    <button class="lr2-type" onclick="ts2Mode('rev', this)">Reverse</button>
+    <button class="lr2-type" onclick="ts2Mode('shuffle', this)">Shuffle</button>
+  </div>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="ts2-ci" checked onchange="ts2Run()" /><span class="pg-track"></span> Ignore case</label>
+    <label class="pg-switch"><input type="checkbox" id="ts2-noempty" checked onchange="ts2Run()" /><span class="pg-track"></span> Remove empty lines</label>
+    <label class="pg-switch"><input type="checkbox" id="ts2-dedupe" onchange="ts2Run()" /><span class="pg-track"></span> Remove duplicates</label>
+  </div>
+  <div class="jf-stats" id="ts2-stats"></div>
+  <label>Sorted result</label>
+  <textarea id="ts2-out" readonly></textarea>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="ts2Copy(this)">Copy result</button>
+    <button class="btn ghost" onclick="ts2Download()">Download .txt</button>
+    <button class="btn ghost" onclick="ts2Use()">Use as input</button>
   </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>

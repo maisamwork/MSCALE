@@ -41,13 +41,22 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Remove Duplicate Lines", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Remove duplicate lines from any list or text, with case-insensitive and trim options.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg><h1>Remove Duplicate Lines</h1></div><p>Remove duplicate lines from any list or text, with case-insensitive and trim options.</p></div>
 
-<div class="panel">
-  <label>Lines</label>
-  <textarea id="dd-in" placeholder="One item per line…"></textarea>
-  <label><input type="checkbox" id="dd-case" style="width:auto" /> Ignore case</label>
-  <label><input type="checkbox" id="dd-trim" checked style="width:auto" /> Trim whitespace</label>
-  <button class="btn" onclick="dedupeLines()">Remove duplicates</button>
-  <div id="dd-out" class="result mono"></div>
+<div class="panel dd2">
+  <label>Lines &mdash; duplicates removed live</label>
+  <textarea id="dd-in" oninput="dedupeLines()" placeholder="One item per line&hellip;">apple&#10;banana&#10;apple&#10;Apple&#10;cherry&#10;banana</textarea>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="dd-case" onchange="dedupeLines()" /><span class="pg-track"></span> Ignore case</label>
+    <label class="pg-switch"><input type="checkbox" id="dd-trim" checked onchange="dedupeLines()" /><span class="pg-track"></span> Trim whitespace</label>
+    <label class="pg-switch"><input type="checkbox" id="dd2-noempty" checked onchange="dedupeLines()" /><span class="pg-track"></span> Remove empty lines</label>
+    <label class="pg-switch"><input type="checkbox" id="dd2-sort" onchange="dedupeLines()" /><span class="pg-track"></span> Sort result A&ndash;Z</label>
+  </div>
+  <div class="jf-stats" id="dd2-stats"></div>
+  <label>Clean result</label>
+  <textarea id="dd2-out" readonly></textarea>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="dd2Copy(this)">Copy result</button>
+    <button class="btn ghost" onclick="dd2Use()">Replace input</button>
+  </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

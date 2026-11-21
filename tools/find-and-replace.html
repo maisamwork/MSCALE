@@ -41,18 +41,25 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Find and Replace", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Find and replace text online with case sensitivity and regular expression support.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg><h1>Find and Replace</h1></div><p>Find and replace text online with case sensitivity and regular expression support.</p></div>
 
-<div class="panel">
+<div class="panel fr2">
   <label>Text</label>
-  <textarea id="fr-in" placeholder="Paste your text…"></textarea>
+  <textarea id="fr-in" oninput="fr2Run()" placeholder="Paste your text&hellip;">The old robot picked the old box. The old cat liked the old robot.</textarea>
   <div class="row">
-    <div><label>Find</label><input type="text" id="fr-find" placeholder="old" /></div>
-    <div><label>Replace with</label><input type="text" id="fr-repl" placeholder="new" /></div>
+    <div><label>Find</label><input type="text" id="fr-find" value="old" oninput="fr2Run()" placeholder="text to find" /></div>
+    <div><label>Replace with</label><input type="text" id="fr-repl" value="new" oninput="fr2Run()" placeholder="replacement" /></div>
   </div>
-  <label><input type="checkbox" id="fr-case" style="width:auto" /> Case sensitive</label>
-  <label><input type="checkbox" id="fr-regex" style="width:auto" /> Regular expression</label>
-  <button class="btn" onclick="findReplace()">Replace all</button>
-  <span id="fr-count" style="color:var(--muted);font-size:13px"></span>
-  <div id="fr-out" class="result mono"></div>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="fr-case" onchange="fr2Run()" /><span class="pg-track"></span> Case sensitive</label>
+    <label class="pg-switch"><input type="checkbox" id="fr-regex" onchange="fr2Run()" /><span class="pg-track"></span> Regular expression</label>
+  </div>
+  <div class="jf-stats" id="fr2-stats"></div>
+  <label>Preview &mdash; matches highlighted</label>
+  <div id="fr2-preview" class="result mono fr2-prev"></div>
+  <div class="lr2-actions">
+    <button class="btn" onclick="fr2All(this)">Replace all</button>
+    <button class="btn ghost" onclick="fr2Undo()">Undo replace</button>
+    <button class="btn ghost" onclick="fr2Copy(this)">Copy text</button>
+  </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

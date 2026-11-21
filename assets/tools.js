@@ -322,30 +322,69 @@ function wc2Sample() {
 }
 if ($("wc-in")) wordCount();
 
-function convertCase(mode) {
+let CV2_MODE = "upper";
+function cv2Set(m, btn) {
+  CV2_MODE = m;
+  btn.parentNode.querySelectorAll(".lr2-type").forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
+  cv2Run();
+}
+function cv2Run() {
   const t = $("case-in").value;
   let r = t;
-  if (mode === "upper") r = t.toUpperCase();
-  if (mode === "lower") r = t.toLowerCase();
-  if (mode === "title") r = t.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-  if (mode === "sentence") r = t.toLowerCase().replace(/(^\s*\w|[.!?]\s+\w)/g, (c) => c.toUpperCase());
-  if (mode === "camel") r = t.toLowerCase().replace(/[^a-z0-9]+(.)/g, (_, c) => c.toUpperCase()).replace(/^(.)/, (c) => c.toLowerCase());
-  if (mode === "snake") r = t.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
-  if (mode === "kebab") r = t.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  $("case-in").value = r;
+  if (CV2_MODE === "upper") r = t.toUpperCase();
+  if (CV2_MODE === "lower") r = t.toLowerCase();
+  if (CV2_MODE === "title") r = t.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+  if (CV2_MODE === "sentence") r = t.toLowerCase().replace(/(^\s*\w|[.!?]\s+\w)/g, (c) => c.toUpperCase());
+  if (CV2_MODE === "camel") r = t.toLowerCase().replace(/[^a-z0-9]+(.)/g, (_, c) => c.toUpperCase()).replace(/^(.)/, (c) => c.toLowerCase());
+  if (CV2_MODE === "pascal") r = t.toLowerCase().replace(/(^|[^a-z0-9]+)(.)/g, (_, __, c) => c.toUpperCase()).replace(/[^a-zA-Z0-9]/g, "");
+  if (CV2_MODE === "snake") r = t.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+  if (CV2_MODE === "kebab") r = t.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  $("cv2-out").value = r;
+  const words = (t.trim().match(/\S+/g) || []).length;
+  const lines = t ? t.split("\n").length : 0;
+  $("cv2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + t.length + "</b>characters</span>" +
+    '<span class="jf-chip"><b>' + words + "</b>words</span>" +
+    '<span class="jf-chip"><b>' + lines + "</b>lines</span>";
 }
+function cv2Copy(btn) {
+  const v = $("cv2-out").value;
+  if (!v) return;
+  navigator.clipboard.writeText(v).catch(() => {});
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy result"), 1200);
+}
+function cv2Swap() { $("case-in").value = $("cv2-out").value; cv2Run(); }
+if ($("case-in")) cv2Run();
 
 function dedupeLines() {
+  const inEl = $("dd-in");
+  if (!inEl || !$("dd2-out")) return;
   const ci = $("dd-case").checked, trim = $("dd-trim").checked;
+  const noEmpty = $("dd2-noempty").checked, doSort = $("dd2-sort").checked;
   const seen = new Set(), res = [];
-  for (const raw of $("dd-in").value.split("\n")) {
+  for (const raw of inEl.value.split("\n")) {
     const line = trim ? raw.trim() : raw;
     const key = ci ? line.toLowerCase() : line;
-    if (key === "" && line === "") { res.push(line); continue; }
+    if (noEmpty && line.trim() === "") continue;
     if (!seen.has(key)) { seen.add(key); res.push(line); }
   }
-  out("dd-out", res.join("\n"), "mono");
+  const out = doSort ? res.slice().sort((a, b) => a.localeCompare(b)).join("\n") : res.join("\n");
+  $("dd2-out").value = out;
+  const inputLines = inEl.value.split("\n").length;
+  $("dd2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + inputLines + "</b>input lines</span>" +
+    '<span class="jf-chip"><b>' + res.length + "</b>unique</span>" +
+    '<span class="jf-chip"><b>' + (inputLines - res.length) + "</b>removed</span>";
 }
+function dd2Copy(btn) {
+  $("dd2-out").value ? navigator.clipboard.writeText($("dd2-out").value).catch(() => {}) : 0;
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy result"), 1200);
+}
+function dd2Use() { $("dd-in").value = $("dd2-out").value; dedupeLines(); }
+if ($("dd-in")) dedupeLines();
 
 function reverseText(mode) {
   const t = $("rev-in").value;
@@ -535,13 +574,59 @@ function jf2Paste() {
 }
 if ($("json-in")) jf2Live();
 
-function b64(op) {
-  const t = $("b64-in").value;
-  try {
-    if (op === "enc") out("b64-out", btoa(String.fromCharCode(...new TextEncoder().encode(t))), "mono");
-    else out("b64-out", new TextDecoder().decode(Uint8Array.from(atob(t.trim()), (c) => c.charCodeAt(0))), "mono");
-  } catch (e) { out("b64-out", "Error: invalid input for " + op, "error"); }
+let B64_MODE = "enc";
+function b64Mode(m) {
+  B64_MODE = m;
+  $("b64-enc").classList.toggle("active", m === "enc");
+  $("b64-dec").classList.toggle("active", m === "dec");
+  b64Live();
 }
+function b64Live() {
+  if (!$("b64-out")) return;
+  const t = $("b64-in").value, url = $("b64-urlsafe").checked;
+  const err = $("b64-err");
+  err.style.display = "none";
+  let r = "";
+  try {
+    if (B64_MODE === "enc") {
+      let s = btoa(String.fromCharCode(...new TextEncoder().encode(t)));
+      if (url) s = s.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+      r = s;
+    } else {
+      let s = t.trim().replace(/-/g, "+").replace(/_/g, "/");
+      while (s.length % 4) s += "=";
+      r = new TextDecoder().decode(Uint8Array.from(atob(s), (c) => c.charCodeAt(0)));
+    }
+  } catch (e) { err.textContent = "That is not valid Base64 \u2014 check for stray characters."; err.style.display = "block"; }
+  $("b64-out").value = r;
+  const ib = new TextEncoder().encode(t).length, ob = new TextEncoder().encode(r).length;
+  $("b64-stats").innerHTML =
+    '<span class="jf-chip"><b>' + ib + "</b>input bytes</span>" +
+    '<span class="jf-chip"><b>' + ob + "</b>output bytes</span>" +
+    '<span class="jf-chip"><b>' + (B64_MODE === "enc" && ib ? "+" + Math.round((ob - ib) / ib * 100) + "%" : B64_MODE === "enc" ? "0%" : "\u2014") + "</b>size change</span>" +
+    '<span class="jf-chip"><b>' + (url ? "URL-safe" : "standard") + "</b>alphabet</span>";
+}
+function b64Swap() {
+  $("b64-in").value = $("b64-out").value;
+  b64Mode(B64_MODE === "enc" ? "dec" : "enc");
+}
+function b64Copy(btn) {
+  const v = $("b64-out").value;
+  if (!v) return;
+  navigator.clipboard.writeText(v).catch(() => {});
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy output"), 1200);
+}
+function b64Download() {
+  const v = $("b64-out").value;
+  if (!v) return;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([v], { type: "text/plain" }));
+  a.download = B64_MODE === "enc" ? "base64-encoded.txt" : "base64-decoded.txt";
+  a.click();
+}
+function b64Sample() { b64Mode("enc"); $("b64-in").value = "Hello MSCALE Tools! Everything runs in your browser."; b64Live(); }
+if ($("b64-in")) b64Mode("enc");
 
 function urlEnc(op) {
   const t = $("url-in").value;
@@ -956,28 +1041,106 @@ function tx2Run() {
 if ($("tax-amt")) tx2Run();
 
 /* ---------- Text ---------- */
-function findReplace() {
+let FR2_ORIG = null, FR2_RE = null;
+function fr2Run() {
   const text = $("fr-in").value, find = $("fr-find").value;
-  if (!find) return;
-  const repl = $("fr-repl").value;
-  const flags = ($("fr-case").checked ? "" : "i") + "g";
-  let re;
-  try { re = new RegExp($("fr-regex").checked ? find : find.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), flags); }
-  catch (e) { return out("fr-out", "Invalid regex: " + e.message, "error"); }
-  const count = (text.match(re) || []).length;
-  out("fr-out", text.replace(re, repl), "mono");
-  $("fr-count").textContent = count + " replacement(s)";
+  if (!$("fr2-preview")) return;
+  const words = (text.trim().match(/\S+/g) || []).length;
+  let re = null;
+  if (find) {
+    try { re = new RegExp($("fr-regex").checked ? find : find.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), ($("fr-case").checked ? "" : "i") + "g"); }
+    catch (e) {
+      $("fr2-stats").innerHTML = '<span class="error">Invalid regular expression</span>';
+      $("fr2-preview").innerHTML = ""; FR2_RE = null; return;
+    }
+  }
+  FR2_RE = re;
+  let matches = 0;
+  if (re) { matches = (text.match(re) || []).length; }
+  $("fr2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + matches + "</b>matches</span>" +
+    '<span class="jf-chip"><b>' + words + "</b>words</span>" +
+    '<span class="jf-chip"><b>' + text.length + "</b>characters</span>";
+  if (!find) { $("fr2-preview").innerHTML = escHtml(text).slice(0, 5000) || '<span style="color:var(--soft)">Paste text above</span>'; return; }
+  let html = "", idx = 0, m, n = 0;
+  re.lastIndex = 0;
+  while ((m = re.exec(text)) !== null && n < 2000) {
+    html += escHtml(text.slice(idx, m.index)) + '<mark class="fr2-m">' + escHtml(m[0]) + "</mark>";
+    idx = m.index + (m[0].length || 1);
+    n++;
+    if (!m[0].length) re.lastIndex++;
+  }
+  html += escHtml(text.slice(idx));
+  $("fr2-preview").innerHTML = html.slice(0, 300000) || '<span style="color:var(--soft)">Paste text above</span>';
 }
+function fr2All(btn) {
+  if (!FR2_RE || !$("fr-find").value) return;
+  FR2_ORIG = $("fr-in").value;
+  $("fr-in").value = FR2_ORIG.replace(FR2_RE, $("fr-repl").value);
+  fr2Run();
+  btn.textContent = "Replaced!";
+  setTimeout(() => (btn.textContent = "Replace all"), 1200);
+}
+function fr2Undo() { if (FR2_ORIG !== null) { $("fr-in").value = FR2_ORIG; FR2_ORIG = null; fr2Run(); } }
+function fr2Copy(btn) {
+  navigator.clipboard.writeText($("fr-in").value).catch(() => {});
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy text"), 1200);
+}
+if ($("fr-in")) fr2Run();
 
-function sortLines(mode) {
-  const lines = $("sort-in").value.split("\n");
-  if (mode === "az") lines.sort((a, b) => a.localeCompare(b));
-  if (mode === "za") lines.sort((a, b) => b.localeCompare(a));
-  if (mode === "len") lines.sort((a, b) => a.length - b.length);
-  if (mode === "len2") lines.sort((a, b) => b.length - a.length);
-  if (mode === "shuffle") { for (let i = lines.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [lines[i], lines[j]] = [lines[j], lines[i]]; } }
-  $("sort-in").value = lines.join("\n");
+let TS2_MODE = "az";
+function ts2Mode(m, btn) {
+  TS2_MODE = m;
+  if (btn && btn.parentNode) btn.parentNode.querySelectorAll(".lr2-type").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  ts2Run();
 }
+function ts2Run() {
+  const inEl = $("sort-in");
+  if (!inEl || !$("ts2-out")) return;
+  const ci = $("ts2-ci").checked;
+  const key = (s) => (ci ? s.toLowerCase() : s);
+  let out = inEl.value.split("\n");
+  if (TS2_MODE === "shuffle") {
+    for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+  } else if (TS2_MODE === "rev") out.reverse();
+  else {
+    out.sort((a, b) => {
+      if (TS2_MODE === "az") return key(a).localeCompare(key(b));
+      if (TS2_MODE === "za") return key(b).localeCompare(key(a));
+      if (TS2_MODE === "len") return a.length - b.length || key(a).localeCompare(key(b));
+      if (TS2_MODE === "len2") return b.length - a.length || key(a).localeCompare(key(b));
+      if (TS2_MODE === "nat") return key(a).localeCompare(key(b), undefined, { numeric: true });
+      return 0;
+    });
+  }
+  if ($("ts2-noempty").checked) out = out.filter((l) => l.trim() !== "");
+  if ($("ts2-dedupe").checked) {
+    const s = new Set();
+    out = out.filter((l) => { const k = ci ? l.toLowerCase() : l; if (s.has(k)) return false; s.add(k); return true; });
+  }
+  $("ts2-out").value = out.join("\n");
+  $("ts2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + inEl.value.split("\n").length + "</b>lines in</span>" +
+    '<span class="jf-chip"><b>' + out.length + "</b>lines out</span>" +
+    '<span class="jf-chip"><b>' + out.join("").length + "</b>characters</span>";
+}
+function ts2Copy(btn) {
+  $("ts2-out").value ? navigator.clipboard.writeText($("ts2-out").value).catch(() => {}) : 0;
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy result"), 1200);
+}
+function ts2Download() {
+  const v = $("ts2-out").value;
+  if (!v) return;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([v], { type: "text/plain" }));
+  a.download = "sorted-lines.txt";
+  a.click();
+}
+function ts2Use() { $("sort-in").value = $("ts2-out").value; ts2Run(); }
+if ($("sort-in")) ts2Run();
 
 const LOREM_WORDS = "lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua enim ad minim veniam quis nostrud exercitation ullamco laboris nisi aliquip ex ea commodo consequat duis aute irure in reprehenderit voluptate velit esse cillum eu fugiat nulla pariatur excepteur sint occaecat cupidatat non proident sunt culpa qui officia deserunt mollit anim id est laborum".split(" ");
 let LR2_TYPE = "paras";
@@ -1074,17 +1237,40 @@ function lr2Download() {
 }
 if ($("lorem-out")) lr2Gen();
 
-function wordFreq() {
-  const stop = new Set("the a an and or but of to in on at for with by from as is are was were be been being it its this that these those i you he she they we not no do does did have has had will would can could should may might must about into over after".split(" "));
-  const words = ($("wf-in").value.toLowerCase().match(/[a-zà-ÿ0-9']+/g) || []).filter((w) => w.length > 1 && !stop.has(w));
-  const freq = {};
-  for (const w of words) freq[w] = (freq[w] || 0) + 1;
-  const top = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 25);
-  const max = top.length ? top[0][1] : 1;
-  $("wf-out").innerHTML = top.map(([w, c]) =>
-    `<div class="wf-row"><span class="wf-word">${w}</span><span class="wf-bar" style="width:${Math.round(c / max * 100)}%"></span><b>${c}</b></div>`).join("") || "Paste text to analyze";
-  $("wf-total").textContent = `${words.length} words analyzed (${Object.keys(freq).length} unique)`;
+const WF2_STOP = new Set("the a an and or but of to in on at for with by from as is are was were be been being it its this that these those i you he she they we us our your his her them not no do does did done have has had having will would can could should shall may might must about into over under after before between during through than then when where which who whom why how all also any both each few more most other some such only own same so too very just don now one two".split(" "));
+let WF2_TOPN = 10;
+function wf2Top(n) {
+  WF2_TOPN = n;
+  [10, 25, 50].forEach((k) => $("wf2-top-" + k).classList.toggle("active", k === n));
+  wordFreq();
 }
+function wordFreq() {
+  const inEl = $("wf-in");
+  if (!inEl || !$("wf-out")) return;
+  const stopOn = $("wf2-stop").checked, caseSens = $("wf2-case").checked, pairs = $("wf2-pairs").checked;
+  const text = inEl.value;
+  const allWords = text.match(/[A-Za-z\u00c0-\u00ff0-9']+/g) || [];
+  let tokens = (caseSens ? allWords : allWords.map((w) => w.toLowerCase()));
+  const seq = tokens.filter((w) => w.length > 1 && (!stopOn || !WF2_STOP.has(w)));
+  const sentences = (text.match(/[^.!?]+[.!?]+/g) || []).length;
+  const avg = allWords.length ? (allWords.join("").replace(/'/g, "").length / allWords.length) : 0;
+  $("wf2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + allWords.length + "</b>words</span>" +
+    '<span class="jf-chip"><b>' + seq.length + "</b>" + (pairs ? "phrases" : "kept") + "</span>" +
+    '<span class="jf-chip"><b>' + new Set(seq).size + "</b>unique</span>" +
+    '<span class="jf-chip"><b>' + sentences + "</b>sentences</span>" +
+    '<span class="jf-chip"><b>' + avg.toFixed(1) + "</b>avg length</span>";
+  let items = pairs ? [] : seq;
+  if (pairs) for (let i = 0; i < seq.length - 1; i++) items.push(seq[i] + " " + seq[i + 1]);
+  const freq = {};
+  for (const it of items) freq[it] = (freq[it] || 0) + 1;
+  const top = Object.entries(freq).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, WF2_TOPN);
+  if (!top.length) { $("wf-out").innerHTML = '<p style="color:var(--soft)">Paste text above to see the most frequent words</p>'; return; }
+  const max = top[0][1];
+  $("wf-out").innerHTML = top.map(([w, c]) =>
+    '<div class="wf-row"><span class="wf-word">' + escHtml(w) + '</span><span class="wf-bar" style="width:' + Math.max(2, Math.round(c / max * 100)) + '%"></span><b>' + c + '</b><span class="wf-pct">' + (c / items.length * 100).toFixed(1) + '%</span></div>').join("");
+}
+if ($("wf-in")) wordFreq();
 
 /* ---------- Developer ---------- */
 async function hashGen() {

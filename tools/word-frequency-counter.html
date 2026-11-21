@@ -41,10 +41,21 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Word Frequency Counter", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Analyze word frequency in any text with a visual bar chart of the top words.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg><h1>Word Frequency Counter</h1></div><p>Analyze word frequency in any text with a visual bar chart of the top words.</p></div>
 
-<div class="panel">
+<div class="panel wf2">
   <label>Text to analyze</label>
-  <textarea id="wf-in" oninput="wordFreq()" placeholder="Paste an article, essay or any text…"></textarea>
-  <p id="wf-total" style="color:var(--muted);font-size:13px"></p>
+  <textarea id="wf-in" oninput="wordFreq()" placeholder="Paste an article, essay or any text&hellip;">Press the sample button and word frequency analysis begins immediately. The bar chart updates as you type, so you can find the words you rely on and vary them. Search engines reward varied vocabulary, and strong writing avoids repeating the same words in every sentence.</textarea>
+  <div class="lr2-types" id="wf2-modes">
+    <span class="ir2-pl">Show:</span>
+    <button class="lr2-type active" id="wf2-top-10" onclick="wf2Top(10)">Top 10</button>
+    <button class="lr2-type" id="wf2-top-25" onclick="wf2Top(25)">Top 25</button>
+    <button class="lr2-type" id="wf2-top-50" onclick="wf2Top(50)">Top 50</button>
+  </div>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="wf2-stop" checked onchange="wordFreq()" /><span class="pg-track"></span> Exclude common words</label>
+    <label class="pg-switch"><input type="checkbox" id="wf2-case" onchange="wordFreq()" /><span class="pg-track"></span> Case sensitive</label>
+    <label class="pg-switch"><input type="checkbox" id="wf2-pairs" onchange="wordFreq()" /><span class="pg-track"></span> 2-word phrases</label>
+  </div>
+  <div class="jf-stats" id="wf2-stats"></div>
   <div id="wf-out" class="result"></div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
