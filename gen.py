@@ -826,16 +826,24 @@ TOOL_BODIES = {
 </div>""",
 
 "reverse-text": """
-<div class="panel">
+<div class="panel rv2">
   <label>Text</label>
-  <textarea id="rev-in" placeholder="Hello world"></textarea>
-  <div>
-    <button class="btn" onclick="reverseText('chars')">Reverse characters</button>
-    <button class="btn ghost" onclick="reverseText('words')">Reverse words</button>
-    <button class="btn ghost" onclick="reverseText('lines')">Reverse lines</button>
+  <textarea id="rev-in" oninput="reverseText(RV2_MODE)" placeholder="Hello world">Hello world</textarea>
+  <div class="lr2-types" id="rv2-modes">
+    <button class="lr2-type active" onclick="reverseText('chars', this)">Characters</button>
+    <button class="lr2-type" onclick="reverseText('words', this)">Words</button>
+    <button class="lr2-type" onclick="reverseText('lines', this)">Lines</button>
+    <button class="lr2-type" onclick="reverseText('each', this)">Each line reversed</button>
   </div>
-  <div id="rev-out" class="result mono"></div>
+  <div class="jf-stats" id="rv2-stats"></div>
+  <label>Reversed</label>
+  <textarea id="rev-out" readonly></textarea>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="rv2Copy(this)">Copy result</button>
+    <button class="btn ghost" onclick="rv2Swap()">Use result as input</button>
+  </div>
 </div>""",
+
 "json-formatter": """
 <div class="panel jf-pro">
   <div class="jf-toolbar">
@@ -888,22 +896,45 @@ TOOL_BODIES = {
 </div>""",
 
 "url-encoder-decoder": """
-<div class="panel">
-  <label>Text or URL</label>
-  <textarea id="url-in"></textarea>
-  <div>
-    <button class="btn" onclick="urlEnc('enc')">Encode →</button>
-    <button class="btn ghost" onclick="urlEnc('dec')">← Decode</button>
+<div class="panel ue2">
+  <div class="lr2-types">
+    <button class="lr2-type active" id="ue2-enc" onclick="ue2Mode('enc')">Encode &rarr;</button>
+    <button class="lr2-type" id="ue2-dec" onclick="ue2Mode('dec')">&larr; Decode</button>
+    <span class="ir2-pl" style="margin-left:auto">Keep URL structure</span>
+    <label class="pg-switch"><input type="checkbox" id="ue2-uri" onchange="ue2Live()" /><span class="pg-track"></span></label>
   </div>
-  <div id="url-out" class="result mono"></div>
+  <div class="b64-io">
+    <div><label>Input</label><textarea id="url-in" oninput="ue2Live()" placeholder="https://example.com/search?q=hello world&num=10"></textarea></div>
+    <button class="btn ghost sm" onclick="ue2Swap()" title="Move output back into input">&#8644;</button>
+    <div><label>Output</label><textarea id="url-out" readonly></textarea></div>
+  </div>
+  <div class="jf-stats" id="ue2-stats"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="ue2Copy(this)">Copy output</button>
+    <button class="btn ghost" onclick="ue2Sample()">Sample URL</button>
+  </div>
+  <div id="ue2-err" class="error" style="display:none"></div>
 </div>""",
+
 "uuid-generator": """
-<div class="panel">
-  <label>How many UUIDs?</label>
-  <input type="number" id="uuid-n" value="5" min="1" max="100" />
-  <button class="btn" onclick="uuidGen()">Generate</button>
+<div class="panel uu2">
+  <div class="row">
+    <div><label>How many UUIDs?</label><input type="number" id="uuid-n" value="5" min="1" max="100" oninput="uuidGen()" /></div>
+    <div class="uu2-note">Click any line to copy it</div>
+  </div>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="uu2-upper" onchange="uuidRegen()" /><span class="pg-track"></span> UPPERCASE</label>
+    <label class="pg-switch"><input type="checkbox" id="uu2-nohyphen" onchange="uuidRegen()" /><span class="pg-track"></span> Remove hyphens</label>
+    <label class="pg-switch"><input type="checkbox" id="uu2-braces" onchange="uuidRegen()" /><span class="pg-track"></span> Wrap in braces</label>
+  </div>
+  <label>Generated UUIDs (v4, cryptographically random)</label>
   <div id="uuid-out" class="result mono"></div>
+  <div class="lr2-actions">
+    <button class="btn" onclick="uuidGen()">Regenerate</button>
+    <button class="btn ghost" onclick="uu2CopyAll(this)">Copy all</button>
+  </div>
 </div>""",
+
 "unit-converter": """
 <div class="panel uc2">
   <div class="uc2-cats" id="uc2-cats"></div>
@@ -1191,32 +1222,54 @@ TOOL_BODIES = {
 </div>""",
 
 "hash-generator": """
-<div class="panel">
-  <label>Text to hash</label>
-  <textarea id="hash-in" placeholder="Enter text…"></textarea>
-  <button class="btn" onclick="hashGen()">Generate hashes</button>
+<div class="panel hg2">
+  <label>Text to hash &mdash; updates live, click any hash to copy</label>
+  <textarea id="hash-in" oninput="hashGen()" placeholder="Type anything&hellip;">hello world</textarea>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="hg2-s1" checked onchange="hashGen()" /><span class="pg-track"></span> SHA-1</label>
+    <label class="pg-switch"><input type="checkbox" id="hg2-s256" checked onchange="hashGen()" /><span class="pg-track"></span> SHA-256</label>
+    <label class="pg-switch"><input type="checkbox" id="hg2-s384" onchange="hashGen()" /><span class="pg-track"></span> SHA-384</label>
+    <label class="pg-switch"><input type="checkbox" id="hg2-s512" checked onchange="hashGen()" /><span class="pg-track"></span> SHA-512</label>
+  </div>
   <div id="hash-out" class="result mono"></div>
 </div>""",
+
 "jwt-decoder": """
-<div class="panel">
-  <label>JWT token</label>
-  <textarea id="jwt-in" placeholder="eyJhbGciOi…"></textarea>
-  <button class="btn" onclick="jwtDecode()">Decode</button>
+<div class="panel jw2">
+  <label>JWT token &mdash; decoded live in your browser</label>
+  <textarea id="jwt-in" oninput="jwtDecode()" placeholder="eyJhbGciOi&hellip;">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkphbmUgRG9lIiwicm9sZSI6ImFkbWluIiwiZXhwIjo0MTAyNDQ0ODAwfQ.sig_not_verified_locally</textarea>
+  <div class="jf-stats" id="jw2-stats"></div>
   <div id="jwt-out" class="result mono"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="jw2Copy(this)">Copy payload JSON</button>
+    <button class="btn ghost" onclick="jw2Sample()">Load sample token</button>
+  </div>
 </div>""",
+
 "regex-tester": """
-<div class="panel">
+<div class="panel re2">
   <div class="row">
-    <div style="flex:2"><label>Pattern</label><input type="text" id="re-pattern" placeholder="\\b\\w+@\\w+\\.\\w+\\b" /></div>
-    <div><label>Flags</label><input type="text" id="re-flags" value="g" /></div>
+    <div style="flex:2"><label>Pattern</label><input type="text" id="re-pattern" value="\\b\\w+@\\w+\\.\\w+\\b" oninput="regexTest()" /></div>
+    <div><label>Flags</label><input type="text" id="re-flags" value="gi" oninput="regexTest()" /></div>
+  </div>
+  <div class="lr2-types" id="re2-presets">
+    <span class="ir2-pl">Presets:</span>
+    <button class="ir2-preset" onclick="re2Pre('email')">Email</button>
+    <button class="ir2-preset" onclick="re2Pre('url')">URL</button>
+    <button class="ir2-preset" onclick="re2Pre('date')">Date</button>
+    <button class="ir2-preset" onclick="re2Pre('hex')">Hex color</button>
+    <button class="ir2-preset" onclick="re2Pre('num')">Number</button>
+    <button class="ir2-preset" onclick="re2Pre('ip')">IPv4</button>
   </div>
   <label>Test text</label>
-  <textarea id="re-text" placeholder="Paste text to test against…"></textarea>
-  <button class="btn" onclick="regexTest()">Test</button>
-  <span id="re-count" style="color:var(--muted);font-size:13px"></span>
+  <textarea id="re-text" oninput="regexTest()" placeholder="Paste text to test against&hellip;">Contact jane@example.com or sales@mscale.tools. Site: https://mslace.vercel.app. Deadline 2026-01-15, alternative 15/01/2026. Colors #ff5733 and #0F0. Server 192.168.1.1 failed. Price: $129.99.</textarea>
+  <div class="jf-stats" id="re2-stats"></div>
+  <label>Highlighted matches</label>
   <div id="re-out" class="result"></div>
+  <label>Matches with capture groups</label>
   <div id="re-groups" class="result mono"></div>
 </div>""",
+
 "csv-to-json-converter": """
 <div class="panel">
   <div class="row">

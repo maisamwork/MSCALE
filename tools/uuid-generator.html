@@ -41,11 +41,22 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "UUID Generator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Generate random UUID v4 identifiers in bulk. Up to 100 at a time.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>UUID Generator</h1></div><p>Generate random UUID v4 identifiers in bulk. Up to 100 at a time.</p></div>
 
-<div class="panel">
-  <label>How many UUIDs?</label>
-  <input type="number" id="uuid-n" value="5" min="1" max="100" />
-  <button class="btn" onclick="uuidGen()">Generate</button>
+<div class="panel uu2">
+  <div class="row">
+    <div><label>How many UUIDs?</label><input type="number" id="uuid-n" value="5" min="1" max="100" oninput="uuidGen()" /></div>
+    <div class="uu2-note">Click any line to copy it</div>
+  </div>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="uu2-upper" onchange="uuidRegen()" /><span class="pg-track"></span> UPPERCASE</label>
+    <label class="pg-switch"><input type="checkbox" id="uu2-nohyphen" onchange="uuidRegen()" /><span class="pg-track"></span> Remove hyphens</label>
+    <label class="pg-switch"><input type="checkbox" id="uu2-braces" onchange="uuidRegen()" /><span class="pg-track"></span> Wrap in braces</label>
+  </div>
+  <label>Generated UUIDs (v4, cryptographically random)</label>
   <div id="uuid-out" class="result mono"></div>
+  <div class="lr2-actions">
+    <button class="btn" onclick="uuidGen()">Regenerate</button>
+    <button class="btn ghost" onclick="uu2CopyAll(this)">Copy all</button>
+  </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

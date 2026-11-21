@@ -386,14 +386,34 @@ function dd2Copy(btn) {
 function dd2Use() { $("dd-in").value = $("dd2-out").value; dedupeLines(); }
 if ($("dd-in")) dedupeLines();
 
-function reverseText(mode) {
+let RV2_MODE = "chars";
+function reverseText(mode, btn) {
+  RV2_MODE = mode;
+  if (btn && btn.parentNode) btn.parentNode.querySelectorAll(".lr2-type").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
   const t = $("rev-in").value;
+  if (!$("rev-out")) return;
   let r = t;
   if (mode === "chars") r = [...t].reverse().join("");
   if (mode === "words") r = t.split(/\s+/).reverse().join(" ");
   if (mode === "lines") r = t.split("\n").reverse().join("\n");
-  out("rev-out", r, "mono");
+  if (mode === "each") r = t.split("\n").map((l) => [...l].reverse().join("")).join("\n");
+  $("rev-out").value = r;
+  const words = (t.trim().match(/\S+/g) || []).length;
+  $("rv2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + t.length + "</b>characters</span>" +
+    '<span class="jf-chip"><b>' + words + "</b>words</span>" +
+    '<span class="jf-chip"><b>' + (t ? t.split("\n").length : 0) + "</b>lines</span>" +
+    '<span class="jf-chip"><b>' + escHtml(mode) + "</b>mode</span>";
 }
+function rv2Copy(btn) {
+  if (!$("rev-out").value) return;
+  navigator.clipboard.writeText($("rev-out").value).catch(() => {});
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy result"), 1200);
+}
+function rv2Swap() { $("rev-in").value = $("rev-out").value; reverseText(RV2_MODE); }
+if ($("rev-in")) reverseText("chars");
 
 /* ---------- Developer ---------- */
 let JF2_LAST = null, JF2_TEXT = "";
@@ -628,18 +648,68 @@ function b64Download() {
 function b64Sample() { b64Mode("enc"); $("b64-in").value = "Hello MSCALE Tools! Everything runs in your browser."; b64Live(); }
 if ($("b64-in")) b64Mode("enc");
 
-function urlEnc(op) {
-  const t = $("url-in").value;
-  try {
-    out("url-out", op === "enc" ? encodeURIComponent(t) : decodeURIComponent(t.replace(/\+/g, " ")), "mono");
-  } catch (e) { out("url-out", "Error: malformed URL encoding", "error"); }
+let UE2_MODE = "enc";
+function ue2Mode(m) {
+  UE2_MODE = m;
+  $("ue2-enc").classList.toggle("active", m === "enc");
+  $("ue2-dec").classList.toggle("active", m === "dec");
+  ue2Live();
 }
+function ue2Live() {
+  if (!$("url-out")) return;
+  const t = $("url-in").value;
+  const err = $("ue2-err");
+  err.style.display = "none";
+  let r = "";
+  try {
+    if (UE2_MODE === "enc") r = $("ue2-uri").checked ? encodeURI(t) : encodeURIComponent(t);
+    else r = decodeURIComponent(t.replace(/\+/g, " "));
+  } catch (e) { err.textContent = "Malformed percent-encoding \u2014 stray % without two hex digits?"; err.style.display = "block"; }
+  $("url-out").value = r;
+  $("ue2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + t.length + "</b>chars in</span>" +
+    '<span class="jf-chip"><b>' + r.length + "</b>chars out</span>" +
+    '<span class="jf-chip"><b>' + (t ? Math.round(r.length / Math.max(t.length, 1) * 100) + "%" : "\u2014") + "</b>of original</span>" +
+    '<span class="jf-chip"><b>' + (UE2_MODE === "enc" ? "encoding" : "decoding") + "</b>mode</span>";
+}
+function ue2Swap() { $("url-in").value = $("url-out").value; ue2Mode(UE2_MODE === "enc" ? "dec" : "enc"); }
+function ue2Copy(btn) {
+  if (!$("url-out").value) return;
+  navigator.clipboard.writeText($("url-out").value).catch(() => {});
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy output"), 1200);
+}
+function ue2Sample() { ue2Mode("enc"); $("url-in").value = "https://example.com/search?q=hello world&cats=big+cats&price=$10"; ue2Live(); }
+if ($("url-in")) ue2Mode("enc");
 
+let UU2_LIST = [];
+function uu2Fmt(u) {
+  $("uu2-upper") && $("uu2-upper").checked && (u = u.toUpperCase());
+  $("uu2-nohyphen") && $("uu2-nohyphen").checked && (u = u.replace(/-/g, ""));
+  $("uu2-braces") && $("uu2-braces").checked && (u = "{" + u + "}");
+  return u;
+}
+function uuidRegen() {
+  if (!$("uuid-out") || !UU2_LIST.length) return;
+  $("uuid-out").innerHTML = UU2_LIST.map((u) => '<button type="button" class="uu2-row" data-uuid="' + uu2Fmt(u) + '" onclick="uu2Click(this)"><code>' + uu2Fmt(u) + "</code></button>").join("");
+}
+function uu2Click(btn) {
+  navigator.clipboard.writeText(btn.dataset.uuid).catch(() => {});
+  const c = btn.querySelector("code");
+  if (c) { const oldU = c.textContent; c.textContent = "Copied!"; setTimeout(() => (c.textContent = btn.dataset.uuid), 1200); }
+}
 function uuidGen() {
   const n = Math.min(parseInt($("uuid-n").value) || 1, 100);
-  const list = Array.from({ length: n }, () => crypto.randomUUID());
-  out("uuid-out", list.join("\n"), "mono");
+  UU2_LIST = Array.from({ length: n }, () => crypto.randomUUID());
+  uuidRegen();
 }
+function uu2CopyAll(btn) {
+  if (!UU2_LIST.length) return;
+  navigator.clipboard.writeText(UU2_LIST.map(uu2Fmt).join("\n")).catch(() => {});
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy all"), 1200);
+}
+if ($("uuid-n")) uuidGen();
 
 /* ---------- Converters ---------- */
 const UC2 = {
@@ -1273,59 +1343,123 @@ function wordFreq() {
 if ($("wf-in")) wordFreq();
 
 /* ---------- Developer ---------- */
+let HG2_COPIED = null;
+function hg2Click(btn) {
+  if (!btn.dataset.hash) return;
+  navigator.clipboard.writeText(btn.dataset.hash).catch(() => {});
+  const c = btn.querySelector("code");
+  if (c) { c.textContent = "Copied!"; setTimeout(() => (c.textContent = btn.dataset.hash), 1200); }
+}
 async function hashGen() {
   const t = $("hash-in").value;
-  if (!t) return;
+  if (!$("hash-out")) return;
+  const algos = [];
+  if ($("hg2-s1").checked) algos.push("SHA-1");
+  if ($("hg2-s256").checked) algos.push("SHA-256");
+  if ($("hg2-s384").checked) algos.push("SHA-384");
+  if ($("hg2-s512").checked) algos.push("SHA-512");
+  if (!t || !algos.length) { $("hash-out").innerHTML = ""; return; }
   const data = new TextEncoder().encode(t);
   let html = "";
-  for (const a of ["SHA-1", "SHA-256", "SHA-512"]) {
+  for (const a of algos) {
     const d = await crypto.subtle.digest(a, data);
     const hex = [...new Uint8Array(d)].map((b) => b.toString(16).padStart(2, "0")).join("");
-    html += `<b>${a}</b><br>${hex}<br><br>`;
+    const bits = { "SHA-1": 160, "SHA-256": 256, "SHA-384": 384, "SHA-512": 512 }[a];
+    html += '<button type="button" class="hg2-row" data-hash="' + hex + '" onclick="hg2Click(this)"><span><b>' + a + '</b><i>' + bits + '-bit</i></span><code>' + hex + "</code></button>";
   }
-  out("hash-out", html, "mono");
+  $("hash-out").innerHTML = html;
 }
+if ($("hash-in")) hashGen();
 
+let JW2_PAYLOAD = "";
+function jw2Hi(json) {
+  return escHtml(json).replace(/("(?:[^"\\]|\\.)*")(\s*:)/g, '<span class="jf-key">$1</span>$2')
+    .replace(/: ("(?:[^"\\]|\\.)*")/g, ': <span class="jf-str">$1</span>')
+    .replace(/: (\d+(?:\.\d+)?)/g, ': <span class="jf-num">$1</span>')
+    .replace(/: (true|false)/g, ': <span class="jf-bool">$1</span>')
+    .replace(/: (null)/g, ': <span class="jf-null">$1</span>');
+}
 function jwtDecode() {
-  const parts = $("jwt-in").value.trim().split(".");
-  if (parts.length < 2) return out("jwt-out", "Not a valid JWT (expected header.payload.signature)", "error");
+  if (!$("jwt-out")) return;
+  const token = $("jwt-in").value.trim();
+  const parts = token.split(".");
+  if (!token) { $("jwt-out").innerHTML = ""; $("jw2-stats").innerHTML = ""; JW2_PAYLOAD = ""; return; }
+  if (parts.length < 2) { $("jwt-out").innerHTML = '<span class="error">A JWT has three dot-separated parts &mdash; header.payload.signature</span>'; $("jw2-stats").innerHTML = ""; return; }
   const dec = (s) => { s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; return new TextDecoder().decode(Uint8Array.from(atob(s), (c) => c.charCodeAt(0))); };
   try {
-    const h = JSON.stringify(JSON.parse(dec(parts[0])), null, 2);
-    const p = JSON.stringify(JSON.parse(dec(parts[1])), null, 2);
-    let extra = "";
+    const ho = JSON.parse(dec(parts[0])), p = JSON.parse(dec(parts[1]));
+    JW2_PAYLOAD = JSON.stringify(p, null, 2);
+    let expChip = "";
     if (p.exp) {
       const e = new Date(p.exp * 1000);
-      extra = `<br><br>Expires: ${e.toLocaleString()} ${e < new Date() ? "— <b style='color:var(--err)'>EXPIRED</b>" : "— still valid"}`;
+      const diff = Math.floor((e - new Date()) / 1000);
+      const days = Math.floor(Math.abs(diff) / 86400);
+      if (diff > 0) {
+        const yrs = (diff / 31557600).toFixed(1);
+        expChip = '<span class="jf-chip"><b>valid</b>expires in ' + (Number(yrs) >= 1 ? yrs + " years" : Math.floor(diff / 86400) + " days") + '</span><span class="jf-chip"><b>' + e.toISOString().slice(0, 10) + "</b>expiry date</span>";
+      } else {
+        expChip = '<span class="jf-chip"><b>EXPIRED</b>' + days.toLocaleString() + " days ago</span>";
+      }
     }
-    out("jwt-out", `<b>HEADER</b>\n${h}\n\n<b>PAYLOAD</b>\n${p}${extra}`, "mono");
-  } catch (e) { out("jwt-out", "Invalid JWT: " + e.message, "error"); }
+    $("jw2-stats").innerHTML =
+      '<span class="jf-chip"><b>' + escHtml(String(ho.alg || "\u2014")) + "</b>algorithm</span>" +
+      '<span class="jf-chip"><b>' + Object.keys(p).length + "</b>payload keys</span>" +
+      '<span class="jf-chip"><b>' + escHtml(String(p.sub || "\u2014")) + "</b>subject</span>" +
+      expChip +
+      '<span class="jf-chip"><b>not verified</b>signature</span>';
+    $("jwt-out").innerHTML = '<b>HEADER</b>\n' + jw2Hi(JSON.stringify(ho, null, 2)) + '\n\n<b>PAYLOAD</b>\n' + jw2Hi(JSON.stringify(p, null, 2)) + (parts[2] ? '\n\n<b>SIGNATURE</b>\n' + escHtml(parts[2]) + "\n<i>Signature validity is NOT checked in the browser \u2014 verify server-side.</i>" : "");
+  } catch (e) { $("jwt-out").innerHTML = '<span class="error">Invalid JWT: ' + escHtml(e.message) + "</span>"; }
 }
+function jw2Copy(btn) {
+  if (!JW2_PAYLOAD) return;
+  navigator.clipboard.writeText(JW2_PAYLOAD).catch(() => {});
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy payload JSON"), 1200);
+}
+function jw2Sample() { $("jwt-in").value = document.getElementById("jwt-in").placeholder; jwtDecode(); }
+if ($("jwt-in")) jwtDecode();
 
+const RE2_PRESETS = {
+  email: ["\\b[\\w.+-]+@[\\w-]+\\.[\\w.]+\\b", "gi"],
+  url: ["https?://[^\\s\"'<>]+", "gi"],
+  date: ["\\b\\d{4}-\\d{2}-\\d{2}\\b", "g"],
+  hex: ["#[0-9a-f]{3,8}\\b", "gi"],
+  num: ["-?\\d+(?:\\.\\d+)?", "g"],
+  ip: ["\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b", "g"]
+};
+function re2Pre(k) {
+  $("re-pattern").value = RE2_PRESETS[k][0];
+  $("re-flags").value = RE2_PRESETS[k][1];
+  regexTest();
+}
 function regexTest() {
   const text = $("re-text").value;
+  if (!$("re-out")) return;
+  $("re2-stats").innerHTML = "";
+  let re;
   try {
-    const re = new RegExp($("re-pattern").value, $("re-flags").value || "g");
-    const matches = [...text.matchAll(re)];
-    $("re-count").textContent = matches.length + " match(es)";
-    let html = "";
-    let last = 0;
-    for (const m of matches) {
-      if (m.index > last) html += escHtml(text.slice(last, m.index));
-      html += "<mark>" + escHtml(m[0]) + "</mark>";
-      last = m.index + m[0].length;
-      if (m[0] === "") { if (last < text.length) html += escHtml(text[last]); last++; if (last > text.length) break; }
-    }
-    html += escHtml(text.slice(last));
-    out("re-out", html || "(empty)");
-    out("re-groups", matches.slice(0, 25).map((m, i) =>
-      `#${i + 1}: ${JSON.stringify(m[0])}${m.length > 1 ? "  groups: " + m.slice(1).map((g) => JSON.stringify(g)).join(", ") : ""}`).join("\n"), "mono");
+    re = new RegExp($("re-pattern").value, $("re-flags").value.includes("g") ? $("re-flags").value : $("re-flags").value + "g");
   } catch (e) {
-    $("re-count").textContent = "Invalid regex: " + e.message;
-    $("re-out").textContent = "";
-    $("re-groups").textContent = "";
+    $("re2-stats").innerHTML = '<span class="error">Invalid regex: ' + escHtml(e.message) + "</span>";
+    $("re-out").textContent = ""; $("re-groups").textContent = ""; return;
   }
+  const matches = [...text.matchAll(re)].slice(0, 500);
+  $("re2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + matches.length + "</b>matches</span>" +
+    '<span class="jf-chip"><b>' + text.length + "</b>chars</span>" +
+    '<span class="jf-chip"><b>' + escHtml("/" + $("re-pattern").value + "/" + $("re-flags").value + "/") + "</b>pattern</span>";
+  let html = "", last = 0;
+  for (const m of matches) {
+    if (m.index > last) html += escHtml(text.slice(last, m.index));
+    html += '<mark class="fr2-m">' + escHtml(m[0]) + "</mark>";
+    last = m.index + (m[0].length || 1);
+  }
+  html += escHtml(text.slice(last));
+  $("re-out").innerHTML = html || "<span style='color:var(--soft)'>(no matches yet)</span>";
+  $("re-groups").innerHTML = matches.slice(0, 20).map((m, i) =>
+    '<div class="uu2-row" data-uuid="">' + `<b>#${i + 1}</b> <code>${escHtml(JSON.stringify(m[0]))}</code>` + (m.length > 1 ? " groups: " + m.slice(1).map((g) => escHtml(JSON.stringify(g))).join(", ") : "") + "</div>").join("");
 }
+if ($("re-text")) regexTest();
 
 function csvParseRows(text, delim) {
   const rows = []; let row = []; let cur = ""; let inQ = false;

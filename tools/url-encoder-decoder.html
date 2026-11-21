@@ -41,14 +41,24 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "URL Encoder / Decoder", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "URL-encode or decode text and query strings online.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>URL Encoder / Decoder</h1></div><p>URL-encode or decode text and query strings online.</p></div>
 
-<div class="panel">
-  <label>Text or URL</label>
-  <textarea id="url-in"></textarea>
-  <div>
-    <button class="btn" onclick="urlEnc('enc')">Encode →</button>
-    <button class="btn ghost" onclick="urlEnc('dec')">← Decode</button>
+<div class="panel ue2">
+  <div class="lr2-types">
+    <button class="lr2-type active" id="ue2-enc" onclick="ue2Mode('enc')">Encode &rarr;</button>
+    <button class="lr2-type" id="ue2-dec" onclick="ue2Mode('dec')">&larr; Decode</button>
+    <span class="ir2-pl" style="margin-left:auto">Keep URL structure</span>
+    <label class="pg-switch"><input type="checkbox" id="ue2-uri" onchange="ue2Live()" /><span class="pg-track"></span></label>
   </div>
-  <div id="url-out" class="result mono"></div>
+  <div class="b64-io">
+    <div><label>Input</label><textarea id="url-in" oninput="ue2Live()" placeholder="https://example.com/search?q=hello world&num=10"></textarea></div>
+    <button class="btn ghost sm" onclick="ue2Swap()" title="Move output back into input">&#8644;</button>
+    <div><label>Output</label><textarea id="url-out" readonly></textarea></div>
+  </div>
+  <div class="jf-stats" id="ue2-stats"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="ue2Copy(this)">Copy output</button>
+    <button class="btn ghost" onclick="ue2Sample()">Sample URL</button>
+  </div>
+  <div id="ue2-err" class="error" style="display:none"></div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

@@ -41,11 +41,15 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "JWT Decoder", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Decode JWT tokens to inspect the header and payload, with expiry checking.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>JWT Decoder</h1></div><p>Decode JWT tokens to inspect the header and payload, with expiry checking.</p></div>
 
-<div class="panel">
-  <label>JWT token</label>
-  <textarea id="jwt-in" placeholder="eyJhbGciOi…"></textarea>
-  <button class="btn" onclick="jwtDecode()">Decode</button>
+<div class="panel jw2">
+  <label>JWT token &mdash; decoded live in your browser</label>
+  <textarea id="jwt-in" oninput="jwtDecode()" placeholder="eyJhbGciOi&hellip;">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkphbmUgRG9lIiwicm9sZSI6ImFkbWluIiwiZXhwIjo0MTAyNDQ0ODAwfQ.sig_not_verified_locally</textarea>
+  <div class="jf-stats" id="jw2-stats"></div>
   <div id="jwt-out" class="result mono"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="jw2Copy(this)">Copy payload JSON</button>
+    <button class="btn ghost" onclick="jw2Sample()">Load sample token</button>
+  </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

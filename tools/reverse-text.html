@@ -41,15 +41,22 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Reverse Text", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Reverse the characters, words or lines of any text instantly.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg><h1>Reverse Text</h1></div><p>Reverse the characters, words or lines of any text instantly.</p></div>
 
-<div class="panel">
+<div class="panel rv2">
   <label>Text</label>
-  <textarea id="rev-in" placeholder="Hello world"></textarea>
-  <div>
-    <button class="btn" onclick="reverseText('chars')">Reverse characters</button>
-    <button class="btn ghost" onclick="reverseText('words')">Reverse words</button>
-    <button class="btn ghost" onclick="reverseText('lines')">Reverse lines</button>
+  <textarea id="rev-in" oninput="reverseText(RV2_MODE)" placeholder="Hello world">Hello world</textarea>
+  <div class="lr2-types" id="rv2-modes">
+    <button class="lr2-type active" onclick="reverseText('chars', this)">Characters</button>
+    <button class="lr2-type" onclick="reverseText('words', this)">Words</button>
+    <button class="lr2-type" onclick="reverseText('lines', this)">Lines</button>
+    <button class="lr2-type" onclick="reverseText('each', this)">Each line reversed</button>
   </div>
-  <div id="rev-out" class="result mono"></div>
+  <div class="jf-stats" id="rv2-stats"></div>
+  <label>Reversed</label>
+  <textarea id="rev-out" readonly></textarea>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="rv2Copy(this)">Copy result</button>
+    <button class="btn ghost" onclick="rv2Swap()">Use result as input</button>
+  </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

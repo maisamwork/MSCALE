@@ -41,16 +41,26 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Regex Tester", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Test regular expressions online with live match highlighting and capture groups.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>Regex Tester</h1></div><p>Test regular expressions online with live match highlighting and capture groups.</p></div>
 
-<div class="panel">
+<div class="panel re2">
   <div class="row">
-    <div style="flex:2"><label>Pattern</label><input type="text" id="re-pattern" placeholder="\b\w+@\w+\.\w+\b" /></div>
-    <div><label>Flags</label><input type="text" id="re-flags" value="g" /></div>
+    <div style="flex:2"><label>Pattern</label><input type="text" id="re-pattern" value="\b\w+@\w+\.\w+\b" oninput="regexTest()" /></div>
+    <div><label>Flags</label><input type="text" id="re-flags" value="gi" oninput="regexTest()" /></div>
+  </div>
+  <div class="lr2-types" id="re2-presets">
+    <span class="ir2-pl">Presets:</span>
+    <button class="ir2-preset" onclick="re2Pre('email')">Email</button>
+    <button class="ir2-preset" onclick="re2Pre('url')">URL</button>
+    <button class="ir2-preset" onclick="re2Pre('date')">Date</button>
+    <button class="ir2-preset" onclick="re2Pre('hex')">Hex color</button>
+    <button class="ir2-preset" onclick="re2Pre('num')">Number</button>
+    <button class="ir2-preset" onclick="re2Pre('ip')">IPv4</button>
   </div>
   <label>Test text</label>
-  <textarea id="re-text" placeholder="Paste text to test against…"></textarea>
-  <button class="btn" onclick="regexTest()">Test</button>
-  <span id="re-count" style="color:var(--muted);font-size:13px"></span>
+  <textarea id="re-text" oninput="regexTest()" placeholder="Paste text to test against&hellip;">Contact jane@example.com or sales@mscale.tools. Site: https://mslace.vercel.app. Deadline 2026-01-15, alternative 15/01/2026. Colors #ff5733 and #0F0. Server 192.168.1.1 failed. Price: $129.99.</textarea>
+  <div class="jf-stats" id="re2-stats"></div>
+  <label>Highlighted matches</label>
   <div id="re-out" class="result"></div>
+  <label>Matches with capture groups</label>
   <div id="re-groups" class="result mono"></div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
