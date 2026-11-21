@@ -5044,3 +5044,121 @@ function tx2Download() {
     window.__tx2t = setTimeout(tx2Run2, 220);
   });
 })();
+
+
+/* ---------- CX2: shared upgrades for the color engine tools ---------- */
+function cx2Current() {
+  var c = cxParseHex(_v("cx-in") || _v("ch-in") || _v("sh-in") || _v("cp-in") || _v("iv-in") || _v("gs-in") || _v("ct-fg") || "");
+  if (c) return [c.r, c.g, c.b];
+  var r = _n("cr-r"), g = _n("cr-g"), b = _n("cr-b");
+  if (r === null && _n("rh-r") !== null) { r = _n("rh-r"); g = _n("rh-g"); b = _n("rh-b"); }
+  if (typeof r !== "number" || typeof g !== "number" || typeof b !== "number") return null;
+  var cl = function (x) { return Math.max(0, Math.min(255, Math.round(x))); };
+  return [cl(r), cl(g), cl(b)];
+}
+function cx2ToHsl(rgb) {
+  var r = rgb[0] / 255, g = rgb[1] / 255, b = rgb[2] / 255;
+  var mx = Math.max(r, g, b), mn = Math.min(r, g, b), h = 0, s = 0, l = (mx + mn) / 2, d = mx - mn;
+  if (d) {
+    s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+    if (mx === r) h = ((g - b) / d + (g < b ? 6 : 0));
+    else if (mx === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h = Math.round(h * 60);
+  }
+  return [h, Math.round(s * 100), Math.round(l * 100)];
+}
+function cx2Ins() {
+  var wrap = document.getElementById("cx2-ins");
+  if (!wrap) return;
+  var rgb = cx2Current();
+  if (!rgb) { wrap.innerHTML = ""; return; }
+  var lum = Math.round(cc2Lum(rgb) * 255);
+  var rw = cc2Ratio(rgb, [255, 255, 255]), rb = cc2Ratio(rgb, [0, 0, 0]);
+  var hsl = cx2ToHsl(rgb);
+  var best = rw >= rb ? "white" : "black";
+  var bestR = Math.max(rw, rb);
+  var verdict = bestR >= 7 ? "AAA" : bestR >= 4.5 ? "AA" : bestR >= 3 ? "large text only" : "avoid text";
+  wrap.innerHTML =
+    dt2Chip(hsl.join(", "), "hsl") +
+    dt2Chip(lum + "/255", "luminance") +
+    cc2CcChip(rw, "white") +
+    cc2CcChip(rb, "black") +
+    dt2Chip(best + " \u00b7 " + verdict, "best text");
+}
+function cx2Copy(fmt, btn) {
+  var rgb = cx2Current();
+  if (!rgb) return;
+  var txt;
+  if (fmt === "rgb") txt = "rgb(" + rgb.join(", ") + ")";
+  else if (fmt === "hsl") txt = "hsl(" + cx2ToHsl(rgb).join(", ") + ")";
+  else txt = "--brand-color: " + cxToHex(rgb[0], rgb[1], rgb[2]) + ";";
+  copyText(txt, btn);
+}
+function cx2Random(hid, fn) {
+  var hexarr = crypto.getRandomValues(new Uint8Array(3));
+  var hex = "#";
+  for (var i = 0; i < 3; i++) hex += hexarr[i].toString(16).padStart(2, "0");
+  var el = $(hid);
+  if (el) el.value = hex;
+  try { if (typeof window[fn] === "function") window[fn](); else eval(fn + "()"); } catch (e) {}
+  cx2Ins();
+}
+(function () {
+  var IDS = ["cx-in", "cr-r", "cr-g", "cr-b", "ch-in", "rh-r", "rh-g", "rh-b", "sh-in", "cp-in", "ct-fg", "ct-bg", "iv-in", "gs-in"];
+  document.addEventListener("input", function (e) {
+    var id = e && e.target && e.target.id;
+    if (!id || IDS.indexOf(id) === -1) return;
+    clearTimeout(window.__cx2t);
+    window.__cx2t = setTimeout(cx2Ins, 180);
+  });
+})();
+
+/* ---------- RN2: shared upgrades for the random engine tools ---------- */
+var RN2_N = 0;
+var RN2_YN = [0, 0];
+function rn2Chip(b, label) { return '<span class="jf-chip"><b>' + b + "</b>" + label + "</span>"; }
+function rn2CopyRes(id, btn) {
+  var el = $(id);
+  if (!el) return;
+  var t = el.tagName === "TEXTAREA" ? el.value : el.textContent;
+  t = String(t || "").replace(/\s+/g, " ").trim();
+  if (t) copyText(t, btn);
+}
+function rn2Redraw() {
+  var st = document.getElementById("rn2-stats");
+  if (!st) return;
+  var d = new Date();
+  var h = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") +
+    ":" + String(d.getSeconds()).padStart(2, "0");
+  var items = [[String(RN2_N), "draws this visit"], [h, "last draw"]];
+  if (document.getElementById("yn-out")) {
+    items.push([String(RN2_YN[0]), "yes answers"], [String(RN2_YN[1]), "no answers"]);
+  }
+  st.innerHTML = items.map(function (it) { return rn2Chip(it[0], it[1]); }).join("");
+}
+function rn2After() {
+  RN2_N++;
+  var el = document.getElementById("yn-out");
+  if (el) {
+    var t = (el.textContent || "").toLowerCase();
+    if (/\byes\b/.test(t)) RN2_YN[0]++;
+    else if (/\bno\b/.test(t)) RN2_YN[1]++;
+  }
+  rn2Redraw();
+}
+[["rnLetter", "rl-out"], ["rnWord", "rw-out"], ["rnDate", "rd-out"], ["rnShuffle", "ls-out"],
+ ["rnPick", "np-out"], ["rnYesNo", "yn-out"], ["rnTeams", "ts-out"], ["rnLottery", "lt-out"],
+ ["rnCountry", "co-out"], ["rnQuote", "qt-out"]].forEach(function (pair) {
+  var orig = window[pair[0]] || eval(pair[0]);
+  if (typeof orig !== "function") return;
+  window[pair[0]] = function () { orig(); rn2After(); };
+});
+document.addEventListener("keydown", function (e) {
+  if (!e || e.code !== "Space") return;
+  var tn = e.target && e.target.tagName;
+  if (["INPUT", "TEXTAREA", "SELECT", "BUTTON"].indexOf(tn) !== -1) return;
+  if (!document.getElementById("yn-out")) return;
+  e.preventDefault();
+  rnYesNo();
+});

@@ -164,7 +164,16 @@ def rand_body(kind):
     else:
         ui = ('<button class="btn" onclick="rnQuote()">Draw a quote</button>'
               '<div id="qt-out" class="result big-res" aria-live="polite"></div>')
-    return f'<div class="panel">{ui}</div>'
+    rn_out = {"letter": "rl-out", "word": "rw-out", "date": "rd-out", "shuffle": "ls-out",
+              "picker": "np-out", "yesno": "yn-out", "teams": "ts-out", "lottery": "lt-out",
+              "country": "co-out", "quote": "qt-out"}.get(kind)
+    tail = ""
+    if rn_out:
+        tail = ('<div id="rn2-stats" class="jf-stats" style="margin-top:12px"></div>'
+                '<div class="lr2-actions" style="margin-top:6px">'
+                '<button type="button" class="btn ghost" onclick="rn2CopyRes(\'' + rn_out + '\', this)">Copy result</button>'
+                '</div>')
+    return f'<div class="panel">{ui}{tail}</div>'
 
 def date_body(kind):
     PRESETS = {

@@ -346,4 +346,16 @@ def col_body(kind):
         ui = ('<div class="row"><div><label for="gs-in">Color (hex)</label><input type="text" id="gs-in" value="#e05e00" autocomplete="off" oninput="cxGray()"/></div></div>'
               '<div id="gs-out" class="result" aria-live="polite"></div>'
               '<div id="gs-prev" class="shade-grid"></div>')
-    return f'<div class="panel">{ui}</div>'
+    hex_run = {"cx-in": "cxHex", "ch-in": "cxHexHsl", "sh-in": "cxShades", "cp-in": "cxComp", "iv-in": "cxInvert", "gs-in": "cxGray"}
+    rnd_btn = ""
+    for hid, fn in hex_run.items():
+        if 'id="' + hid + '"' in ui:
+            rnd_btn = '<button type="button" class="btn ghost" onclick="cx2Random(\'' + hid + '\', \'' + fn + '\')">Random colour</button>'
+            break
+    tail = ('<div id="cx2-ins" class="jf-stats" style="margin-top:12px"></div>'
+            '<div class="lr2-actions" style="margin-top:6px">'
+            '<button type="button" class="btn ghost" onclick="cx2Copy(\'rgb\', this)">Copy rgb()</button>'
+            '<button type="button" class="btn ghost" onclick="cx2Copy(\'hsl\', this)">Copy hsl()</button>'
+            '<button type="button" class="btn ghost" onclick="cx2Copy(\'var\', this)">Copy CSS variable</button>'
+            + rnd_btn + '</div>')
+    return f'<div class="panel">{ui}{tail}</div>'
