@@ -41,13 +41,18 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Dice Roller", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Roll up to 20 dice with 4 to 100 sides. Great for board games and D&D.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/></svg><h1>Dice Roller</h1></div><p>Roll up to 20 dice with 4 to 100 sides. Great for board games and D&D.</p></div>
 
-<div class="panel">
+<div class="panel dr2">
   <div class="row">
-    <div><label>Number of dice</label><input type="number" id="dice-n" value="2" min="1" max="20" /></div>
-    <div><label>Sides</label><select id="dice-sides"><option>4</option><option selected>6</option><option>8</option><option>10</option><option>12</option><option>20</option><option>100</option></select></div>
+    <div><label>Number of dice</label><input type="number" id="dice-n" value="2" min="1" max="20" oninput="rollDice()" /></div>
+    <div><label>Sides</label><select id="dice-sides" onchange="rollDice()"><option>4</option><option selected>6</option><option>8</option><option>10</option><option>12</option><option>20</option><option>100</option></select></div>
+    <div><label>Modifier</label><input type="number" id="dr2-mod" value="0" oninput="rollDice()" /></div>
+    <div style="align-self:end"><button class="btn" onclick="rollDice()">Roll</button></div>
   </div>
-  <button class="btn" onclick="rollDice()">Roll 🎲</button>
+  <div class="pct2-result" id="dr2-big">&mdash;</div>
   <div id="dice-out" class="result"></div>
+  <div class="jf-stats" id="dr2-stats"></div>
+  <label>Recent rolls</label>
+  <div id="dr2-hist" class="jf-stats" style="min-height:34px"></div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

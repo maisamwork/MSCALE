@@ -41,10 +41,14 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "URL Parser", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Break any URL into scheme, host, port, path, decoded query parameters and fragment using the browser's own URL engine.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>URL Parser</h1></div><p>Break any URL into scheme, host, port, path, decoded query parameters and fragment using the browser's own URL engine.</p></div>
 
-<div class="panel">
-  <label>URL to parse</label>
-  <input id="up-in" oninput="urlParse()" placeholder="https://user:pass@sub.example.com:8080/path/page?q=hello&lang=en#section" autocomplete="off">
+<div class="panel up2">
+  <label>URL to parse &mdash; updates live</label>
+  <input id="up-in" oninput="urlParse()" value="https://user:pass@sub.example.com:8080/path/page?q=hello world&lang=en#section" autocomplete="off">
+  <div class="jf-stats" id="up2-stats"></div>
   <div id="up-out" class="result" style="overflow:auto"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="up2CopyJson(this)">Copy as JSON</button>
+  </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

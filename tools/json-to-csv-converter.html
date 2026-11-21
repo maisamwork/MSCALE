@@ -41,14 +41,23 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "JSON to CSV Converter", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Convert a JSON array of objects into a clean CSV for Excel or Google Sheets. Quote-aware, private and free, right in your browser.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><h1>JSON to CSV Converter</h1></div><p>Convert a JSON array of objects into a clean CSV for Excel or Google Sheets. Quote-aware, private and free, right in your browser.</p></div>
 
-<div class="panel">
-  <label>JSON array of objects</label>
-  <textarea id="j2c-in" placeholder='[{"name": "Ada", "role": "Engineer"}, {"name": "Grace", "role": "Admiral"}]'></textarea>
-  <button class="btn" onclick="jsonToCsv()">Convert to CSV</button>
+<div class="panel jc2">
+  <div class="uc2-cats jf-stats" id="jc2-delims">
+    <span class="ir2-pl">CSV delimiter:</span>
+    <button class="uc2-cat active" onclick="jc2Delim(',', this)">Comma</button>
+    <button class="uc2-cat" onclick="jc2Delim(';', this)">Semicolon</button>
+    <button class="uc2-cat" onclick="jc2Delim('tb', this)">Tab</button>
+    <button class="uc2-cat" onclick="jc2Delim('|', this)">Pipe</button>
+  </div>
+  <label>JSON array of objects &mdash; converted live</label>
+  <textarea id="j2c-in" oninput="jsonToCsv()" placeholder='[{"name": "Ada", "role": "Engineer"}]'>[{"name":"Ada","role":"Engineer","years":12},{"name":"Grace","role":"Admiral","years":30},{"name":"Linus","role":"Kernel","years":33}]</textarea>
+  <div class="jf-stats" id="jc2-stats"></div>
   <label>CSV output</label>
   <textarea id="j2c-out" style="min-height:180px" readonly></textarea>
-  <button class="btn" onclick="copyText('j2c-out')">Copy CSV</button>
-  <a id="j2c-dl" class="btn ghost" style="display:none;margin-left:6px" download="data.csv">Download .csv</a>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="jc2Copy(this)">Copy CSV</button>
+    <button class="btn ghost" onclick="jc2Download()">Download .csv</button>
+  </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

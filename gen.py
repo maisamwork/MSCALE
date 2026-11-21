@@ -358,11 +358,16 @@ TOOL_BODIES = {
   <div id="po-count" class="result">Completed focus sessions: 0</div>
 </div>""",
 "url-parser": """
-<div class="panel">
-  <label>URL to parse</label>
-  <input id="up-in" oninput="urlParse()" placeholder="https://user:pass@sub.example.com:8080/path/page?q=hello&lang=en#section" autocomplete="off">
+<div class="panel up2">
+  <label>URL to parse &mdash; updates live</label>
+  <input id="up-in" oninput="urlParse()" value="https://user:pass@sub.example.com:8080/path/page?q=hello world&lang=en#section" autocomplete="off">
+  <div class="jf-stats" id="up2-stats"></div>
   <div id="up-out" class="result" style="overflow:auto"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="up2CopyJson(this)">Copy as JSON</button>
+  </div>
 </div>""",
+
 
 "qr-code-generator": """
 <div class="panel qr2">
@@ -504,15 +509,25 @@ TOOL_BODIES = {
   <div id="cd-msg" class="result"></div>
 </div>""",
 "json-to-csv-converter": """
-<div class="panel">
-  <label>JSON array of objects</label>
-  <textarea id="j2c-in" placeholder='[{"name": "Ada", "role": "Engineer"}, {"name": "Grace", "role": "Admiral"}]'></textarea>
-  <button class="btn" onclick="jsonToCsv()">Convert to CSV</button>
+<div class="panel jc2">
+  <div class="uc2-cats jf-stats" id="jc2-delims">
+    <span class="ir2-pl">CSV delimiter:</span>
+    <button class="uc2-cat active" onclick="jc2Delim(',', this)">Comma</button>
+    <button class="uc2-cat" onclick="jc2Delim(';', this)">Semicolon</button>
+    <button class="uc2-cat" onclick="jc2Delim('tb', this)">Tab</button>
+    <button class="uc2-cat" onclick="jc2Delim('|', this)">Pipe</button>
+  </div>
+  <label>JSON array of objects &mdash; converted live</label>
+  <textarea id="j2c-in" oninput="jsonToCsv()" placeholder='[{"name": "Ada", "role": "Engineer"}]'>[{"name":"Ada","role":"Engineer","years":12},{"name":"Grace","role":"Admiral","years":30},{"name":"Linus","role":"Kernel","years":33}]</textarea>
+  <div class="jf-stats" id="jc2-stats"></div>
   <label>CSV output</label>
   <textarea id="j2c-out" style="min-height:180px" readonly></textarea>
-  <button class="btn" onclick="copyText('j2c-out')">Copy CSV</button>
-  <a id="j2c-dl" class="btn ghost" style="display:none;margin-left:6px" download="data.csv">Download .csv</a>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="jc2Copy(this)">Copy CSV</button>
+    <button class="btn ghost" onclick="jc2Download()">Download .csv</button>
+  </div>
 </div>""",
+
 
 "pdf-merge": """
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
@@ -586,13 +601,17 @@ TOOL_BODIES = {
   <button class="btn" onclick="copyText('mt-code')">Copy tags</button>
 </div>""",
 "keyword-density-checker": """
-<div class="panel">
-  <label>Text to analyse</label>
-  <textarea id="kd-in" placeholder="Paste your article or page text here…"></textarea>
-  <label style="text-transform:none;letter-spacing:0"><input type="checkbox" id="kd-stop" checked style="width:auto;margin-right:8px" /> Hide common stop words (the, and, of…)</label>
-  <button class="btn" onclick="kwDensity()">Analyse density</button>
-  <div id="kd-out" class="result" style="white-space:normal">Paste text and click Analyse.</div>
+<div class="panel kd2">
+  <label>Text to analyse &mdash; updates live</label>
+  <textarea id="kd-in" oninput="kwDensity()" placeholder="Paste your article or page text here&hellip;"></textarea>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="kd-stop" checked onchange="kwDensity()" /><span class="pg-track"></span> Hide common stop words</label>
+    <span class="ir2-pl" style="margin-left:auto">Ideal density 0.5&ndash;2.5%</span>
+  </div>
+  <div class="jf-stats" id="kd2-stats"></div>
+  <div id="kd-out" class="result" style="white-space:normal"></div>
 </div>""",
+
 "xml-sitemap-generator": """
 <div class="panel">
   <label>Page URLs (one per line)</label>
@@ -1050,32 +1069,60 @@ TOOL_BODIES = {
 </div>""",
 
 "dice-roller": """
-<div class="panel">
+<div class="panel dr2">
   <div class="row">
-    <div><label>Number of dice</label><input type="number" id="dice-n" value="2" min="1" max="20" /></div>
-    <div><label>Sides</label><select id="dice-sides"><option>4</option><option selected>6</option><option>8</option><option>10</option><option>12</option><option>20</option><option>100</option></select></div>
+    <div><label>Number of dice</label><input type="number" id="dice-n" value="2" min="1" max="20" oninput="rollDice()" /></div>
+    <div><label>Sides</label><select id="dice-sides" onchange="rollDice()"><option>4</option><option selected>6</option><option>8</option><option>10</option><option>12</option><option>20</option><option>100</option></select></div>
+    <div><label>Modifier</label><input type="number" id="dr2-mod" value="0" oninput="rollDice()" /></div>
+    <div style="align-self:end"><button class="btn" onclick="rollDice()">Roll</button></div>
   </div>
-  <button class="btn" onclick="rollDice()">Roll 🎲</button>
+  <div class="pct2-result" id="dr2-big">&mdash;</div>
   <div id="dice-out" class="result"></div>
-</div>""",
-"coin-flipper": """
-<div class="panel">
-  <label>How many flips?</label>
-  <input type="number" id="coin-n" value="1" min="1" max="1000" />
-  <button class="btn" onclick="flipCoin()">Flip 🪙</button>
-  <div id="coin-out" class="result"></div>
+  <div class="jf-stats" id="dr2-stats"></div>
+  <label>Recent rolls</label>
+  <div id="dr2-hist" class="jf-stats" style="min-height:34px"></div>
 </div>""",
 
-"discount-calculator": """
-<div class="panel">
+"coin-flipper": """
+<div class="panel cf2">
   <div class="row">
-    <div><label>Original price</label><input type="number" id="disc-p" placeholder="99.99" /></div>
-    <div><label>Discount (%)</label><input type="number" id="disc-off" placeholder="25" /></div>
-    <div><label>Tax (%) — optional</label><input type="number" id="disc-tax" placeholder="0" /></div>
+    <div><label>How many flips?</label><input type="number" id="coin-n" value="1" min="1" max="1000" oninput="flipCoin()" /></div>
+    <div style="align-self:end"><button class="btn" onclick="flipCoin()">Flip coins</button></div>
   </div>
-  <button class="btn" onclick="discountCalc()">Calculate</button>
-  <div id="disc-out" class="result">Enter price and discount.</div>
+  <div class="pct2-result" id="cf2-big">&mdash;</div>
+  <div class="ci2-bars" id="cf2-bars"></div>
+  <div class="jf-stats" id="cf2-stats"></div>
+  <label>History (newest first)</label>
+  <div id="cf2-hist" class="jf-stats" style="min-height:34px"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="cf2Clear()">Clear history</button>
+  </div>
 </div>""",
+
+
+"discount-calculator": """
+<div class="panel dc2">
+  <div class="row">
+    <div><label>Original price</label><input type="number" id="disc-p" value="99.99" step="0.01" oninput="discountCalc()" /></div>
+    <div><label>Discount (%)</label><input type="number" id="disc-off" value="25" oninput="discountCalc()" /></div>
+    <div><label>Tax (%) &mdash; optional</label><input type="number" id="disc-tax" value="0" step="0.01" oninput="discountCalc()" /></div>
+  </div>
+  <div class="uc2-cats tx2-rates">
+    <span class="ir2-pl">Quick discounts:</span>
+    <button class="ir2-preset" onclick="dc2Pre(5)">5%</button>
+    <button class="ir2-preset" onclick="dc2Pre(10)">10%</button>
+    <button class="ir2-preset" onclick="dc2Pre(15)">15%</button>
+    <button class="ir2-preset" onclick="dc2Pre(20)">20%</button>
+    <button class="ir2-preset" onclick="dc2Pre(25)">25%</button>
+    <button class="ir2-preset" onclick="dc2Pre(30)">30%</button>
+    <button class="ir2-preset" onclick="dc2Pre(50)">50%</button>
+  </div>
+  <div class="pct2-result" id="dc2-big">&mdash;</div>
+  <div class="ci2-bars" id="dc2-bars"></div>
+  <p class="tool-note">Same product at every discount (with your tax rate applied)</p>
+  <div class="uc2-table" id="dc2-table"></div>
+</div>""",
+
 "tip-calculator": """
 <div class="panel tp2">
   <div class="row">
@@ -1301,7 +1348,7 @@ TOOL_BODIES = {
     <span class="ir2-pl">Delimiter:</span>
     <button class="uc2-cat active" onclick="cj2Delim(',', this)">Comma</button>
     <button class="uc2-cat" onclick="cj2Delim(';', this)">Semicolon</button>
-    <button class="uc2-cat" onclick="cj2Delim('\t', this)">Tab</button>
+    <button class="uc2-cat" onclick="cj2Delim('tb', this)">Tab</button>
     <button class="uc2-cat" onclick="cj2Delim('|', this)">Pipe</button>
   </div>
   <div class="lr2-types">

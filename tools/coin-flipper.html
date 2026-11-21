@@ -41,11 +41,19 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Coin Flipper", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Flip a coin online. One flip or hundreds, with heads/tails counts.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.8-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/></svg><h1>Coin Flipper</h1></div><p>Flip a coin online. One flip or hundreds, with heads/tails counts.</p></div>
 
-<div class="panel">
-  <label>How many flips?</label>
-  <input type="number" id="coin-n" value="1" min="1" max="1000" />
-  <button class="btn" onclick="flipCoin()">Flip 🪙</button>
-  <div id="coin-out" class="result"></div>
+<div class="panel cf2">
+  <div class="row">
+    <div><label>How many flips?</label><input type="number" id="coin-n" value="1" min="1" max="1000" oninput="flipCoin()" /></div>
+    <div style="align-self:end"><button class="btn" onclick="flipCoin()">Flip coins</button></div>
+  </div>
+  <div class="pct2-result" id="cf2-big">&mdash;</div>
+  <div class="ci2-bars" id="cf2-bars"></div>
+  <div class="jf-stats" id="cf2-stats"></div>
+  <label>History (newest first)</label>
+  <div id="cf2-hist" class="jf-stats" style="min-height:34px"></div>
+  <div class="lr2-actions">
+    <button class="btn ghost" onclick="cf2Clear()">Clear history</button>
+  </div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

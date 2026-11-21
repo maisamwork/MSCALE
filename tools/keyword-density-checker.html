@@ -41,12 +41,15 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Keyword Density Checker", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Analyse keyword density in any text: top one, two and three-word phrases with counts and percentages, stopword filter included.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg><h1>Keyword Density Checker</h1></div><p>Analyse keyword density in any text: top one, two and three-word phrases with counts and percentages, stopword filter included.</p></div>
 
-<div class="panel">
-  <label>Text to analyse</label>
-  <textarea id="kd-in" placeholder="Paste your article or page text here…"></textarea>
-  <label style="text-transform:none;letter-spacing:0"><input type="checkbox" id="kd-stop" checked style="width:auto;margin-right:8px" /> Hide common stop words (the, and, of…)</label>
-  <button class="btn" onclick="kwDensity()">Analyse density</button>
-  <div id="kd-out" class="result" style="white-space:normal">Paste text and click Analyse.</div>
+<div class="panel kd2">
+  <label>Text to analyse &mdash; updates live</label>
+  <textarea id="kd-in" oninput="kwDensity()" placeholder="Paste your article or page text here&hellip;"></textarea>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="kd-stop" checked onchange="kwDensity()" /><span class="pg-track"></span> Hide common stop words</label>
+    <span class="ir2-pl" style="margin-left:auto">Ideal density 0.5&ndash;2.5%</span>
+  </div>
+  <div class="jf-stats" id="kd2-stats"></div>
+  <div id="kd-out" class="result" style="white-space:normal"></div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

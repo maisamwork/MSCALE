@@ -1065,18 +1065,68 @@ function rn2Copy(btn) {
 }
 if ($("rn-min")) randNums();
 
+let CF2_HIST = [];
+function cf2Best() { return parseInt(localStorage.getItem("mscale-cf2-best") || "0", 10) || 0; }
 function flipCoin() {
   const n = Math.min(parseInt($("coin-n").value) || 1, 1000);
-  const flips = Array.from({ length: n }, () => (Math.random() < 0.5 ? "Heads" : "Tails"));
+  if (!$("cf2-big")) return;
+  const flips = Array.from({ length: n }, () => (crypto.getRandomValues(new Uint8Array(1))[0] & 1 ? "Tails" : "Heads"));
+  CF2_HIST = flips.concat(CF2_HIST).slice(0, 12);
   const heads = flips.filter((f) => f === "Heads").length;
-  out("coin-out", n === 1 ? flips[0] : `Heads: ${heads} · Tails: ${n - heads}<br><small>${flips.slice(0, 50).join(", ")}${n > 50 ? " …" : ""}</small>`);
+  const tails = n - heads;
+  // streak across this flip batch (single face runs)
+  let streak = 1, best = 1;
+  for (let i = 1; i < flips.length; i++) {
+    streak = flips[i] === flips[i - 1] ? streak + 1 : 1;
+    best = Math.max(best, streak);
+  }
+  if (n === 1) {
+    best = 1;
+    if (CF2_HIST[1] === flips[0]) { /* tie into previous batch visually only */ }
+  }
+  const savedBest = cf2Best();
+  if (best > savedBest) { CF2_BEST = best; localStorage.setItem("mscale-cf2-best", String(best)); }
+  else CF2_BEST = savedBest;
+  $("cf2-big").innerHTML = n === 1
+    ? (flips[0] === "Heads" ? "\u{1F95E} Heads" : "\u{1F40A} Tails")
+    : (heads + '<span class="pct2-big-sub">heads &middot; ' + tails + " tails</span>");
+  const hp = n ? heads / n * 100 : 0;
+  $("cf2-bars").innerHTML =
+    '<div class="ci2-bar-row"><span>Heads</span><div class="wc-bar"><div class="wc-bar-fill" style="width:' + hp.toFixed(1) + '%"></div></div><b>' + heads + " (" + hp.toFixed(0) + "%)</b></div>" +
+    '<div class="ci2-bar-row"><span>Tails</span><div class="wc-bar"><div class="wc-bar-fill near" style="width:' + (100 - hp).toFixed(1) + '%"></div></div><b>' + tails + " (" + (100 - hp).toFixed(0) + "%)</b></div>";
+  $("cf2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + n + "</b>flips</span>" +
+    '<span class="jf-chip"><b>' + (best || 0) + "</b>run streak</span>" +
+    '<span class="jf-chip"><b>' + CF2_BEST + "</b>personal best</span>" +
+    '<span class="jf-chip"><b>' + (Math.abs(hp - 50) < 2 && n > 30 ? "fair" : n > 30 ? "&plusmn;dev" : "\u2014") + "</b>vs 50/50</span>";
+  $("cf2-hist").innerHTML = CF2_HIST.slice(0, 12).map((f, i) => '<span class="jf-chip' + (i === 0 ? '" style="border-color:var(--accent)' : "") + '"><b>' + (f === "Heads" ? "H" : "T") + "</b></span>").join("");
 }
+function cf2Clear() { CF2_HIST = []; if ($("cf2-hist")) $("cf2-hist").innerHTML = '<p style="color:var(--soft);font-size:13px">Flip to build a history</p>'; }
 
+let DR2_HIST = [];
 function rollDice() {
   const count = Math.min(parseInt($("dice-n").value) || 1, 20);
   const sides = parseInt($("dice-sides").value) || 6;
+  const mod = parseInt($("dr2-mod").value) || 0;
+  if (!$("dr2-big")) return;
   const rolls = Array.from({ length: count }, () => 1 + Math.floor(Math.random() * sides));
-  out("dice-out", `You rolled: <b>${rolls.join(", ")}</b>${count > 1 ? ` — total <b>${rolls.reduce((a, b) => a + b)}</b>` : ""}`);
+  const sum = rolls.reduce((a, b) => a + b, 0);
+  const total = sum + mod;
+  DR2_HIST = [{ rolls: rolls.slice(), total, sides, mod }].concat(DR2_HIST).slice(0, 6);
+  const natMax = rolls.every((r) => r === sides);
+  const natMin = rolls.every((r) => r === 1);
+  $("dr2-big").innerHTML = (natMax ? "\u{1F451} " : natMin ? "\u{1F4A9} " : "") + (total.toLocaleString()) +
+    '<span class="pct2-big-sub">' + count + "d" + sides + (mod ? (mod > 0 ? "+" + mod : mod) : "") + (count > 1 ? " &middot; sum &middot; avg " + (Math.round(sum / count * 10) / 10) : "") + "</span>";
+  $("dice-out").innerHTML = '<span class="jf-stats" style="justify-content:center">' + rolls.map((r) =>
+    '<span class="jf-chip"' + (r === sides ? ' style="border-color:#f59e0b"' : r === 1 ? ' style="border-color:var(--err)"' : "") + '><b>' + r + "</b></span>").join("") + "</span>";
+  $("dr2-stats").innerHTML =
+    '<span class="jf-chip"><b>1\u2013' + sides + "</b>per die</span>" +
+    '<span class="jf-chip"><b>' + count + "</b>dice</span>" +
+    '<span class="jf-chip"><b>' + sum + "</b>pips</span>" +
+    '<span class="jf-chip"><b>' + (count * sides + mod) + "</b>max possible</span>" +
+    '<span class="jf-chip"><b>' + (Math.round((count * (sides + 1) / 2 + mod) * 10) / 10) + "</b>expected</span>";
+  $("dr2-hist").innerHTML = DR2_HIST.map((h) =>
+    '<span class="jf-chip"><b>' + h.rolls.join("+") + (h.mod ? (h.mod > 0 ? "+" + h.mod : h.mod) : "") + "=" + h.total + '</b> ' + h.rolls.length + "d" + h.sides + "</span>").join("");
 }
 
 /* ---------- shared helpers ---------- */
@@ -1088,14 +1138,31 @@ function toHexStr(r, g, b) {
 }
 
 /* ---------- Calculators ---------- */
+function dc2Pre(v) { $("disc-off").value = v; discountCalc(); }
 function discountCalc() {
   const price = parseFloat($("disc-p").value), off = parseFloat($("disc-off").value);
   const tax = parseFloat($("disc-tax").value) || 0;
-  if (isNaN(price) || isNaN(off)) return;
+  if (!$("dc2-big")) return;
+  $("dc2-table").innerHTML = "";
+  if (isNaN(price) || isNaN(off)) { $("dc2-big").innerHTML = "&mdash;"; $("dc2-bars").innerHTML = ""; return; }
   const saved = price * off / 100;
   const after = price - saved;
-  const final = after * (1 + tax / 100);
-  out("disc-out", `You save: <b>${saved.toFixed(2)}</b><br>Price after discount: <b>${after.toFixed(2)}</b>${tax ? `<br>After ${tax}% tax: <b>${final.toFixed(2)}</b>` : ""}`);
+  const withTax = after * (1 + tax / 100);
+  const origTax = price * (1 + tax / 100);
+  $("dc2-big").innerHTML = (Math.round(withTax * 100) / 100).toFixed(2) +
+    '<span class="pct2-big-sub">you pay &middot; save ' + (Math.round(saved * 100) / 100).toFixed(2) + (tax ? " &middot; incl " + tax + "% tax" : "") + "</span>";
+  const denom = Math.max(price, 1);
+  $("dc2-bars").innerHTML =
+    '<div class="ci2-bar-row"><span>You pay</span><div class="wc-bar"><div class="wc-bar-fill" style="width:' + (after / denom * 100).toFixed(1) + '%"></div></div><b>' + (Math.round(after * 100) / 100).toFixed(2) + "</b></div>" +
+    '<div class="ci2-bar-row"><span>You save</span><div class="wc-bar"><div class="wc-bar-fill near" style="width:' + (saved / denom * 100).toFixed(1) + '%"></div></div><b>' + (Math.round(saved * 100) / 100).toFixed(2) + "</b></div>" +
+    (tax ? '<div class="ci2-bar-row"><span>With tax</span><div class="wc-bar"><div class="wc-bar-fill over" style="width:' + (Math.min(withTax, origTax) / denom * 100).toFixed(1) + '%"></div></div><b>' + (Math.round(withTax * 100) / 100).toFixed(2) + "</b></div>" : "");
+  let rows = "";
+  for (const o of [5, 10, 15, 20, 25, 30, 50, 70]) {
+    const a = price * (1 - o / 100);
+    const f = a * (1 + tax / 100);
+    rows += `<tr><td>${o}%</td><td>${a.toFixed(2)}</td><td>${o === off ? "<b>" + f.toFixed(2) + "</b>" : f.toFixed(2)}</td><td>${(price - a).toFixed(2)}</td></tr>`;
+  }
+  $("dc2-table").innerHTML = '<table class="wc-table"><thead><tr><th>Discount</th><th>After discount</th>' + (tax ? "<th>After + tax</th>" : "") + "<th>You save</th></tr></thead><tbody>" + rows + "</tbody></table>";
 }
 
 function tp2Rate(r) { $("tip-pct").value = r; tipCalc(); }
@@ -1545,7 +1612,7 @@ function csvParseRows(text, delim) {
 }
 let CJ2_DELIM = ",";
 function cj2Delim(d, btn) {
-  CJ2_DELIM = d;
+  CJ2_DELIM = d === "tb" ? "\t" : d;
   (btn.parentNode || document).querySelectorAll && btn.parentNode.querySelectorAll(".uc2-cat").forEach((b) => b.classList.remove("active"));
   btn.classList.add("active");
   csvToJson();
@@ -2065,11 +2132,20 @@ function metaGen() {
 const KD_STOP = new Set(("a,an,the,and,or,but,if,then,else,when,at,by,for,with,about,against,between,into,through,during,before,after,above,below,to,from,up,down,in,out,on,off,over,under,again,further,once,here,there,all,any,both,each,few,more,most,other,some,such,no,nor,not,only,own,same,so,than,too,very,can,will,just,is,are,was,were,be,been,being,have,has,had,having,do,does,did,doing,would,should,could,of,it,its,this,that,these,those,i,you,he,she,we,they,them,his,her,their,our,your,my,me,as").split(","));
 function kwDensity() {
   const raw = document.getElementById("kd-in").value;
-  const stop = document.getElementById("kd-stop").checked;
-  const words = raw.toLowerCase().replace(/[^\p{L}\p{N}'’\- ]/gu, " ").split(/\s+/).filter(Boolean);
-  if (words.length < 10) { out("kd-out", "Paste at least a paragraph of text."); return; }
+  if (!$("kd-out")) return;
+  const stop = $("kd-stop").checked;
+  const words = raw.toLowerCase().replace(/[^\p{L}\p{N}'\u2019\- ]/gu, " ").split(/\s+/).filter(Boolean);
+  if (words.length < 10) { $("kd-out").innerHTML = '<p style="color:var(--soft)">Paste at least a paragraph of text.</p>'; $("kd2-stats").innerHTML = ""; return; }
   const kept = stop ? words.filter((w) => !KD_STOP.has(w)) : words;
   const total = words.length;
+  const unique = new Set(words).size;
+  const sentences = (raw.match(/[^.!?]+[.!?]+/g) || []).length;
+  const readMin = Math.max(1, Math.round(total / 220));
+  $("kd2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + total + "</b>words</span>" +
+    '<span class="jf-chip"><b>' + unique + "</b>unique</span>" +
+    '<span class="jf-chip"><b>' + sentences + "</b>sentences</span>" +
+    '<span class="jf-chip"><b>~' + readMin + " min</b>reading time</span>";
   const tables = [[], [], []];
   for (let n = 1; n <= 3; n++) {
     const counts = new Map();
@@ -2080,12 +2156,14 @@ function kwDensity() {
     tables[n - 1] = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10);
   }
   const max1 = tables[0].length ? tables[0][0][1] : 1;
-  const bar = (c) => `<div style="display:inline-block;height:9px;background:var(--grad);border-radius:5px;width:${Math.max(2, Math.round(c / max1 * 130))}px"></div>`;
-  const fmt = (n) => tables[n - 1].map(([g, c]) =>
-    `<div class="wf-row"><span class="wf-word" style="width:190px">${g}</span>${n === 1 ? bar(c) : ""}<span style="margin-left:auto;font-size:12.5px;color:var(--muted)">${c}× · ${(c / total * 100).toFixed(1)}%</span></div>`).join("") || "<p>—</p>";
-  out("kd-out",
-    `<p style="margin:0 0 10px">Total words: <b>${total}</b>${stop ? ` · analysing <b>${kept.length}</b> after stopword filter` : ""}</p>` +
-    `<b>One-word phrases</b>${fmt(1)}<br><b>Two-word phrases</b>${fmt(2)}<br><b>Three-word phrases</b>${fmt(3)}`);
+  const cls = (d) => d > 5 ? "over" : d > 2.5 ? "near" : "";
+  const bar = (c, d) => '<div class="wc-bar"><div class="wc-bar-fill ' + cls(d) + '" style="width:' + Math.max(2, Math.round(c / max1 * 100)) + '%"></div></div>';
+  const fmt = (n) => tables[n - 1].map(([g, c]) => {
+    const d = c / total * 100;
+    return '<div class="wf-row"><span class="wf-word" style="width:190px">' + escHtml(g) + "</span>" + bar(c, d) + "<b>" + c + "&times;</b><span class=\"wf-pct\">" + d.toFixed(1) + "%</span></div>";
+  }).join("") || "<p>\u2014</p>";
+  $("kd-out").innerHTML =
+    "<b>One-word phrases</b>" + fmt(1) + "<br><b>Two-word phrases</b>" + fmt(2) + "<br><b>Three-word phrases</b>" + fmt(2 === 2 ? 3 : 3);
 }
 
 /* XML Sitemap Generator */
@@ -2209,27 +2287,53 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /* JSON to CSV Converter */
-function jsonToCsv() {
-  let data;
-  try { data = JSON.parse(document.getElementById("j2c-in").value); }
-  catch (e) { out("j2c-out", '<span class="error">Invalid JSON: ' + e.message + "</span>"); return; }
-  if (!Array.isArray(data) || !data.length || typeof data[0] !== "object") {
-    out("j2c-out", '<span class="error">Input must be a non-empty JSON array of objects, e.g. [{"a":1}].</span>'); return;
-  }
-  const q = (v) => {
-    if (v === null || v === undefined) return "";
-    if (typeof v === "object") v = JSON.stringify(v);
-    v = String(v);
-    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
-  };
-  const keys = [...new Set(data.flatMap((o) => Object.keys(o)))];
-  const csv = [keys.join(",")].concat(data.map((o) => keys.map((k) => q(o[k])).join(","))).join("\n");
-  document.getElementById("j2c-out").value = csv;
-  const dl = document.getElementById("j2c-dl");
-  dl.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
-  dl.style.display = "inline-flex";
-  out("j2c-out", "");
+let JC2_DELIM = ",";
+function jc2Delim(d, btn) {
+  JC2_DELIM = d === "tb" ? "\t" : d;
+  btn.parentNode.querySelectorAll(".uc2-cat").forEach((b) => b.classList.remove("active"));
+  btn.classList.add("active");
+  jsonToCsv();
 }
+function jc2Q(v) {
+  if (v === null || v === undefined) return "";
+  if (typeof v === "object") v = JSON.stringify(v);
+  v = String(v);
+  return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+}
+function jsonToCsv() {
+  const inEl = document.getElementById("j2c-in");
+  if (!inEl || !document.getElementById("j2c-out")) return;
+  $("j2c-out").value = "";
+  $("jc2-stats").innerHTML = "";
+  let data;
+  try { data = JSON.parse(inEl.value); }
+  catch (e) { $("jc2-stats").innerHTML = '<span class="error">Invalid JSON: ' + escHtml(String(e.message).slice(0, 80)) + "</span>"; return; }
+  if (!Array.isArray(data) || !data.length || typeof data[0] !== "object") {
+    $("jc2-stats").innerHTML = '<span class="error">Input must be a non-empty JSON array of objects.</span>'; return;
+  }
+  const keys = [...new Set(data.flatMap((o) => Object.keys(o)))];
+  const csv = [keys.map(jc2Q).join(JC2_DELIM)].concat(data.map((o) => keys.map((k) => jc2Q(o[k])).join(JC2_DELIM))).join("\n");
+  $("j2c-out").value = csv;
+  $("jc2-stats").innerHTML =
+    '<span class="jf-chip"><b>' + data.length + "</b>rows</span>" +
+    '<span class="jf-chip"><b>' + keys.length + "</b>columns</span>" +
+    '<span class="jf-chip"><b>' + new TextEncoder().encode(csv).length + "</b>bytes</span>";
+}
+function jc2Copy(btn) {
+  if (!$("j2c-out").value) return;
+  navigator.clipboard.writeText($("j2c-out").value).catch(() => {});
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy CSV"), 1200);
+}
+function jc2Download() {
+  const v = $("j2c-out").value;
+  if (!v) return;
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([v], { type: "text/csv" }));
+  a.download = "data.csv";
+  a.click();
+}
+if ($("j2c-in")) jsonToCsv();
 
 /* ===================== Batch 11: advanced tools ===================== */
 
@@ -3004,10 +3108,29 @@ function poReset() {
 }
 
 /* ---- URL Parser ---- */
+function up2CopyJson(btn) {
+  const v = document.getElementById("up-in").value.trim();
+  let u;
+  try { u = new URL(v); } catch (e) { return; }
+  const params = {};
+  u.searchParams.forEach((val, k) => { params[k] = val; });
+  const obj = {
+    href: u.href, protocol: u.protocol.replace(":", ""), username: u.username || null,
+    hostname: u.hostname, port: u.port || null, pathname: u.pathname,
+    search: u.search || null, hash: u.hash ? u.hash.slice(1) : null, params
+  };
+  const txt = JSON.stringify(obj, null, 2);
+  navigator.clipboard.writeText(txt).catch(() => {});
+  const el = document.getElementById("up2-json");
+  if (el) el.innerHTML = escHtml(txt);
+  btn.textContent = "Copied!";
+  setTimeout(() => (btn.textContent = "Copy as JSON"), 1200);
+}
 function urlParse() {
   const v = document.getElementById("up-in").value.trim();
   const el = document.getElementById("up-out");
-  if (!v) { el.innerHTML = ""; return; }
+  if (!el) return;
+  if (!v) { el.innerHTML = ""; if (document.getElementById("up2-stats")) document.getElementById("up2-stats").innerHTML = ""; return; }
   let u;
   try { u = new URL(v); }
   catch (e) { el.innerHTML = "<span class='error'>Not a valid absolute URL \u2014 include the https:// part.</span>"; return; }
@@ -3018,16 +3141,28 @@ function urlParse() {
     ["Hostname", u.hostname],
     ["Port", u.port || (u.protocol === "https:" ? "443 (default)" : "80 (default)")],
     ["Path", u.pathname],
+    ["Path segments", u.pathname.split("/").filter(Boolean).length],
     ["Origin", u.origin],
     ["Fragment", u.hash ? u.hash.slice(1) : "\u2014"],
   ];
   let params = "";
   if (u.search) {
     const entries = [...u.searchParams.entries()];
-    params = "<label>Query parameters (decoded)</label>" + entries
-      .map(([k, val]) => `<div class="up-param"><b>${escHtml(k)}</b> = ${escHtml(val)}</div>`).join("");
+    params = "<label>Query parameters (decoded \u2014 click to copy the value)</label>" + entries
+      .map(([k, val], i) => '<button type="button" class="uu2-row" data-uuid="' + escHtml(val).replace(/"/g, "&quot;") + '" onclick="up2Copy(this)"><b>' + escHtml(k) + "</b> = <code>" + escHtml(val) + "</code></button>").join("");
   }
-  el.innerHTML = `<table class="wc-table"><tbody>` + rows.map(([k, val]) => `<tr><th>${k}</th><td>${escHtml(String(val))}</td></tr>`).join("") + `</tbody></table>` + params;
+  el.innerHTML = '<table class="wc-table"><tbody>' + rows.map(([k, val]) => `<tr><th>${k}</th><td>${escHtml(String(val))}</td></tr>`).join("") + "</tbody></table>" + params;
+  const st = document.getElementById("up2-stats");
+  if (st) st.innerHTML =
+    '<span class="jf-chip"><b>' + ([...u.searchParams.keys()].length) + "</b>params</span>" +
+    '<span class="jf-chip"><b>' + v.length + "</b>chars</span>" +
+    '<span class="jf-chip"><b>' + (u.protocol === "https:" ? "secure" : "NOT secure") + "</b>scheme</span>";
+}
+function up2Copy(btn) {
+  if (!btn.dataset.uuid) return;
+  navigator.clipboard.writeText(btn.dataset.uuid).catch(() => {});
+  const c = btn.querySelector("code");
+  if (c) { c.textContent = "Copied!"; setTimeout(() => (c.textContent = btn.dataset.uuid), 1200); }
 }
 
 /* Initial render for tools that need it */

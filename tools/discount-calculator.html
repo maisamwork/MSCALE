@@ -41,14 +41,26 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Discount Calculator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Calculate sale price, savings and final price with optional sales tax.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg><h1>Discount Calculator</h1></div><p>Calculate sale price, savings and final price with optional sales tax.</p></div>
 
-<div class="panel">
+<div class="panel dc2">
   <div class="row">
-    <div><label>Original price</label><input type="number" id="disc-p" placeholder="99.99" /></div>
-    <div><label>Discount (%)</label><input type="number" id="disc-off" placeholder="25" /></div>
-    <div><label>Tax (%) — optional</label><input type="number" id="disc-tax" placeholder="0" /></div>
+    <div><label>Original price</label><input type="number" id="disc-p" value="99.99" step="0.01" oninput="discountCalc()" /></div>
+    <div><label>Discount (%)</label><input type="number" id="disc-off" value="25" oninput="discountCalc()" /></div>
+    <div><label>Tax (%) &mdash; optional</label><input type="number" id="disc-tax" value="0" step="0.01" oninput="discountCalc()" /></div>
   </div>
-  <button class="btn" onclick="discountCalc()">Calculate</button>
-  <div id="disc-out" class="result">Enter price and discount.</div>
+  <div class="uc2-cats tx2-rates">
+    <span class="ir2-pl">Quick discounts:</span>
+    <button class="ir2-preset" onclick="dc2Pre(5)">5%</button>
+    <button class="ir2-preset" onclick="dc2Pre(10)">10%</button>
+    <button class="ir2-preset" onclick="dc2Pre(15)">15%</button>
+    <button class="ir2-preset" onclick="dc2Pre(20)">20%</button>
+    <button class="ir2-preset" onclick="dc2Pre(25)">25%</button>
+    <button class="ir2-preset" onclick="dc2Pre(30)">30%</button>
+    <button class="ir2-preset" onclick="dc2Pre(50)">50%</button>
+  </div>
+  <div class="pct2-result" id="dc2-big">&mdash;</div>
+  <div class="ci2-bars" id="dc2-bars"></div>
+  <p class="tool-note">Same product at every discount (with your tax rate applied)</p>
+  <div class="uc2-table" id="dc2-table"></div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">
