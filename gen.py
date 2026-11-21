@@ -316,18 +316,22 @@ TOOL_BODIES = {
 "text-to-speech": """
 <div class="panel">
   <label>Text to read aloud</label>
-  <textarea id="tts-in" placeholder="Type or paste anything\u2026"></textarea>
+  <textarea id="tts-in" oninput="ttsStats()" placeholder="Type or paste anything&hellip;">MSCALE Tools runs entirely in your browser. Your text never leaves this page.</textarea>
+  <div class="jf-stats" id="tts-stats"></div>
   <div class="row">
-    <div><label>Voice</label><select id="tts-voice"></select></div>
-    <div><label>Speed: <span id="tts-ratev">1</span>\u00d7</label><input type="range" id="tts-rate" min="0.5" max="2" step="0.1" value="1" oninput="document.getElementById('tts-ratev').textContent=this.value"></div>
-    <div><label>Pitch</label><input type="range" id="tts-pitch" min="0.5" max="2" step="0.1" value="1"></div>
+    <div><label>Voice</label><select id="tts-voice" onchange="ttsStats()"></select></div>
+    <div><label>Speed: <span id="tts-ratev">1</span>&times;</label><input type="range" id="tts-rate" min="0.5" max="2" step="0.1" value="1" class="pg-slider" oninput="document.getElementById('tts-ratev').textContent=this.value; ttsStats()"></div>
+    <div><label>Pitch: <span id="tts-pitchv">1</span></label><input type="range" id="tts-pitch" min="0.5" max="2" step="0.1" value="1" class="pg-slider" oninput="document.getElementById('tts-pitchv').textContent=this.value"></div>
   </div>
-  <div class="row">
+  <div class="row" style="margin-top:12px">
     <button class="btn" onclick="ttsPlay()">Speak</button>
+    <button class="btn ghost" onclick="ttsPause()" id="tts-pause">Pause</button>
     <button class="btn ghost" onclick="ttsStop()">Stop</button>
+    <button class="btn ghost" onclick="ttsSample()">Sample text</button>
   </div>
   <div id="tts-msg" class="result"></div>
 </div>""",
+
 "typing-speed-test": """
 <div class="panel ty2">
   <div class="ty2-bar">
@@ -348,15 +352,29 @@ TOOL_BODIES = {
 
 "pomodoro-timer": """
 <div class="panel">
+  <div class="lr2-types">
+    <button class="lr2-type active" onclick="poShow('focus', this)">Focus</button>
+    <button class="lr2-type" onclick="poShow('short', this)">Short break</button>
+    <button class="lr2-type" onclick="poShow('long', this)">Long break</button>
+  </div>
+  <div class="row" style="margin-top:12px">
+    <div><label>Focus (min)</label><input type="number" id="po-focus-len" value="25" min="1" max="90" onchange="poSetLen()" /></div>
+    <div><label>Short break (min)</label><input type="number" id="po-short-len" value="5" min="1" max="30" onchange="poSetLen()" /></div>
+    <div><label>Long break (min)</label><input type="number" id="po-long-len" value="15" min="1" max="60" onchange="poSetLen()" /></div>
+  </div>
   <div id="po-mode" class="tool-note" style="text-align:center">Focus session</div>
   <div id="po-display" class="big-time">25:00</div>
-  <div class="row">
+  <div class="wc-bar" style="margin:10px auto 4px;max-width:420px"><div class="wc-bar-fill" id="po-prog" style="width:0%"></div></div>
+  <div class="row" style="margin-top:12px">
     <button class="btn" id="po-start" onclick="poToggle()">Start</button>
     <button class="btn ghost" onclick="poSkip()">Skip</button>
     <button class="btn ghost" onclick="poReset()">Reset</button>
+    <label class="pg-switch" style="margin-left:auto"><input type="checkbox" id="po-sound" checked onchange="" /><span class="pg-track"></span> Sound</label>
   </div>
   <div id="po-count" class="result">Completed focus sessions: 0</div>
+  <div class="jf-stats" id="po-dots" style="justify-content:center;margin-top:10px"></div>
 </div>""",
+
 "url-parser": """
 <div class="panel up2">
   <label>URL to parse &mdash; updates live</label>
@@ -1193,14 +1211,25 @@ TOOL_BODIES = {
   <p class="tool-note">Works for GST, VAT, sales tax \u2014 any percentage-based tax.</p>
 </div>""",
 "date-difference-calculator": """
-<div class="panel">
+<div class="panel dd2">
   <div class="row">
-    <div><label>Start date</label><input type="text" id="dd2-a" readonly placeholder="Pick start date"></div>
-    <div><label>End date</label><input type="text" id="dd2-b" readonly placeholder="Pick end date"></div>
+    <div><label>Start date</label><input type="text" id="dd2-a" readonly placeholder="Pick start date" oninput="dateDiff()"></div>
+    <div><label>End date</label><input type="text" id="dd2-b" readonly placeholder="Pick end date" oninput="dateDiff()"></div>
   </div>
-  <button class="btn" onclick="dateDiff()">Calculate difference</button>
-  <div id="dd2-out" class="result">Pick two dates.</div>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="dd2-inc" onchange="dateDiff()" /><span class="pg-track"></span> Include end date (day after shifts everything by 1)</label>
+  </div>
+  <div class="pct2-result" id="dd2-big">&mdash;</div>
+  <div class="jf-stats" id="dd2-dowchips"></div>
+  <table class="wc-table"><tbody>
+    <tr><th>Calendar breakdown</th><td id="dd2-ymd">&mdash;</td></tr>
+    <tr><th>Weeks + days</th><td id="dd2-wd">&mdash;</td></tr>
+    <tr><th>Business days (Mon&ndash;Fri)</th><td id="dd2-biz">&mdash;</td></tr>
+    <tr><th>Total hours</th><td id="dd2-hours">&mdash;</td></tr>
+    <tr><th>Total minutes</th><td id="dd2-mins">&mdash;</td></tr>
+  </tbody></table>
 </div>""",
+
 "find-and-replace": """
 <div class="panel fr2">
   <label>Text</label>

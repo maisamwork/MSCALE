@@ -41,13 +41,23 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Date Difference Calculator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Find the exact duration between two dates in days, weeks, months and years.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h1>Date Difference Calculator</h1></div><p>Find the exact duration between two dates in days, weeks, months and years.</p></div>
 
-<div class="panel">
+<div class="panel dd2">
   <div class="row">
-    <div><label>Start date</label><input type="text" id="dd2-a" readonly placeholder="Pick start date"></div>
-    <div><label>End date</label><input type="text" id="dd2-b" readonly placeholder="Pick end date"></div>
+    <div><label>Start date</label><input type="text" id="dd2-a" readonly placeholder="Pick start date" oninput="dateDiff()"></div>
+    <div><label>End date</label><input type="text" id="dd2-b" readonly placeholder="Pick end date" oninput="dateDiff()"></div>
   </div>
-  <button class="btn" onclick="dateDiff()">Calculate difference</button>
-  <div id="dd2-out" class="result">Pick two dates.</div>
+  <div class="lr2-types">
+    <label class="pg-switch"><input type="checkbox" id="dd2-inc" onchange="dateDiff()" /><span class="pg-track"></span> Include end date (day after shifts everything by 1)</label>
+  </div>
+  <div class="pct2-result" id="dd2-big">&mdash;</div>
+  <div class="jf-stats" id="dd2-dowchips"></div>
+  <table class="wc-table"><tbody>
+    <tr><th>Calendar breakdown</th><td id="dd2-ymd">&mdash;</td></tr>
+    <tr><th>Weeks + days</th><td id="dd2-wd">&mdash;</td></tr>
+    <tr><th>Business days (Mon&ndash;Fri)</th><td id="dd2-biz">&mdash;</td></tr>
+    <tr><th>Total hours</th><td id="dd2-hours">&mdash;</td></tr>
+    <tr><th>Total minutes</th><td id="dd2-mins">&mdash;</td></tr>
+  </tbody></table>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

@@ -43,15 +43,18 @@
 
 <div class="panel">
   <label>Text to read aloud</label>
-  <textarea id="tts-in" placeholder="Type or paste anything…"></textarea>
+  <textarea id="tts-in" oninput="ttsStats()" placeholder="Type or paste anything&hellip;">MSCALE Tools runs entirely in your browser. Your text never leaves this page.</textarea>
+  <div class="jf-stats" id="tts-stats"></div>
   <div class="row">
-    <div><label>Voice</label><select id="tts-voice"></select></div>
-    <div><label>Speed: <span id="tts-ratev">1</span>×</label><input type="range" id="tts-rate" min="0.5" max="2" step="0.1" value="1" oninput="document.getElementById('tts-ratev').textContent=this.value"></div>
-    <div><label>Pitch</label><input type="range" id="tts-pitch" min="0.5" max="2" step="0.1" value="1"></div>
+    <div><label>Voice</label><select id="tts-voice" onchange="ttsStats()"></select></div>
+    <div><label>Speed: <span id="tts-ratev">1</span>&times;</label><input type="range" id="tts-rate" min="0.5" max="2" step="0.1" value="1" class="pg-slider" oninput="document.getElementById('tts-ratev').textContent=this.value; ttsStats()"></div>
+    <div><label>Pitch: <span id="tts-pitchv">1</span></label><input type="range" id="tts-pitch" min="0.5" max="2" step="0.1" value="1" class="pg-slider" oninput="document.getElementById('tts-pitchv').textContent=this.value"></div>
   </div>
-  <div class="row">
+  <div class="row" style="margin-top:12px">
     <button class="btn" onclick="ttsPlay()">Speak</button>
+    <button class="btn ghost" onclick="ttsPause()" id="tts-pause">Pause</button>
     <button class="btn ghost" onclick="ttsStop()">Stop</button>
+    <button class="btn ghost" onclick="ttsSample()">Sample text</button>
   </div>
   <div id="tts-msg" class="result"></div>
 </div>

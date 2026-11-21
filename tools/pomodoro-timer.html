@@ -42,14 +42,27 @@
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><h1>Pomodoro Timer</h1></div><p>Run automatic 25/5 Pomodoro focus cycles with long breaks every fourth session and a completed-session counter.</p></div>
 
 <div class="panel">
+  <div class="lr2-types">
+    <button class="lr2-type active" onclick="poShow('focus', this)">Focus</button>
+    <button class="lr2-type" onclick="poShow('short', this)">Short break</button>
+    <button class="lr2-type" onclick="poShow('long', this)">Long break</button>
+  </div>
+  <div class="row" style="margin-top:12px">
+    <div><label>Focus (min)</label><input type="number" id="po-focus-len" value="25" min="1" max="90" onchange="poSetLen()" /></div>
+    <div><label>Short break (min)</label><input type="number" id="po-short-len" value="5" min="1" max="30" onchange="poSetLen()" /></div>
+    <div><label>Long break (min)</label><input type="number" id="po-long-len" value="15" min="1" max="60" onchange="poSetLen()" /></div>
+  </div>
   <div id="po-mode" class="tool-note" style="text-align:center">Focus session</div>
   <div id="po-display" class="big-time">25:00</div>
-  <div class="row">
+  <div class="wc-bar" style="margin:10px auto 4px;max-width:420px"><div class="wc-bar-fill" id="po-prog" style="width:0%"></div></div>
+  <div class="row" style="margin-top:12px">
     <button class="btn" id="po-start" onclick="poToggle()">Start</button>
     <button class="btn ghost" onclick="poSkip()">Skip</button>
     <button class="btn ghost" onclick="poReset()">Reset</button>
+    <label class="pg-switch" style="margin-left:auto"><input type="checkbox" id="po-sound" checked onchange="" /><span class="pg-track"></span> Sound</label>
   </div>
   <div id="po-count" class="result">Completed focus sessions: 0</div>
+  <div class="jf-stats" id="po-dots" style="justify-content:center;margin-top:10px"></div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

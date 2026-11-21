@@ -1934,15 +1934,39 @@ if ($("pal-in")) genPalette();
 /* ---------- Date & Time ---------- */
 function dateDiff() {
   const a = new Date($("dd2-a").value), b = new Date($("dd2-b").value);
+  if (!$("dd2-big")) return;
+  $("dd2-big").innerHTML = "&mdash;"; $("dd2-ymd").textContent = $("dd2-wd").textContent = $("dd2-biz").textContent = $("dd2-hours").textContent = $("dd2-mins").textContent = "\u2014";
+  $("dd2-dowchips").innerHTML = "";
   if (isNaN(a) || isNaN(b)) return;
-  const [s, e] = a <= b ? [a, b] : [b, a];
-  const days = Math.round((e - s) / 86400000);
-  let y = e.getFullYear() - s.getFullYear();
-  let m = e.getMonth() - s.getMonth();
-  let d = e.getDate() - s.getDate();
-  if (d < 0) { m--; d += new Date(e.getFullYear(), e.getMonth(), 0).getDate(); }
+  const inc = $("dd2-inc").checked;
+  const [st, en] = a <= b ? [a, b] : [b, a];
+  const enAdj = inc ? new Date(en.getFullYear(), en.getMonth(), en.getDate() + 1) : en;
+  const days = Math.round((enAdj - st) / 86400000);
+  if (days < 0) return;
+  let y = enAdj.getFullYear() - st.getFullYear();
+  let m = enAdj.getMonth() - st.getMonth();
+  let d = enAdj.getDate() - st.getDate();
+  if (d < 0) { m--; d += new Date(enAdj.getFullYear(), enAdj.getMonth(), 0).getDate(); }
   if (m < 0) { y--; m += 12; }
-  out("dd2-out", `<b>${days.toLocaleString()}</b> days total<br>or <b>${y}</b> years, <b>${m}</b> months, <b>${d}</b> days<br>or <b>${Math.floor(days / 7)}</b> weeks and ${days % 7} day(s)<br>or <b>${(days * 24).toLocaleString()}</b> hours`);
+  const dowS = st.toLocaleDateString(undefined, { weekday: "long" });
+  const dowE = en.toLocaleDateString(undefined, { weekday: "long" });
+  $("dd2-big").innerHTML = days.toLocaleString() + '<span class="pct2-big-sub">days total</span>';
+  $("dd2-dowchips").innerHTML =
+    '<span class="jf-chip"><b>' + dowS + '</b>starts on</span>' +
+    '<span class="jf-chip"><b>' + dowE + '</b>ends on</span>';
+  const ymd = (y ? y + " year" + (y === 1 ? "" : "s") + ", " : "") + (m ? m + " month" + (m === 1 ? "" : "s") + ", " : "") + d + " day" + (d === 1 ? "" : "s");
+  $("dd2-ymd").textContent = ymd;
+  $("dd2-wd").textContent = Math.floor(days / 7).toLocaleString() + " week(s) + " + (days % 7) + " day(s)";
+  let biz = 0;
+  const cap = Math.min(days, 200000);
+  for (let i = 0; i < cap; i++) {
+    const dd = new Date(st.getFullYear(), st.getMonth(), st.getDate() + i);
+    const w = dd.getDay();
+    if (w !== 0 && w !== 6) biz++;
+  }
+  $("dd2-biz").textContent = days > 200000 ? "> 200k (too many to count)" : biz.toLocaleString() + " weekdays";
+  $("dd2-hours").textContent = (days * 24).toLocaleString();
+  $("dd2-mins").textContent = (days * 24 * 60).toLocaleString();
 }
 
 /* ---------- Batch 9+10 tools ---------- */
@@ -2949,6 +2973,18 @@ function ttsLoad() {
   if (sel) sel.innerHTML = ttsVoices.map((v, i) => `<option value="${i}">${escHtml(v.name)} (${escHtml(v.lang)})</option>`).join("");
 }
 if ("speechSynthesis" in window) { ttsLoad(); speechSynthesis.onvoiceschanged = ttsLoad; }
+function ttsStats() {
+  const t = document.getElementById("tts-in").value;
+  if (!document.getElementById("tts-stats")) return;
+  const words = (t.trim().match(/\S+/g) || []).length;
+  const rate = Math.max(0.5, parseFloat(document.getElementById("tts-rate").value) || 1);
+  const mins = words / (150 * rate);
+  const eta = words ? (mins < 1 ? Math.max(1, Math.round(mins * 60)) + "s" : mins.toFixed(1) + " min") : "\u2014";
+  document.getElementById("tts-stats").innerHTML =
+    '<span class="jf-chip"><b>' + words + "</b>words</span>" +
+    '<span class="jf-chip"><b>' + t.length + "</b>characters</span>" +
+    '<span class="jf-chip"><b>' + eta + "</b>est. speak time</span>";
+}
 function ttsPlay() {
   if (!("speechSynthesis" in window)) { out("tts-msg", "<span class='error'>Your browser does not support speech synthesis.</span>"); return; }
   speechSynthesis.cancel();
@@ -2957,10 +2993,23 @@ function ttsPlay() {
   if (v) u.voice = v;
   u.rate = +document.getElementById("tts-rate").value;
   u.pitch = +document.getElementById("tts-pitch").value;
+  const p = document.getElementById("tts-pause");
+  if (p) p.textContent = "Pause";
   speechSynthesis.speak(u);
 }
-function ttsStop() { if ("speechSynthesis" in window) speechSynthesis.cancel(); }
-
+function ttsPause() {
+  if (!("speechSynthesis" in window)) return;
+  const btn = document.getElementById("tts-pause");
+  if (speechSynthesis.paused) { speechSynthesis.resume(); if (btn) btn.textContent = "Pause"; }
+  else if (speechSynthesis.speaking) { speechSynthesis.pause(); if (btn) btn.textContent = "Resume"; }
+}
+function ttsStop() { if ("speechSynthesis" in window) speechSynthesis.cancel(); const b = document.getElementById("tts-pause"); if (b) b.textContent = "Pause"; }
+function ttsSample() {
+  const el = document.getElementById("tts-in");
+  el.value = "Welcome to MSCALE Tools! This free text to speech reader uses the voices already installed on your device. Adjust the speed and pitch, then press Speak again to compare.";
+  ttsStats();
+}
+if (document.getElementById("tts-in")) ttsStats();
 /* ---- Typing Speed Test ---- */
 const TY_WORDS = "the of and to in is you that it he was for on are as with his they at be this have from or one had by word but not what all were we when your can said there use an each which she do how their if will up other about out many then them these so some her would make like him into time has look two more write go see number no way could people my than first water been call who oil its now find long down day did get come made may part".split(" ");
 let tyList = [], tyIdx = 0, tyStart = 0, tyDone = false, tyErrWords = 0, tyTypedWords = 0, tyCorrectWords = 0;
@@ -3063,26 +3112,53 @@ function ty2Finish() {
 
 /* ---- Pomodoro Timer ---- */
 const PO_LEN = { focus: 25 * 60000, short: 5 * 60000, long: 15 * 60000 };
-let poPhase = "focus", poEnd = 0, poTimer = null, poCount = 0, poLeft = 0, poRun = false;
+let poPhase = "focus", poEnd = 0, poTimer = null, poCount = 0, poLeft = 0, poRun = false, PO_CYCLE = 0;
 function poFmt(ms) {
   const s = Math.max(0, Math.ceil(ms / 1000));
   return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
 }
 function poLabel() { return poPhase === "focus" ? "Focus session" : poPhase === "short" ? "Short break" : "Long break"; }
+function poDots() {
+  const dots = document.getElementById("po-dots");
+  if (dots) dots.innerHTML = [1, 2, 3, 4].map((i) => '<span class="jf-chip"><b>' + (PO_CYCLE % 4 >= i % 4 || (PO_CYCLE % 4 === 0 && PO_CYCLE > 0 && i === 4) ? "\u25CF" : "\u25CB") + "</b>cycle " + i + "</span>").join("");
+}
 function poTick() {
-  const left = poEnd - Date.now();
-  if (left <= 0) { poNext(); return; }
-  document.getElementById("po-display").textContent = poFmt(left);
+  const el = document.getElementById("po-display");
+  const left = Math.max(0, poEnd - Date.now());
+  const total = PO_LEN[poPhase] || 1;
+  if (el) el.textContent = poFmt(left);
+  const prog = document.getElementById("po-prog");
+  if (prog) prog.style.width = Math.min(100, Math.round((total - left) / total * 100)) + "%";
+  if (left <= 0 && poRun) { poNext(); return; }
+}
+function poBeep() {
+  const want = document.getElementById("po-sound");
+  if (want && !want.checked) return;
+  try {
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.frequency.value = 880; g.gain.value = 0.08;
+    o.start(); o.stop(ac.currentTime + 0.18);
+    setTimeout(() => { try { o.frequency.value = 660; o.start(); o.stop(ac.currentTime + 0.22); } catch (e) {} }, 240);
+  } catch (e) {}
 }
 function poNext() {
   if (poPhase === "focus") {
     poCount++;
-    poPhase = poCount % 4 === 0 ? "long" : "short";
-    document.getElementById("po-count").textContent = "Completed focus sessions: " + poCount;
+    PO_CYCLE++;
+    poCountEl();
+    try { const t = parseInt(localStorage.getItem("mscale-pomo-total") || "0", 10) || 0; localStorage.setItem("mscale-pomo-total", String(t + 1)); } catch (e) {}
+    poPhase = PO_CYCLE % 4 === 0 ? "long" : "short";
   } else poPhase = "focus";
   poEnd = Date.now() + PO_LEN[poPhase];
   document.getElementById("po-mode").textContent = poLabel();
+  poBeep();
   poTick();
+}
+function poCountEl() {
+  const el = document.getElementById("po-count");
+  if (el) el.innerHTML = "Completed focus sessions: <b>" + poCount + "</b>" + (localStorage.getItem("mscale-pomo-total") ? " <span style='color:var(--soft)'>&middot; all-time " + localStorage.getItem("mscale-pomo-total") + "</span>" : "");
 }
 function poToggle() {
   const btn = document.getElementById("po-start");
@@ -3096,16 +3172,41 @@ function poToggle() {
 }
 function poSkip() {
   if (poRun) poEnd = Date.now();
-  else { poLeft = 0; poNext(); }
+  else { poLeft = 0; poEnd = Date.now(); poNext(); }
 }
 function poReset() {
   clearInterval(poTimer);
-  poRun = false; poPhase = "focus"; poCount = 0; poLeft = 0;
-  document.getElementById("po-display").textContent = "25:00";
+  poRun = false; poPhase = "focus"; poCount = 0; poLeft = 0; poEnd = 0; PO_CYCLE = 0;
+  document.getElementById("po-display").textContent = poFmt(PO_LEN.focus);
   document.getElementById("po-mode").textContent = "Focus session";
-  document.getElementById("po-count").textContent = "Completed focus sessions: 0";
+  poCountEl();
   document.getElementById("po-start").textContent = "Start";
+  const prog = document.getElementById("po-prog");
+  if (prog) prog.style.width = "0%";
+  poDots();
 }
+function poShow(phase, btn) {
+  if (btn && btn.parentNode) btn.parentNode.querySelectorAll(".lr2-type").forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  clearInterval(poTimer);
+  poRun = false; poPhase = phase; poLeft = 0;
+  document.getElementById("po-mode").textContent = poLabel();
+  document.getElementById("po-display").textContent = poFmt(PO_LEN[phase]);
+  document.getElementById("po-start").textContent = "Start";
+  const prog = document.getElementById("po-prog");
+  if (prog) prog.style.width = "0%";
+}
+function poSetLen() {
+  const f = Math.max(1, parseInt(document.getElementById("po-focus-len").value) || 25);
+  const s = Math.max(1, parseInt(document.getElementById("po-short-len").value) || 5);
+  const l = Math.max(1, parseInt(document.getElementById("po-long-len").value) || 15);
+  PO_LEN.focus = f * 60000; PO_LEN.short = s * 60000; PO_LEN.long = l * 60000;
+  if (!poRun && !poLeft) { poEnd = 0; poShowInit(); }
+}
+function poShowInit() {
+  document.getElementById("po-display").textContent = poFmt(PO_LEN[poPhase]);
+}
+if (document.getElementById("po-display")) { poCountEl(); poDots(); }
 
 /* ---- URL Parser ---- */
 function up2CopyJson(btn) {
