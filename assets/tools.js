@@ -4820,3 +4820,172 @@ function cc2Extras() {
   cc2Random = function () { oldRand(); cc2Extras(); };
   cc2Extras();
 })();
+
+
+/* ---------- DT2: shared upgrades for the date micro-tools (overrides the originals above) ---------- */
+function dt2Chip(b, label, bad) { return '<span class="jf-chip' + (bad ? " jf-chip-bad" : "") + '"><b>' + b + "</b>" + label + "</span>"; }
+function dt2IsoWeek(d) {
+  var t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  var dow = (t.getUTCDay() + 6) % 7;
+  t.setUTCDate(t.getUTCDate() - dow + 3);
+  var ft = new Date(Date.UTC(t.getUTCFullYear(), 0, 4));
+  var fd = (ft.getUTCDay() + 6) % 7;
+  ft.setUTCDate(ft.getUTCDate() - fd + 3);
+  return { year: t.getUTCFullYear(), week: 1 + Math.round((t - ft) / (7 * 86400000)) };
+}
+function dt2Ins(date) {
+  var wrap = document.getElementById("dt2-ins");
+  if (!wrap || !date || isNaN(date)) return;
+  var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  var doy = Math.floor((date - new Date(date.getFullYear(), 0, 1)) / 86400000) + 1;
+  var iso = dt2IsoWeek(date);
+  var now = new Date();
+  var base = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var tgt = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  var rel = Math.round((tgt - base) / 86400000);
+  var relTxt = rel === 0 ? "today" : rel > 0 ? "in " + rel.toLocaleString() + " d" : Math.abs(rel).toLocaleString() + " d ago";
+  var q = "Q" + (Math.floor(date.getMonth() / 3) + 1);
+  wrap.innerHTML =
+    dt2Chip(days[date.getDay()], "weekday") +
+    dt2Chip(doy.toLocaleString(), "day of year") +
+    dt2Chip("W" + iso.week + " " + iso.year, "ISO week") +
+    dt2Chip(relTxt, "from today") +
+    dt2Chip(q, "quarter");
+}
+function dt2InsDur(seconds) {
+  var wrap = document.getElementById("dt2-ins");
+  if (!wrap || seconds === null || seconds === undefined || isNaN(seconds) || seconds < 0) return;
+  seconds = Math.round(seconds);
+  wrap.innerHTML =
+    dt2Chip((seconds / 3600).toFixed(2), "decimal hours") +
+    dt2Chip((seconds / 60).toFixed(1), "minutes") +
+    dt2Chip((seconds / 28800).toFixed(2), "8-h workdays") +
+    dt2Chip(seconds.toLocaleString(), "total seconds");
+}
+function dt2Copy(id, btn) { var el = $(id); if (el) copyText(el.textContent.replace(/\s+/g, " ").trim(), btn); }
+function ad2Pre(n) { if ($("ad-n")) $("ad-n").value = String(n); dtAddDays(); }
+function dw2Pre(offset) { var d = new Date(); d.setDate(d.getDate() + offset); if ($("dw-date")) $("dw-date").value = dISO(d); dtDow(); }
+function wn2Off(offset) { var d = new Date(); d.setDate(d.getDate() + offset); if ($("wn-date")) $("wn-date").value = dISO(d); dtWeekNum(); }
+function lp2Pre(y) { if ($("lp-y")) $("lp-y").value = String(y); dtLeap(); }
+function s2Pre(s) { if ($("s2-sec")) $("s2-sec").value = String(s); dtS2Hms(); }
+function h2Pre(h, m, s) { if ($("h2-h")) $("h2-h").value = String(h); if ($("h2-m")) $("h2-m").value = String(m); if ($("h2-s")) $("h2-s").value = String(s); dtHms2S(); }
+function mt2Preset(v) { if ($("mt-tv")) $("mt-tv").value = v; if ($("mt-time")) $("mt-time").value = v; dtMilitary(); }
+function mt2Now() { var d = new Date(); mt2Preset(String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0")); }
+function bd2Pre(mode) {
+  var t = new Date(), a, b;
+  if (mode === "month") { a = new Date(t.getFullYear(), t.getMonth(), 1); b = new Date(t.getFullYear(), t.getMonth() + 1, 0); }
+  else if (mode === "q") { var q0 = Math.floor(t.getMonth() / 3) * 3; a = new Date(t.getFullYear(), q0, 1); b = new Date(t.getFullYear(), q0 + 3, 0); }
+  else { a = new Date(t); b = new Date(t); b.setDate(b.getDate() + 30); }
+  if ($("bd-a")) $("bd-a").value = dISO(a);
+  if ($("bd-b")) $("bd-b").value = dISO(b);
+  dtBizDays();
+}
+function dt2MilChips(v) {
+  var m = (v || "").match(/^\s*(\d{1,2}):(\d{2})\s*$/);
+  if (!m || +m[1] > 23 || +m[2] > 59) return;
+  var h = +m[1], mi = +m[2];
+  dt2Ins(new Date(2000, 0, 2, h, mi, 0));
+}
+
+function dtAddDays() {
+  var d = _v("ad-date"), n = _n("ad-n");
+  if (!d || n === null) { out("ad-out", "Pick a date and enter a number of days.", "err"); if (document.getElementById("dt2-ins")) document.getElementById("dt2-ins").innerHTML = ""; return; }
+  var r = pISO(d); r.setDate(r.getDate() + n);
+  var skip = document.getElementById("ad2-wk") && document.getElementById("ad2-wk").checked && (r.getDay() === 0 || r.getDay() === 6);
+  var note = "";
+  if (skip) { note = r.getDay() === 6 ? "<br><span class=\"dim\">Landed on a Saturday \u2014 moved to Monday.</span>" : "<br><span class=\"dim\">Landed on a Sunday \u2014 moved to Monday.</span>"; r.setDate(r.getDay() === 6 ? r.getDate() + 2 : r.getDate() + 1); }
+  var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  out("ad-out", "<b>" + dISO(r) + "</b><br>" + days[r.getDay()] + ", " + r.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) + note);
+  dt2Ins(r);
+}
+function dtDow() {
+  var d = _v("dw-date");
+  if (!d) { out("dw-out", "Pick a date first.", "err"); return; }
+  var r = pISO(d);
+  var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  var start = new Date(r.getFullYear(), 0, 1);
+  var doy = Math.floor((r - start) / 86400000) + 1;
+  out("dw-out", "<b>" + days[r.getDay()] + "</b><br>" + r.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }) + " &nbsp;\u00b7&nbsp; day " + doy + " of " + r.getFullYear());
+  dt2Ins(r);
+}
+function dtWeekNum() {
+  var d = _v("wn-date");
+  if (!d) { out("wn-out", "Pick a date first.", "err"); return; }
+  var r = pISO(d);
+  var iso = dt2IsoWeek(r);
+  var mon = new Date(r); mon.setDate(mon.getDate() - ((mon.getDay() + 6) % 7));
+  var sun = new Date(mon); sun.setDate(sun.getDate() + 6);
+  var pct = Math.round(iso.week / 52.14 * 100);
+  out("wn-out", "<b>Week " + iso.week + "</b> of " + iso.year + "<br><span class=\"dim\">ISO-8601 (weeks start Monday; week 1 holds the first Thursday) \u00b7 begins " + dISO(mon) + ", ends " + dISO(sun) + " \u00b7 " + pct + "% through the year</span>");
+  dt2Ins(r);
+}
+function dtLeap() {
+  var y = _n("lp-y");
+  if (y === null || Math.floor(y) !== y) { out("lp-out", "Enter a whole year.", "err"); if (document.getElementById("dt2-ins")) document.getElementById("dt2-ins").innerHTML = ""; return; }
+  var isL = (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0);
+  var why = isL ? ((y % 400 === 0 && y % 100 === 0) ? "divisible by 400, so the century exception does not apply" : "divisible by 4 and not by 100") : ((y % 100 === 0) ? "a century year not divisible by 400" : "not divisible by 4");
+  var next = [];
+  var yy = y;
+  while (next.length < 5) { yy++; if ((yy % 4 === 0 && yy % 100 !== 0) || yy % 400 === 0) next.push(yy); }
+  out("lp-out", y + " is <b>" + (isL ? "a leap year" : "not a leap year") + "</b> \u2014 " + why + ".<br>February " + y + ": " + (isL ? 29 : 28) + " days<br>Next leap years: " + next.join(", "));
+  var wrap = document.getElementById("dt2-ins");
+  if (wrap) {
+    var chips = dt2Chip(isL ? 366 : 365, "days in " + y);
+    if (isL) chips += dt2Chip("Feb 29, " + y, "extra day");
+    else chips += dt2Chip(next[0], "next leap year");
+    wrap.innerHTML = chips;
+  }
+}
+function dtS2Hms() {
+  var s = _n("s2-sec");
+  if (s === null || s < 0) { out("s2-out", "Enter a number of seconds (0 or more).", "err"); if (document.getElementById("dt2-ins")) document.getElementById("dt2-ins").innerHTML = ""; return; }
+  s = Math.round(s);
+  var h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+  out("s2-out", "<b>" + h + ":" + String(m).padStart(2, "0") + ":" + String(sec).padStart(2, "0") + "</b><br>" + nfmt(h, 0) + " hours &nbsp;\u00b7&nbsp; " + m + " minutes &nbsp;\u00b7&nbsp; " + sec + " seconds");
+  dt2InsDur(s);
+}
+function dtHms2S() {
+  var h = _n("h2-h"), m = _n("h2-m"), s = _n("h2-s");
+  if (h === null || m === null || s === null) { out("h2-out", "Enter all three fields (0 is fine).", "err"); if (document.getElementById("dt2-ins")) document.getElementById("dt2-ins").innerHTML = ""; return; }
+  var tot = h * 3600 + m * 60 + s;
+  out("h2-out", "<b>" + nfmt(tot, 0) + "</b> seconds");
+  dt2InsDur(tot);
+}
+function dtMilitary() {
+  var t = _v("mt-tv");
+  if (!t) { out("mt-out", "Pick a time first.", "err"); return; }
+  var p = t.split(":"), h = +p[0], m = +p[1];
+  var ap = h >= 12 ? "PM" : "AM";
+  var h12 = h % 12; if (h12 === 0) h12 = 12;
+  out("mt-out", "<b>" + t + "</b> in 24-hour time = <b>" + h12 + ":" + String(m).padStart(2, "0") + " " + ap + "</b> in 12-hour time");
+  dt2MilChips(t);
+}
+function dtMilRev() {
+  var t = _v("mt24");
+  var o = $("mt-out2"); if (!o) return;
+  var m = t.match(/^\s*(\d{1,2}):(\d{2})\s*$/);
+  if (!m) { o.innerHTML = '<span class="dim">Enter 24-hour time as HH:MM, e.g. 21:15.</span>'; return; }
+  var h = +m[1], mi = +m[2];
+  if (h > 23 || mi > 59) { o.innerHTML = '<span class="dim">Hours 0\u201323, minutes 0\u201359.</span>'; return; }
+  var ap = h >= 12 ? "PM" : "AM";
+  var h12 = h % 12; if (h12 === 0) h12 = 12;
+  o.innerHTML = "<b>" + t + "</b> = <b>" + h12 + ":" + String(mi).padStart(2, "0") + " " + ap + "</b>";
+}
+function dtBizDays() {
+  var a = _v("bd-a"), b = _v("bd-b");
+  if (!a || !b) { out("bd-out", "Pick both dates.", "err"); if (document.getElementById("dt2-ins")) document.getElementById("dt2-ins").innerHTML = ""; return; }
+  var d1 = pISO(a), d2 = pISO(b);
+  if (d2 < d1) { var tmp = d1; d1 = d2; d2 = tmp; }
+  var biz = 0, cal = Math.round((d2 - d1) / 86400000);
+  var cur = new Date(d1);
+  for (var i = 0; i < cal; i++) { var dow = cur.getDay(); if (dow !== 0 && dow !== 6) biz++; cur.setDate(cur.getDate() + 1); }
+  out("bd-out", "<b>" + biz + " business days</b> (Mon\u2013Fri) between " + a + " and " + b + "<br>Calendar span: " + cal + " days &nbsp;\u00b7&nbsp; Weekend days: " + (cal - biz));
+  var wrap = document.getElementById("dt2-ins");
+  if (wrap) {
+    var weeks = cal / 7;
+    wrap.innerHTML =
+      dt2Chip(weeks.toFixed(1), "weeks in span") +
+      dt2Chip(cal > 0 ? (biz / weeks).toFixed(1) : "\u2014", "business days / week") +
+      dt2Chip(biz > 0 ? Math.ceil(biz / 5) : 0, "working weeks (5-day)");
+  }
+}

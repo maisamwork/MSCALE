@@ -167,9 +167,62 @@ def rand_body(kind):
     return f'<div class="panel">{ui}</div>'
 
 def date_body(kind):
+    PRESETS = {
+        "adddays":
+            '<button type="button" class="ir2-preset" onclick="ad2Pre(7)">+7 days</button>'
+            '<button type="button" class="ir2-preset" onclick="ad2Pre(30)">+30 days</button>'
+            '<button type="button" class="ir2-preset" onclick="ad2Pre(90)">+90 days</button>'
+            '<button type="button" class="ir2-preset" onclick="ad2Pre(365)">+1 year</button>'
+            '<button type="button" class="ir2-preset" onclick="ad2Pre(-7)">&minus;7 days</button>',
+        "dayofweek":
+            '<button type="button" class="ir2-preset" onclick="dw2Pre(0)">Today</button>'
+            '<button type="button" class="ir2-preset" onclick="dw2Pre(1)">Tomorrow</button>'
+            '<button type="button" class="ir2-preset" onclick="dw2Pre(7)">Next week</button>',
+        "weeknumber":
+            '<button type="button" class="ir2-preset" onclick="wn2Off(0)">Today</button>'
+            '<button type="button" class="ir2-preset" onclick="wn2Off(1)">Tomorrow</button>',
+        "leap":
+            '<button type="button" class="ir2-preset" onclick="lp2Pre(2000)">2000</button>'
+            '<button type="button" class="ir2-preset" onclick="lp2Pre(1900)">1900</button>'
+            '<button type="button" class="ir2-preset" onclick="lp2Pre(2100)">2100</button>'
+            '<button type="button" class="ir2-preset" onclick="lp2Pre(2024)">2024</button>',
+        "s2hms":
+            '<button type="button" class="ir2-preset" onclick="s2Pre(60)">1 minute</button>'
+            '<button type="button" class="ir2-preset" onclick="s2Pre(3600)">1 hour</button>'
+            '<button type="button" class="ir2-preset" onclick="s2Pre(86400)">1 day</button>'
+            '<button type="button" class="ir2-preset" onclick="s2Pre(604800)">1 week</button>'
+            '<button type="button" class="ir2-preset" onclick="s2Pre(1000000)">1,000,000 s</button>',
+        "hms2s":
+            '<button type="button" class="ir2-preset" onclick="h2Pre(0, 3, 0)">3-min song</button>'
+            '<button type="button" class="ir2-preset" onclick="h2Pre(1, 30, 0)">90-min lecture</button>'
+            '<button type="button" class="ir2-preset" onclick="h2Pre(8, 0, 0)">8-h workday</button>'
+            '<button type="button" class="ir2-preset" onclick="h2Pre(24, 0, 0)">1 day</button>',
+        "military":
+            '<button type="button" class="ir2-preset" onclick="mt2Preset(\'09:00\')">09:00</button>'
+            '<button type="button" class="ir2-preset" onclick="mt2Preset(\'13:30\')">13:30</button>'
+            '<button type="button" class="ir2-preset" onclick="mt2Preset(\'21:15\')">21:15</button>'
+            '<button type="button" class="ir2-preset" onclick="mt2Preset(\'00:00\')">00:00</button>'
+            '<button type="button" class="ir2-preset" onclick="mt2Now()">Now</button>',
+        "bizdays":
+            '<button type="button" class="ir2-preset" onclick="bd2Pre(\'month\')">This month</button>'
+            '<button type="button" class="ir2-preset" onclick="bd2Pre(\'30\')">Next 30 days</button>'
+            '<button type="button" class="ir2-preset" onclick="bd2Pre(\'q\')">This quarter</button>',
+    }
+    pre = PRESETS.get(kind, "")
+    acts = {
+        "adddays": "ad-out", "dayofweek": "dw-out", "weeknumber": "wn-out", "leap": "lp-out",
+        "s2hms": "s2-out", "hms2s": "h2-out", "military": "mt-out", "bizdays": "bd-out",
+    }.get(kind)
+    tail = ""
+    if acts:
+        tail = ('<div id="dt2-ins" class="jf-stats" style="margin-top:12px"></div>'
+                '<div class="lr2-actions" style="margin-top:6px">'
+                '<button type="button" class="btn ghost" onclick="dt2Copy(\'' + acts + '\', this)">Copy result</button>'
+                '</div>')
     if kind == "adddays":
         ui = ('<div class="row"><div><label for="ad-date">Start date</label><input type="text" id="ad-date" class="dt-input" readonly placeholder="Pick a date"/></div>'
-              '<div><label for="ad-n">Days to add (negative to subtract)</label><input type="number" id="ad-n" value="30" step="1"/></div></div>'
+              '<div><label for="ad-n">Days to add (negative to subtract)</label><input type="number" id="ad-n" value="30" step="1" oninput="dtAddDays()"/></div></div>'
+              '<label class="pg-switch"><input type="checkbox" id="ad2-wk" onchange="dtAddDays()" /><span class="pg-track"></span> If it lands on a weekend, move to Monday</label>'
               '<button class="btn" onclick="dtAddDays()">Calculate</button>'
               '<div id="ad-out" class="result" aria-live="polite"></div>')
     elif kind == "dayofweek":
@@ -181,31 +234,32 @@ def date_body(kind):
               '<button class="btn" onclick="dtWeekNum()">Get week number</button>'
               '<div id="wn-out" class="result" aria-live="polite"></div>')
     elif kind == "leap":
-        ui = ('<div class="row"><div><label for="lp-y">Year</label><input type="number" id="lp-y" value="2024" step="1"/></div></div>'
+        ui = ('<div class="row"><div><label for="lp-y">Year</label><input type="number" id="lp-y" value="2024" step="1" oninput="dtLeap()"/></div></div>'
               '<button class="btn" onclick="dtLeap()">Check leap year</button>'
               '<div id="lp-out" class="result" aria-live="polite"></div>')
     elif kind == "s2hms":
-        ui = ('<div class="row"><div><label for="s2-sec">Total seconds</label><input type="number" id="s2-sec" value="14537" step="1"/></div></div>'
+        ui = ('<div class="row"><div><label for="s2-sec">Total seconds</label><input type="number" id="s2-sec" value="14537" step="1" oninput="dtS2Hms()"/></div></div>'
               '<button class="btn" onclick="dtS2Hms()">Convert</button>'
               '<div id="s2-out" class="result" aria-live="polite"></div>')
     elif kind == "hms2s":
-        ui = ('<div class="row"><div><label for="h2-h">Hours</label><input type="number" id="h2-h" value="1" min="0" step="1"/></div>'
-              '<div><label for="h2-m">Minutes</label><input type="number" id="h2-m" value="45" min="0" step="1"/></div>'
-              '<div><label for="h2-s">Seconds</label><input type="number" id="h2-s" value="0" min="0" step="1"/></div></div>'
+        ui = ('<div class="row"><div><label for="h2-h">Hours</label><input type="number" id="h2-h" value="1" min="0" step="1" oninput="dtHms2S()"/></div>'
+              '<div><label for="h2-m">Minutes</label><input type="number" id="h2-m" value="45" min="0" step="1" oninput="dtHms2S()"/></div>'
+              '<div><label for="h2-s">Seconds</label><input type="number" id="h2-s" value="0" min="0" step="1" oninput="dtHms2S()"/></div></div>'
               '<button class="btn" onclick="dtHms2S()">Convert</button>'
               '<div id="h2-out" class="result" aria-live="polite"></div>')
     elif kind == "military":
         ui = ('<div class="row"><div><label for="mt-time">Time (12-hour)</label><input type="text" id="mt-time" class="dt-input" readonly placeholder="09:00"/><input type="hidden" id="mt-tv" value="09:00"/></div></div>'
               '<button class="btn" onclick="dtMilitary()">Convert to 24-hour</button>'
               '<div id="mt-out" class="result" aria-live="polite"></div>'
-              '<div class="row"><div><label for="mt24">24-hour value (HH:MM)</label><input type="text" id="mt24" placeholder="21:15" autocomplete="off" oninput="dtMilRev()"/></div></div>'
+              '<div class="row"><div><label for="mt24">24-hour value (HH:MM)</label><input type="text" id="mt24" placeholder="21:15" autocomplete="off" oninput="dtMilRev(); dt2MilChips(this.value)"/></div></div>'
               '<div id="mt-out2" class="result" aria-live="polite"></div>')
     else:
         ui = ('<div class="row"><div><label for="bd-a">Start date</label><input type="text" id="bd-a" class="dt-input" readonly placeholder="Pick start date"/></div>'
               '<div><label for="bd-b">End date</label><input type="text" id="bd-b" class="dt-input" readonly placeholder="Pick end date"/></div></div>'
               '<button class="btn" onclick="dtBizDays()">Count business days</button>'
               '<div id="bd-out" class="result" aria-live="polite"></div>')
-    return f'<div class="panel">{ui}</div>'
+    pre_html = ('<div class="ir2-presets" style="margin-bottom:10px">' + pre + '</div>') if pre else ""
+    return f'<div class="panel">{pre_html}{ui}{tail}</div>'
 
 MEGA2 = {}
 CONTENT2 = {}
