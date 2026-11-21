@@ -41,11 +41,21 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Age Calculator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Calculate your exact age in years, months and days from your date of birth.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg><h1>Age Calculator</h1></div><p>Calculate your exact age in years, months and days from your date of birth.</p></div>
 
-<div class="panel">
+<div class="panel ag2">
   <label>Date of birth</label>
-  <input type="text" id="age-dob" readonly placeholder="Pick your date of birth">
-  <button class="btn" onclick="ageCalc()">Calculate age</button>
-  <div id="age-out" class="result">Pick your date of birth.</div>
+  <input type="text" id="age-dob" readonly placeholder="Pick your date of birth" oninput="ageCalc()">
+  <div class="row">
+    <div><label>Compare with (defaults to today)</label><input type="text" id="ag2-on" readonly placeholder="Today" /></div>
+  </div>
+  <div class="pct2-result" id="ag2-big">&mdash;</div>
+  <table class="wc-table ag2-table"><tbody>
+    <tr><th>Total months</th><td id="ag2-months">—</td></tr>
+    <tr><th>Total weeks</th><td id="ag2-weeks">—</td></tr>
+    <tr><th>Total days</th><td id="ag2-days">—</td></tr>
+    <tr><th>Total hours</th><td id="ag2-hours">—</td></tr>
+    <tr><th>Next birthday in</th><td id="ag2-next">—</td></tr>
+    <tr><th>Day of birth</th><td id="ag2-dow">—</td></tr>
+  </tbody></table>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

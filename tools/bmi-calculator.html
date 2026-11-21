@@ -41,13 +41,30 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "BMI Calculator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Web", "description": "Calculate your Body Mass Index (BMI) instantly from weight and height, with WHO weight category.", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
 <div class="tool-head"><div class="tool-title"><svg class="tool-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/></svg><h1>BMI Calculator</h1></div><p>Calculate your Body Mass Index (BMI) instantly from weight and height, with WHO weight category.</p></div>
 
-<div class="panel">
-  <div class="row">
-    <div><label>Weight (kg)</label><input type="number" id="bmi-w" placeholder="70" /></div>
-    <div><label>Height (cm)</label><input type="number" id="bmi-h" placeholder="175" /></div>
+<div class="panel bm2">
+  <div class="lr2-types">
+    <button class="lr2-type active" id="bm2-metric" onclick="bm2Units('metric', this)">Metric (kg / cm)</button>
+    <button class="lr2-type" id="bm2-imperial" onclick="bm2Units('imperial', this)">Imperial (lb / ft+in)</button>
   </div>
-  <button class="btn" onclick="bmiCalc()">Calculate BMI</button>
-  <div id="bmi-out" class="result">Enter weight and height.</div>
+  <div id="bm2-metric-pane">
+    <div class="row">
+      <div><label>Weight (kg)</label><input type="number" id="bmi-w" value="70" oninput="bmiCalc()" /></div>
+      <div><label>Height (cm)</label><input type="number" id="bmi-h" value="175" oninput="bmiCalc()" /></div>
+    </div>
+  </div>
+  <div id="bm2-imperial-pane" style="display:none">
+    <div class="row">
+      <div><label>Weight (lb)</label><input type="number" id="bm2-wlb" value="155" oninput="bmiCalc()" /></div>
+      <div><label>Height</label><div class="row bm2-ft"><input type="number" id="bm2-ft" value="5" placeholder="ft" oninput="bmiCalc()" /><input type="number" id="bm2-in" value="9" placeholder="in" oninput="bmiCalc()" /></div></div>
+    </div>
+  </div>
+  <div class="pct2-result" id="bmi-big">&mdash;</div>
+  <div class="bm2-gauge">
+    <div class="bm2-gauge-track"><div class="bm2-gauge-seg u1"></div><div class="bm2-gauge-seg u2"></div><div class="bm2-gauge-seg u3"></div><div class="bm2-gauge-seg u4"></div><div class="bm2-gauge-marker" id="bm2-marker"></div></div>
+    <div class="bm2-gauge-labels"><span>15</span><span>18.5</span><span>25</span><span>30</span><span>40</span></div>
+  </div>
+  <div id="bmi-out" class="bm2-cat"></div>
+  <div class="bm2-healthy" id="bm2-healthy"></div>
 </div>
 <div class='ad-slot' data-ad-slot='tool-top' aria-label='Advertisement'><span class='ad-tag'>Ad</span><div class='ad-ph'>970 × 120 ad space — paste your ad network code here</div></div>
 <div class="article">

@@ -695,31 +695,63 @@ TOOL_BODIES = {
 </div>""",
 
 "bmi-calculator": """
-<div class="panel">
-  <div class="row">
-    <div><label>Weight (kg)</label><input type="number" id="bmi-w" placeholder="70" /></div>
-    <div><label>Height (cm)</label><input type="number" id="bmi-h" placeholder="175" /></div>
+<div class="panel bm2">
+  <div class="lr2-types">
+    <button class="lr2-type active" id="bm2-metric" onclick="bm2Units('metric', this)">Metric (kg / cm)</button>
+    <button class="lr2-type" id="bm2-imperial" onclick="bm2Units('imperial', this)">Imperial (lb / ft+in)</button>
   </div>
-  <button class="btn" onclick="bmiCalc()">Calculate BMI</button>
-  <div id="bmi-out" class="result">Enter weight and height.</div>
+  <div id="bm2-metric-pane">
+    <div class="row">
+      <div><label>Weight (kg)</label><input type="number" id="bmi-w" value="70" oninput="bmiCalc()" /></div>
+      <div><label>Height (cm)</label><input type="number" id="bmi-h" value="175" oninput="bmiCalc()" /></div>
+    </div>
+  </div>
+  <div id="bm2-imperial-pane" style="display:none">
+    <div class="row">
+      <div><label>Weight (lb)</label><input type="number" id="bm2-wlb" value="155" oninput="bmiCalc()" /></div>
+      <div><label>Height</label><div class="row bm2-ft"><input type="number" id="bm2-ft" value="5" placeholder="ft" oninput="bmiCalc()" /><input type="number" id="bm2-in" value="9" placeholder="in" oninput="bmiCalc()" /></div></div>
+    </div>
+  </div>
+  <div class="pct2-result" id="bmi-big">&mdash;</div>
+  <div class="bm2-gauge">
+    <div class="bm2-gauge-track"><div class="bm2-gauge-seg u1"></div><div class="bm2-gauge-seg u2"></div><div class="bm2-gauge-seg u3"></div><div class="bm2-gauge-seg u4"></div><div class="bm2-gauge-marker" id="bm2-marker"></div></div>
+    <div class="bm2-gauge-labels"><span>15</span><span>18.5</span><span>25</span><span>30</span><span>40</span></div>
+  </div>
+  <div id="bmi-out" class="bm2-cat"></div>
+  <div class="bm2-healthy" id="bm2-healthy"></div>
 </div>""",
+
 "age-calculator": """
-<div class="panel">
+<div class="panel ag2">
   <label>Date of birth</label>
-  <input type="text" id="age-dob" readonly placeholder="Pick your date of birth">
-  <button class="btn" onclick="ageCalc()">Calculate age</button>
-  <div id="age-out" class="result">Pick your date of birth.</div>
-</div>""",
-"loan-emi-calculator": """
-<div class="panel">
+  <input type="text" id="age-dob" readonly placeholder="Pick your date of birth" oninput="ageCalc()">
   <div class="row">
-    <div><label>Loan amount</label><input type="number" id="emi-p" placeholder="10000" /></div>
-    <div><label>Interest rate (% / year)</label><input type="number" id="emi-r" placeholder="7.5" step="0.01" /></div>
-    <div><label>Term (years)</label><input type="number" id="emi-n" placeholder="5" /></div>
+    <div><label>Compare with (defaults to today)</label><input type="text" id="ag2-on" readonly placeholder="Today" /></div>
   </div>
-  <button class="btn" onclick="emiCalc()">Calculate EMI</button>
-  <div id="emi-out" class="result">Enter loan details.</div>
+  <div class="pct2-result" id="ag2-big">&mdash;</div>
+  <table class="wc-table ag2-table"><tbody>
+    <tr><th>Total months</th><td id="ag2-months">\u2014</td></tr>
+    <tr><th>Total weeks</th><td id="ag2-weeks">\u2014</td></tr>
+    <tr><th>Total days</th><td id="ag2-days">\u2014</td></tr>
+    <tr><th>Total hours</th><td id="ag2-hours">\u2014</td></tr>
+    <tr><th>Next birthday in</th><td id="ag2-next">\u2014</td></tr>
+    <tr><th>Day of birth</th><td id="ag2-dow">\u2014</td></tr>
+  </tbody></table>
 </div>""",
+
+"loan-emi-calculator": """
+<div class="panel ln2">
+  <div class="row">
+    <div><label>Loan amount</label><input type="number" id="emi-p" value="250000" oninput="emiCalc()" /></div>
+    <div><label>Interest rate (% / year)</label><input type="number" id="emi-r" value="7.5" step="0.01" oninput="emiCalc()" /></div>
+    <div><label>Term (years)</label><input type="number" id="emi-n" value="30" oninput="emiCalc()" /></div>
+  </div>
+  <div class="pct2-result" id="ln2-big">&mdash;</div>
+  <div class="ci2-bars" id="ln2-bars"></div>
+  <p class="tool-note">Payment schedule (first years shown \u2014 principal vs interest each year)</p>
+  <div class="uc2-table" id="ln2-table"></div>
+</div>""",
+
 "word-counter": """
 <div class="panel wc-pro">
   <div class="wc-toolbar">
@@ -958,15 +990,29 @@ TOOL_BODIES = {
   <div id="disc-out" class="result">Enter price and discount.</div>
 </div>""",
 "tip-calculator": """
-<div class="panel">
+<div class="panel tp2">
   <div class="row">
-    <div><label>Bill amount</label><input type="number" id="tip-bill" placeholder="64.50" /></div>
-    <div><label>Tip (%)</label><input type="number" id="tip-pct" value="15" /></div>
-    <div><label>Split between</label><input type="number" id="tip-people" value="1" min="1" /></div>
+    <div><label>Bill amount</label><input type="number" id="tip-bill" value="64.50" step="0.01" oninput="tipCalc()" /></div>
+    <div><label>Tip (%)</label><input type="number" id="tip-pct" value="15" oninput="tipCalc()" /></div>
+    <div><label>Split between</label><input type="number" id="tip-people" value="1" min="1" oninput="tipCalc()" /></div>
   </div>
-  <button class="btn" onclick="tipCalc()">Calculate tip</button>
-  <div id="tip-out" class="result">Enter the bill amount.</div>
+  <div class="uc2-cats tx2-rates">
+    <span class="ir2-pl">Tip presets:</span>
+    <button class="ir2-preset" onclick="tp2Rate(10)">10%</button>
+    <button class="ir2-preset" onclick="tp2Rate(12)">12%</button>
+    <button class="ir2-preset" onclick="tp2Rate(15)">15%</button>
+    <button class="ir2-preset" onclick="tp2Rate(18)">18%</button>
+    <button class="ir2-preset" onclick="tp2Rate(20)">20%</button>
+    <button class="ir2-preset" onclick="tp2Rate(25)">25%</button>
+  </div>
+  <table class="wc-table tp2-table"><tbody>
+    <tr><th>Tip amount</th><td id="tp2-tip">\u2014</td></tr>
+    <tr><th>Total bill</th><td id="tp2-total">\u2014</td></tr>
+    <tr><th>Per person \u2014 tip</th><td id="tp2-per-tip">\u2014</td></tr>
+    <tr><th>Per person \u2014 total</th><td id="tp2-per-total">\u2014</td></tr>
+  </tbody></table>
 </div>""",
+
 "compound-interest-calculator": """
 <div class="panel ci2">
   <div class="row">

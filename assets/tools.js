@@ -95,35 +95,92 @@ function pct2Run() {
 }
 if ($("pct2-of-p")) pct2Run();
 
-function bmiCalc() {
-  const w = parseFloat($("bmi-w").value), h = parseFloat($("bmi-h").value) / 100;
-  if (!w || !h) return;
-  const bmi = w / (h * h);
-  const cat = bmi < 18.5 ? "Underweight" : bmi < 25 ? "Normal weight" : bmi < 30 ? "Overweight" : "Obese";
-  out("bmi-out", `BMI: <b>${bmi.toFixed(1)}</b> — ${cat}`);
+let BM2_UNITS = "metric";
+function bm2Units(u, btn) {
+  BM2_UNITS = u;
+  $("bm2-metric").classList.toggle("active", u === "metric");
+  $("bm2-imperial").classList.toggle("active", u === "imperial");
+  $("bm2-metric-pane").style.display = u === "metric" ? "block" : "none";
+  $("bm2-imperial-pane").style.display = u === "imperial" ? "block" : "none";
+  bmiCalc();
 }
+function bm2Cat(bmi) {
+  if (bmi < 18.5) return { lab: "Underweight", cls: "pct2-down", note: "Below the healthy range \u2014 consider nutrient-dense meals and strength training." };
+  if (bmi < 25) return { lab: "Normal weight", cls: "", note: "Healthy range \u00b7 keep doing what you are doing." };
+  if (bmi < 30) return { lab: "Overweight", cls: "pct2-up", note: "Slightly above the healthy range \u2014 small daily deficits add up." };
+  return { lab: "Obese", cls: "pct2-down2", note: "Well above the healthy range \u2014 a doctor can help you plan safely." };
+}
+function bmiCalc() {
+  let w, hM;
+  if (BM2_UNITS === "metric") {
+    w = parseFloat($("bmi-w").value);
+    hM = parseFloat($("bmi-h").value) / 100;
+  } else {
+    w = parseFloat($("bm2-wlb").value) * 0.45359237;
+    hM = (parseFloat($("bm2-ft").value) * 12 + (parseFloat($("bm2-in").value) || 0)) * 0.0254;
+  }
+  if (!w || !hM || hM < 0.5) { $("bmi-big").innerHTML = "\u2014"; $("bm2-marker").style.left = "0"; $("bmi-out").innerHTML = ""; $("bm2-healthy").innerHTML = ""; return; }
+  const bmi = w / (hM * hM);
+  const cat = bm2Cat(bmi);
+  $("bmi-big").innerHTML = `${bmi.toFixed(1)}<span class="pct2-big-sub">Body Mass Index</span>`;
+  const pct = Math.max(0, Math.min(100, (bmi - 15) / 25 * 100));
+  $("bm2-marker").style.left = pct + "%";
+  $("bmi-out").innerHTML = `<b class="${cat.cls}">${cat.lab}</b><span>${cat.note}</span>`;
+  const loW = 18.5 * hM * hM, hiW = 24.9 * hM * hM;
+  const f = (kg) => BM2_UNITS === "metric" ? kg.toFixed(1) + " kg" : (kg / 0.45359237).toFixed(1) + " lb";
+  $("bm2-healthy").innerHTML = `<span class="pct2-chip">Healthy weight for your height: <b>${f(loW)} \u2013 ${f(hiW)}</b></span>`;
+}
+if ($("bmi-w")) bmiCalc();
 
 function ageCalc() {
-  const dob = new Date($("age-dob").value);
-  if (isNaN(dob)) return;
-  const now = new Date();
-  let y = now.getFullYear() - dob.getFullYear();
-  let m = now.getMonth() - dob.getMonth();
-  let d = now.getDate() - dob.getDate();
-  if (d < 0) { m--; d += new Date(now.getFullYear(), now.getMonth(), 0).getDate(); }
-  if (m < 0) { y--; m += 12; }
-  const days = Math.floor((now - dob) / 86400000);
-  out("age-out", `<b>${y}</b> years, <b>${m}</b> months, <b>${d}</b> days<br><small>${days.toLocaleString()} days old · next birthday in ${Math.ceil((new Date(now.getFullYear(), dob.getMonth(), dob.getDate()) > now ? new Date(now.getFullYear(), dob.getMonth(), dob.getDate()) : new Date(now.getFullYear() + 1, dob.getMonth(), dob.getDate()) - 0).valueOf ? Math.abs((new Date(now.getFullYear(), dob.getMonth(), dob.getDate()) > now ? new Date(now.getFullYear(), dob.getMonth(), dob.getDate()) : new Date(now.getFullYear() + 1, dob.getMonth(), dob.getDate())) - now) / 86400000 : 0)} days</small>`);
+  const dobV = $("age-dob").value;
+  if (!dobV) return;
+  const hidden = ($("ag2-on") || {}).dataset && $("ag2-on").dataset.date;
+  const dob = new Date(dobV + "T00:00:00");
+  const on = hidden ? new Date(hidden + "T00:00:00") : new Date();
+  if (isNaN(dob) || isNaN(on) || on < dob) return;
+  let y = on.getFullYear() - dob.getFullYear(), m2 = on.getMonth() - dob.getMonth(), d = on.getDate() - dob.getDate();
+  if (d < 0) { m2--; d += new Date(on.getFullYear(), on.getMonth(), 0).getDate(); }
+  if (m2 < 0) { y--; m2 += 12; }
+  const days = Math.floor((on - dob) / 86400000);
+  $("ag2-big").innerHTML = `${y} <span class="pct2-big-sub-inline">years</span> ${m2} <span class="pct2-big-sub-inline">months</span> ${d} <span class="pct2-big-sub-inline">days</span>`;
+  $("ag2-months").textContent = (y * 12 + m2).toLocaleString();
+  $("ag2-weeks").textContent = Math.floor(days / 7).toLocaleString();
+  $("ag2-days").textContent = days.toLocaleString();
+  $("ag2-hours").textContent = (days * 24).toLocaleString();
+  let nb = new Date(on.getFullYear(), dob.getMonth(), dob.getDate());
+  if (nb < on) nb = new Date(on.getFullYear() + 1, dob.getMonth(), dob.getDate());
+  const toNb = Math.ceil((nb - on) / 86400000);
+  $("ag2-next").textContent = `${toNb} day${toNb === 1 ? "" : "s"} (${nb.toLocaleDateString(undefined, { month: "short", day: "numeric" })})`;
+  $("ag2-dow").textContent = dob.toLocaleDateString(undefined, { weekday: "long" });
 }
 
 function emiCalc() {
-  const P = parseFloat($("emi-p").value), r = parseFloat($("emi-r").value) / 1200, n = parseFloat($("emi-n").value) * 12;
-  if (!P || !n || isNaN(r)) return;
+  const P = parseFloat($("emi-p").value), r = parseFloat($("emi-r").value) / 100 / 12, n = parseInt($("emi-n").value) * 12;
+  if (!P || isNaN(r) || !n) { $("ln2-big").innerHTML = "\u2014"; return; }
   const emi = r === 0 ? P / n : P * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
-  const total = emi * n;
-  out("emi-out",
-    `Monthly EMI: <b>${emi.toFixed(2)}</b><br>Total interest: <b>${(total - P).toFixed(2)}</b><br>Total payment: <b>${total.toFixed(2)}</b>`);
+  const total = emi * n, interest = total - P;
+  $("ln2-big").innerHTML = `${emi.toFixed(2)}<span class="pct2-big-sub">monthly payment \u00b7 ${n} payments</span>`;
+  const max = Math.max(P, interest, 1);
+  $("ln2-bars").innerHTML = `
+    <div class="ci2-bar-row"><span>Principal</span><div class="wc-bar"><div class="wc-bar-fill" style="width:${(P / max * 100).toFixed(1)}%"></div></div><b>${(P / total * 100).toFixed(1)}%</b></div>
+    <div class="ci2-bar-row"><span>Interest</span><div class="wc-bar"><div class="wc-bar-fill near" style="width:${(interest / max * 100).toFixed(1)}%"></div></div><b>${(interest / total * 100).toFixed(1)}%</b></div>`;
+  const bal0 = P;
+  let bal = P, rows = [], yInt = 0, yPrin = 0;
+  for (let i = 1; i <= n; i++) {
+    const int = bal * r;
+    const prin = emi - int;
+    bal -= prin;
+    yInt += int; yPrin += prin;
+    if (i % 12 === 0 || i === n) {
+      rows.push([Math.ceil(i / 12), yPrin, yInt, Math.max(0, bal)]);
+      yInt = 0; yPrin = 0;
+    }
+  }
+  $("ln2-table").innerHTML = `<table class="wc-table"><thead><tr><th>Year</th><th>Principal paid</th><th>Interest paid</th><th>Balance left</th></tr></thead><tbody>` +
+    rows.map(([y, p, i2, b]) => `<tr><td>${y}</td><td><b>${p.toFixed(0)}</b></td><td style="color:#f59e0b">${i2.toFixed(0)}</td><td>${b.toFixed(0)}</td></tr>`).join("") + `</tbody></table>`;
 }
+if ($("emi-p")) emiCalc();
 
 /* ---------- Text ---------- */
 function wcDur(words, wpm) {
@@ -819,14 +876,20 @@ function discountCalc() {
   out("disc-out", `You save: <b>${saved.toFixed(2)}</b><br>Price after discount: <b>${after.toFixed(2)}</b>${tax ? `<br>After ${tax}% tax: <b>${final.toFixed(2)}</b>` : ""}`);
 }
 
+function tp2Rate(r) { $("tip-pct").value = r; tipCalc(); }
 function tipCalc() {
   const bill = parseFloat($("tip-bill").value), pct = parseFloat($("tip-pct").value);
-  const people = parseInt($("tip-people").value) || 1;
-  if (isNaN(bill) || isNaN(pct)) return;
+  const people = Math.max(1, parseInt($("tip-people").value) || 1);
+  if (isNaN(bill) || isNaN(pct)) { ["tp2-tip", "tp2-total", "tp2-per-tip", "tp2-per-total"].forEach(id => { if ($(id)) $(id).textContent = "\u2014"; }); return; }
   const tip = bill * pct / 100;
   const total = bill + tip;
-  out("tip-out", `Tip: <b>${tip.toFixed(2)}</b><br>Total: <b>${total.toFixed(2)}</b>${people > 1 ? `<br>Per person (${people}): <b>${(total / people).toFixed(2)}</b>` : ""}`);
+  $("tp2-tip").textContent = tip.toFixed(2);
+  $("tp2-total").textContent = total.toFixed(2);
+  $("tp2-per-tip").textContent = (tip / people).toFixed(2);
+  $("tp2-per-total").textContent = (total / people).toFixed(2);
 }
+
+if ($("tip-bill")) tipCalc();
 
 function ci2Series(P, r, t, n, monthly) {
   const periodRate = r / 100 / n;
