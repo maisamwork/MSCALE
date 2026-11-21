@@ -893,6 +893,7 @@ TOOL_BODIES = {
   <h3 style="margin:18px 0 6px">Preview</h3>
   <div id="inv-print" style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:22px"></div>
   <button class="btn" onclick="invPrint()">Print / Save PDF</button>
+  <button class="btn ghost" onclick="invCopy(this)">Copy invoice text</button>
 </div>""",
 "percentage-calculator": """
 <div class="panel pct2">
@@ -968,6 +969,7 @@ TOOL_BODIES = {
   </div>
   <div id="bmi-out" class="bm2-cat"></div>
   <div class="bm2-healthy" id="bm2-healthy"></div>
+  <div class="lr2-actions" style="margin-top:10px"><button class="btn ghost" onclick="bm2Copy(this)">Copy result</button></div>
 </div>""",
 
 "age-calculator": """
@@ -1221,6 +1223,7 @@ TOOL_BODIES = {
   <div class="uc2-result" id="uc2-big">&mdash;</div>
   <p class="tool-note">Same value in every unit of this category:</p>
   <div id="uc2-table" class="uc2-table"></div>
+  <div class="lr2-actions" style="margin-top:10px"><button class="btn ghost" onclick="uc2Copy(this)">Copy result</button></div>
 </div>""",
 
 "timestamp-converter": """
@@ -1342,6 +1345,7 @@ TOOL_BODIES = {
   <div class="jf-stats" id="dr2-stats"></div>
   <label>Recent rolls</label>
   <div id="dr2-hist" class="jf-stats" style="min-height:34px"></div>
+  <div class="lr2-actions" style="margin-top:10px"><button class="btn ghost" onclick="dr2Copy(this)">Copy result</button></div>
 </div>""",
 
 "coin-flipper": """
@@ -1356,6 +1360,7 @@ TOOL_BODIES = {
   <label>History (newest first)</label>
   <div id="cf2-hist" class="jf-stats" style="min-height:34px"></div>
   <div class="lr2-actions">
+    <button class="btn ghost" onclick="cf2Copy(this)">Copy result</button>
     <button class="btn ghost" onclick="cf2Clear()">Clear history</button>
   </div>
 </div>""",
@@ -1424,6 +1429,7 @@ TOOL_BODIES = {
   <div class="uc2-cats tx2-rates"><span class="ir2-pl">Comparison of total by compounding frequency:</span><div id="ci2-freq" class="ci2-freq"></div></div>
   <p class="tool-note">Year-by-year growth</p>
   <div class="uc2-table" id="ci2-table"></div>
+  <div class="lr2-actions" style="margin-top:10px"><button class="btn ghost" onclick="ci2Copy(this)">Copy result</button><button class="btn ghost" onclick="ci2Csv()">Export CSV</button></div>
 </div>""",
 "gst-vat-calculator": """
 <div class="panel tx2">

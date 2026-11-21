@@ -5221,3 +5221,94 @@ function ucPreset(v) {
   a.value = String(v);
   ucRun();
 }
+
+
+/* ---------- F15: copy/export finishers on standalone pro tools ---------- */
+var BM2_LAST = "", CI2_ROWS = null, CI2_SUM = "", UC2_TXT = "", DR2_LAST = "", CF2_LAST = "";
+/* BMI */
+(function () {
+  var o = bmiCalc;
+  bmiCalc = function () {
+    o();
+    var el = $("bmi-big");
+    if (!el) return;
+    var m = (el.textContent || "").match(/-?\d+(\.\d+)?/);
+    if (!m) { BM2_LAST = ""; return; }
+    var parts = ["BMI " + m[0]];
+    var st = $("bmi-out"), hy = $("bm2-healthy");
+    if (st && st.textContent) parts.push(st.textContent.replace(/\s+/g, " ").trim());
+    if (hy && hy.textContent) parts.push(hy.textContent.replace(/\s+/g, " ").trim());
+    BM2_LAST = parts.join(" \u00b7 ");
+  };
+})();
+function bm2Copy(btn) { if (BM2_LAST) copyText(BM2_LAST, btn); }
+/* Compound interest */
+(function () {
+  var o = ci2Live;
+  ci2Live = function () {
+    o();
+    var el = $("ci2-big");
+    if (!el) return;
+    var txt = (el.textContent || "").trim();
+    if (!txt || txt === "\u2014") { CI2_ROWS = null; CI2_SUM = ""; return; }
+    var P = parseFloat($("ci-p").value), r = parseFloat($("ci-r").value), t = parseFloat($("ci-t").value);
+    var n = parseInt($("ci-n").value), monthly = parseFloat($("ci-monthly").value) || 0;
+    if (isNaN(P) || isNaN(r) || isNaN(t) || !n || t <= 0) { CI2_ROWS = null; CI2_SUM = ""; return; }
+    var s = ci2Series(P, r, t, n, monthly);
+    CI2_ROWS = s.yearly.map(function (row) {
+      return [row.year, +row.bal.toFixed(2), +row.contributed.toFixed(2), +(row.bal - row.contributed).toFixed(2)];
+    });
+    CI2_SUM = "Future value " + ci2F(s.bal) + " after " + t + " years \u00b7 contributed " + ci2F(s.contributed) +
+      " \u00b7 interest " + ci2F(s.interest) + " \u00b7 " + P.toLocaleString() + " at " + r + "%" +
+      (monthly ? ", +" + monthly + "/month" : "");
+  };
+})();
+function ci2Copy(btn) { if (CI2_SUM) copyText(CI2_SUM, btn); }
+function ci2Csv() {
+  if (!CI2_ROWS || !CI2_ROWS.length) return;
+  var csv = "Year,Balance,Contributed,Interest\n" + CI2_ROWS.map(function (r) { return r.join(","); }).join("\n");
+  dlBytes(csv, "compound-interest-growth.csv", "text/csv");
+}
+/* Universal unit converter */
+(function () {
+  var o = uc2Run;
+  uc2Run = function () {
+    o();
+    var el = $("uc2-big");
+    if (!el) return;
+    var t = (el.textContent || "").trim();
+    UC2_TXT = (t && t !== "\u2014") ? t : "";
+  };
+})();
+function uc2Copy(btn) { if (UC2_TXT) copyText(UC2_TXT, btn); }
+/* Dice roller */
+(function () {
+  var o = rollDice;
+  rollDice = function () {
+    o();
+    var h = (typeof DR2_HIST !== "undefined" && DR2_HIST && DR2_HIST[0]) ? DR2_HIST[0] : null;
+    if (!h) return;
+    DR2_LAST = h.rolls.length + "d" + h.sides + (h.mod ? (h.mod > 0 ? "+" + h.mod : String(h.mod)) : "") +
+      " \u2192 " + h.rolls.join(", ") + " \u00b7 total " + h.total;
+  };
+})();
+function dr2Copy(btn) { if (DR2_LAST) copyText(DR2_LAST, btn); }
+/* Coin flipper */
+(function () {
+  var o = flipCoin;
+  flipCoin = function () {
+    o();
+    var el = $("cf2-big");
+    if (!el) return;
+    var t = (el.textContent || "").trim();
+    CF2_LAST = (t && t !== "\u2014") ? t.replace(/^[^A-Za-z0-9]+/, "") : "";
+  };
+})();
+function cf2Copy(btn) { if (CF2_LAST) copyText(CF2_LAST, btn); }
+/* Invoice */
+function invCopy(btn) {
+  var el = document.getElementById("inv-print");
+  if (!el) return;
+  var t = (el.textContent || "").replace(/[ \t]+/g, " ").trim();
+  if (t) copyText(t, btn);
+}
