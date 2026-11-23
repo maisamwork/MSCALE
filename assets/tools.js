@@ -6800,4 +6800,177 @@ function sa2() {
   if (typeof orig !== "function") return;
   window[fn] = function () { orig(); m3After(); };
 });
+/* ---------- M10: batch 24 new tools (tc2, ip2, bf2, rg2, ce2, pa2, ba2, hr2) ---------- */
+
+/* --- tc2: time card --- */
+function tc2() {
+  var o = $("tc2-out");
+  var r = m7Num("tc2-r"), t = m7Num("tc2-t"), total = 0, i, v;
+  for (i = 1; i <= 5; i++) { v = m7Num("tc2-d" + i); total += v === null ? 0 : Math.max(0, v); }
+  if (t === null || t < 0) t = 40;
+  if (r === null || r < 0) { o.innerHTML = "Enter your hourly rate."; return; }
+  var regH = Math.min(total, t), otH = Math.max(0, total - t);
+  var pay = r * regH + 1.5 * r * otH;
+  o.innerHTML = "<b>" + m7Money(pay) + "</b>for a " + nfmt(total, 1) + "-hour week" +
+    "<span class='jf-chip'><b>" + nfmt(regH, 1) + " h</b>regular hours</span>" +
+    (otH > 0 ? "<span class='jf-chip'><b>" + nfmt(otH, 1) + " h</b>overtime (paid 1.5\u00d7)</span>" : "<span class='jf-chip'><b>0 h</b>no overtime this week</span>") +
+    "<span class='jf-chip'><b>" + m7Money(pay * 2) + "</b>if next week repeats (fortnight)</span>" +
+    "<span class='jf-chip'><b>" + m7Money(pay * 13) + "</b>a full quarter at this pace</span>" +
+    (total === 0 ? "<span class='jf-chip jf-chip-bad'><b>empty</b>no hours entered</span>" : "");
+}
+
+/* --- ip2: subnet calculator --- */
+function ip2Fmt(i32) {
+  return ((i32 >>> 24) & 255) + "." + ((i32 >>> 16) & 255) + "." + ((i32 >>> 8) & 255) + "." + (i32 & 255);
+}
+function ip2() {
+  var o = $("ip2-out");
+  var s = String($("ip2-in").value || "").trim();
+  var m = s.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(?:\s*\/\s*(\d{1,2}))?$/);
+  if (!m) { o.innerHTML = "Enter an IPv4 address with an optional /prefix \u2014 for example 192.168.10.5/26."; return; }
+  var a = [+m[1], +m[2], +m[3], +m[4]], pfx = m[5] === undefined ? 24 : +m[5];
+  if (a[0] > 255 || a[1] > 255 || a[2] > 255 || a[3] > 255) { o.innerHTML = "Each octet must be 0\u2013255 \u2014 " + s + " is not an IPv4 address."; return; }
+  if (pfx < 0 || pfx > 32) { o.innerHTML = "The CIDR prefix must be 0\u201332."; return; }
+  var ip = ((a[0] << 24) | (a[1] << 16) | (a[2] << 8) | a[3]) >>> 0;
+  var mask = pfx === 0 ? 0 : (0xFFFFFFFF << (32 - pfx)) >>> 0;
+  var wild = (~mask) >>> 0;
+  var net = (ip & mask) >>> 0, bcast = (net | wild) >>> 0;
+  var hosts = pfx >= 31 ? (pfx === 32 ? 1 : 2) : Math.pow(2, 32 - pfx) - 2;
+  var bits = "";
+  for (var i = 0; i < 32; i++) bits += (i < pfx ? "1" : "0");
+  var priv = (a[0] === 10 || (a[0] === 172 && a[1] >= 16 && a[1] <= 31) || (a[0] === 192 && a[1] === 168) || a[0] === 127 || (a[0] === 169 && a[1] === 254));
+  var rng = pfx >= 31 ? "n/a (\u00d731+) \u2014 usable range collapses on /31 and /32" : ip2Fmt(net + 1) + " \u2192 " + ip2Fmt(bcast - 1);
+  o.innerHTML = "<b>" + ip2Fmt(net) + "/" + pfx + "</b>network" +
+    "<span class='jf-chip'><b>" + ip2Fmt(mask) + "</b>subnet mask</span>" +
+    "<span class='jf-chip'><b>" + ip2Fmt(wild) + "</b>wildcard</span>" +
+    "<span class='jf-chip'><b>" + ip2Fmt(bcast) + "</b>broadcast</span>" +
+    "<span class='jf-chip'><b>" + nfmt(hosts, 0) + "</b>usable hosts</span>" +
+    "<span class='jf-chip'><b>" + rng + "</b>usable range</span>" +
+    (priv ? "<span class='jf-chip'><b>private</b>" + s.split("/")[0] + " is not routable on the public internet</span>" : "<span class='jf-chip'><b>public</b>routable address space</span>") +
+    "<span class='jf-chip' style='font-family:monospace'><b style='font-size:9px'>" + bits + "</b>" + pfx + " mask bits</span>";
+}
+
+/* --- bf2: board feet --- */
+function bf2() {
+  var o = $("bf2-out");
+  var q = m7Num("bf2-q"), t = m7Num("bf2-t"), w = m7Num("bf2-w"), l = m7Num("bf2-l"), c = m7Num("bf2-c");
+  if (q === null || q < 1 || t === null || t <= 0 || w === null || w <= 0 || l === null || l <= 0) {
+    o.innerHTML = "Enter a piece count of 1+ and positive thickness, width and length."; return;
+  }
+  var per = t * w * l / 12, total = per * q;
+  var parts = "<b>" + nfmt(total, 2) + " BF</b>(" + nfmt(q, 0) + " pieces \u00d7 " + nfmt(per, 2) + " each)" +
+    "<span class='jf-chip'><b>" + nfmt(total * 0.00236, 3) + " m\u00b3</b>cubic metres mills quote</span>" +
+    "<span class='jf-chip'><b>" + nfmt(l * 12 * w * t * q / 1728, 2) + " ft\u00b3</b>solid cubic feet</span>";
+  if (c !== null && c >= 0) parts += "<span class='jf-chip'><b>" + m7Money(total * c) + "</b>order cost at " + m7Money(c) + " per BF</span>";
+  o.innerHTML = parts;
+}
+
+/* --- rg2: ring size --- */
+function rg2() {
+  var o = $("rg2-out");
+  var d = m7Num("rg2-d"), u = m7Num("rg2-u");
+  if (u !== null && u > 0) d = 11.63 + 0.8128 * u;
+  if (d === null || d <= 0) { o.innerHTML = "Enter a positive inside diameter in mm, or a US ring size."; return; }
+  var us = (d - 11.63) / 0.8128, circ = Math.PI * d;
+  var uk = Math.round((us - 1) * 2) / 2 + 0.5;
+  o.innerHTML = "<b>" + nfmt(us, 1) + " US</b>ring size" +
+    "<span class='jf-chip'><b>" + nfmt(uk, 1) + " UK (approx)</b>British sizing runs half below US</span>" +
+    "<span class='jf-chip'><b>" + nfmt(circ, 1) + " mm</b>inside circumference \u2014 the EU/French scale</span>" +
+    "<span class='jf-chip'><b>" + nfmt(d, 2) + " mm</b>inside diameter</span>" +
+    (us < 3.5 || us > 14 ? "<span class='jf-chip jf-chip-bad'><b>unusual</b>outside the standard 4\u201313 ring range \u2014 double-check the measurement</span>" : "");
+}
+
+/* --- ce2: caesar cipher --- */
+function ce2Shift(text, k) {
+  var out = "", i, ch, code;
+  for (i = 0; i < text.length; i++) {
+    ch = text[i];
+    code = text.charCodeAt(i);
+    if (code >= 65 && code <= 90) ch = String.fromCharCode((code - 65 + k + 26) % 26 + 65);
+    else if (code >= 97 && code <= 122) ch = String.fromCharCode((code - 97 + k + 26) % 26 + 97);
+    out += ch;
+  }
+  return out;
+}
+function ce2() {
+  var o = $("ce2-out");
+  var t = String($("ce2-in").value || ""), k = m7Num("ce2-s");
+  var dir = String($("ce2-d").value || "enc");
+  if (!t.trim()) { o.innerHTML = "Type the text to shift \u2014 punctuation and digits pass through unchanged."; return; }
+  if (k === null || k < 1 || k > 25) { o.innerHTML = "The shift must be between 1 and 25."; return; }
+  var res = ce2Shift(t, dir === "enc" ? k : -k);
+  o.innerHTML = "<b style='font-family:monospace'>" + res.replace(/</g, "&lt;") + "</b>" +
+    "<span class='jf-chip'><b>" + (dir === "enc" ? "+" : "\u2212") + k + "</b>shift applied, case preserved</span>" +
+    "<span class='jf-chip'><b>" + t.replace(/</g, "&lt;").length + "</b>characters in</span>";
+}
+function ce2Brute() {
+  var o = $("ce2-out");
+  var t = String($("ce2-in").value || "").trim();
+  if (!t) { o.innerHTML = "Type the message first, then tap brute force."; return; }
+  var lines = [];
+  for (var k = 1; k <= 25; k++) lines.push("shift " + String(k).padStart(2, " ") + ": " + ce2Shift(t, -k));
+  o.innerHTML = "<b>All 25 decodings of \u201c" + t.replace(/</g, "&lt;") + "\u201d</b><br>" +
+    lines.map(function (l) { return l.replace(/</g, "&lt;"); }).join("<br>");
+}
+
+/* --- pa2: palindrome checker --- */
+function pa2() {
+  var o = $("pa2-out");
+  var t = String($("pa2-in").value || "").trim();
+  if (!t) { o.innerHTML = "Paste a word, phrase or sentence \u2014 punctuation and case are stripped automatically."; return; }
+  var clean = t.toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (!clean) { o.innerHTML = "No letters or numbers left after cleaning \u2014 is this text just punctuation?"; return; }
+  var rev = clean.split("").reverse().join("");
+  var isPal = clean === rev;
+  o.innerHTML = "<b>" + (isPal ? "PALINDROME" : "not a palindrome") + "</b>" +
+    "<span class='jf-chip'><b>" + clean + "</b>after cleaning (this is what was compared)</span>" +
+    "<span class='jf-chip'><b>" + clean.length + "</b>characters compared</span>" +
+    (isPal ? "<span class='jf-chip'><b>" + Math.floor(clean.length / 2) + "</b>mismatches allowed: zero in both directions</span>" : "<span class='jf-chip jf-chip-bad'><b>differs</b>from at least one reversed character</span>");
+}
+
+/* --- ba2: BAC (Widmark) --- */
+function ba2() {
+  var o = $("ba2-out");
+  var d = m7Num("ba2-d"), w = m7Num("ba2-w"), h = m7Num("ba2-h");
+  var sex = String($("ba2-s").value || "m");
+  if (d === null || d < 0 || w === null || w <= 0 || h === null || h < 0) {
+    o.innerHTML = "Enter non-negative drinks and hours, and a positive weight."; return;
+  }
+  var r = sex === "f" ? 0.55 : 0.68;
+  var grams = d * 14;
+  var bac = Math.max(0, grams / (w * 1000 * r) * 100 - 0.015 * h);
+  var verdict = bac >= 0.08 ? "over the US 0.08 limit" : bac >= 0.05 ? "over many 0.05 limits" : "below 0.05";
+  var toZero = bac / 0.015;
+  o.innerHTML = "<b>" + bac.toFixed(3) + "%</b>estimated BAC (Widmark)" +
+    "<span class='jf-chip" + (bac >= 0.05 ? " jf-chip-bad" : "") + "><b>" + verdict + "</b>driving is not safe or legal at or over the limit</span>" +
+    "<span class='jf-chip'><b>" + nfmt(toZero, 1) + " h</b>elimination time to reach 0.000 at \u22120.015/h</span>" +
+    "<span class='jf-chip'><b>" + nfmt(grams, 0) + " g</b>alcohol consumed (" + nfmt(d, 1) + " standard drinks \u00d7 14 g)</span>" +
+    "<span class='jf-chip'><b>r = " + r + "</b>body-water factor used</span>";
+}
+
+/* --- hr2: heart rate zones --- */
+function hr2() {
+  var o = $("hr2-out");
+  var a = m7Num("hr2-a"), r = m7Num("hr2-r");
+  if (a === null || a < 10 || a > 100 || r === null || r < 30 || r > 120) {
+    o.innerHTML = "Enter a realistic age (10\u2013100) and resting heart rate (30\u2013120 bpm)."; return;
+  }
+  var max = 220 - a, reserve = max - r;
+  var Z = [[50, 60, "Z1", "recovery"], [60, 70, "Z2", "easy / fat-burn"], [70, 80, "Z3", "aerobic tempo"], [80, 90, "Z4", "threshold"], [90, 100, "Z5", "VO2 max"]];
+  var rows = "";
+  for (var i = 0; i < Z.length; i++) {
+    rows += "<span class='jf-chip'><b>" + Z[i][2] + " " + Math.round(reserve * Z[i][0] / 100 + r) + "\u2013" + Math.round(reserve * Z[i][1] / 100 + r) +
+      " bpm</b>" + Z[i][3] + " (" + Z[i][0] + "\u2013" + Z[i][1] + "%)</span>";
+  }
+  o.innerHTML = "<b>" + max + " bpm</b>estimated maximum (220 \u2212 age)" +
+    "<span class='jf-chip'><b>" + reserve + " bpm</b>heart-rate reserve (max \u2212 resting)</span>" + rows;
+}
+
+/* wire the batch-24 engines into the shared M3 finisher */
+["tc2", "ip2", "bf2", "rg2", "ce2", "pa2", "ba2", "hr2"].forEach(function (fn) {
+  var orig = null;
+  try { orig = window[fn] || eval(fn); } catch (e) { orig = null; }
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
 

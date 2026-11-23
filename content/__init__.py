@@ -50,6 +50,10 @@ from .mega9 import MEGA9 as _MEGA9, CONTENT9 as _CONTENT9
 CONTENT.update(_CONTENT9)
 MEGA.update(_MEGA9)
 
+from .mega10 import MEGA10 as _MEGA10, CONTENT10 as _CONTENT10
+CONTENT.update(_CONTENT10)
+MEGA.update(_MEGA10)
+
 from .blog_meta import BLOG_META as _BMETA, LENGTH_RANGES as _LR, enriched_blocks as _eb, geo_checks as _gc
 BLOG_META = _BMETA
 LENGTH_RANGES = _LR
