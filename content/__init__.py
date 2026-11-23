@@ -21,12 +21,14 @@ from .mega2 import MEGA as _MEGA2, CONTENT as _CONTENT2
 from .mega3 import MEGA3 as _MEGA3, CONTENT3 as _CONTENT3
 from .mega4 import MEGA4 as _MEGA4, CONTENT4 as _CONTENT4
 from .mega5 import MEGA5 as _MEGA5, CONTENT5 as _CONTENT5
+from .mega6 import MEGA6 as _MEGA6, CONTENT6 as _CONTENT6
 
 CONTENT.update(_CONTENT1)
 CONTENT.update(_CONTENT2)
 CONTENT.update(_CONTENT3)
 CONTENT.update(_CONTENT4)
 CONTENT.update(_CONTENT5)
+CONTENT.update(_CONTENT6)
 
 MEGA = {}
 MEGA.update(_MEGA1)
@@ -34,6 +36,7 @@ MEGA.update(_MEGA2)
 MEGA.update(_MEGA3)
 MEGA.update(_MEGA4)
 MEGA.update(_MEGA5)
+MEGA.update(_MEGA6)
 
 from .blog_meta import BLOG_META as _BMETA, LENGTH_RANGES as _LR, enriched_blocks as _eb, geo_checks as _gc
 BLOG_META = _BMETA

@@ -6042,4 +6042,236 @@ function wh2() { wh2Draw(); }
   if (typeof orig !== "function") return;
   window[fn] = function () { orig(); m3After(); };
 });
+/* ---------- M6: batch 20 new tools (pf2, wg2, rs2, rp2, gc2, sn2, ke2, lc2) ---------- */
+function m6Num(id) {
+  var v = String($(id).value || "").trim();
+  return (v === "" || !isFinite(+v)) ? null : +v;
+}
+
+/* --- pf2: prime factorization --- */
+function pf2() {
+  var o = $("pf2-out");
+  var n = m6Num("pf2-n");
+  if (n === null || Math.floor(n) !== n || n < 2) {
+    o.innerHTML = "Enter a whole number of 2 or more (up to one trillion)."; return;
+  }
+  if (n > 1e12) { o.innerHTML = "Numbers above one trillion are rejected so the answer is always exact."; return; }
+  var x = n, f = [], lim = Math.sqrt(x);
+  for (var p = 2; p <= lim; p += (p === 2 ? 1 : 2)) {
+    var e = 0;
+    while (x % p === 0) { x /= p; e++; }
+    if (e) { f.push([p, e]); lim = Math.sqrt(x); }
+  }
+  if (x > 1) f.push([x, 1]);
+  var fac = f.map(function (d) { return d[0] + (d[1] > 1 ? "^" + d[1] : ""); }).join(" \u00d7 ");
+  var div = f.reduce(function (a, d) { return a * (d[1] + 1); }, 1);
+  var isPri = f.length === 1 && f[0][1] === 1;
+  var opt = f.map(function (d) { return d[0] + (d[1] > 1 ? "^" + d[1] : ""); });
+  o.innerHTML = isPri
+    ? "<b>" + n + " is prime</b><span class='jf-chip'><b>itself</b>only divisors: 1 and " + n + "</span>"
+    : "<b>" + n + " = " + fac + "</b>" +
+      "<span class='jf-chip'><b>" + div + "</b>divisors</span>" +
+      "<span class='jf-chip'><b>" + f.length + "</b>distinct primes</span>" +
+      "<span class='jf-chip'><b>" + nfmt(f.map(function (d) { return Math.pow(d[0], d[1]); }).reduce(function (a, b) { return a + b; }, 0)) + "</b>sum of prime powers</span>" +
+      "<span class='jf-chip'><b>" + (div % 2 === 0 ? "not" : "yes") + "</b>perfect square?</span>";
+}
+
+/* --- wg2: hourly wage --- */
+function wg2() {
+  var o = $("wg2-out");
+  var r = m6Num("wg2-r"), h = m6Num("wg2-h"), ot = m6Num("wg2-o"), om = m6Num("wg2-m");
+  if (r === null || r < 0 || h === null || h < 0) { o.innerHTML = "Enter a non-negative hourly rate and hours."; return; }
+  if (ot === null || ot < 0) ot = 40;
+  if (om === null || om <= 0) om = 1.5;
+  var regH = Math.min(h, ot), otH = Math.max(0, h - ot);
+  var reg = r * regH, otp = r * om * otH, wk = reg + otp;
+  o.innerHTML = "<b>" + wk.toFixed(2) + "</b> gross this week" +
+    "<span class='jf-chip'><b>" + reg.toFixed(2) + "</b>regular pay (" + regH + " h)</span>" +
+    "<span class='jf-chip'><b>" + otp.toFixed(2) + "</b>overtime pay (" + otH + " h \u00d7 " + om + " rate)</span>" +
+    "<span class='jf-chip'><b>" + (wk * 52).toFixed(0) + "</b>per year (52 wk)</span>" +
+    "<span class='jf-chip'><b>" + (wk * 52 / 12).toFixed(0) + "</b>per month</span>" +
+    "<span class='jf-chip'><b>" + (wk * 52 / 26).toFixed(0) + "</b>per fortnight</span>";
+}
+
+/* --- rs2: random strings (crypto) --- */
+function rs2Sets() {
+  var U = "ABCDEFGHIJKLMNOPQRSTUVWXYZ", L = "abcdefghijklmnopqrstuvwxyz", Dg = "0123456789", S = "!@#$%^&*-_=+?";
+  var pool = "";
+  if ($("rs2-up").checked) pool += U;
+  if ($("rs2-low").checked) pool += L;
+  if ($("rs2-dig").checked) pool += Dg;
+  if ($("rs2-sym").checked) pool += S;
+  if ($("rs2-amb").checked) pool = pool.replace(/[0O1lI|]/g, "");
+  return pool;
+}
+function rs2() {
+  var o = $("rs2-out");
+  var ln = m6Num("rs2-l"), cnt = m6Num("rs2-c"), pool = rs2Sets();
+  ln = ln === null ? 20 : Math.max(1, Math.min(256, Math.round(ln)));
+  cnt = cnt === null ? 10 : Math.max(1, Math.min(200, Math.round(cnt)));
+  if (!pool.length) { o.value = ""; $("rs2-l").value = ln; $("rs2-c").value = cnt;
+    return void 0; }
+  var total = ln * cnt, buf = new Uint32Array(total), i, j, lines = [];
+  var C = window.crypto || globalThis.crypto;
+  for (var off = 0; off < total; off += 16384) C.getRandomValues(buf.subarray(off, Math.min(total, off + 16384)));
+  for (i = 0; i < cnt; i++) {
+    var s = "";
+    for (j = 0; j < ln; j++) s += pool[buf[i * ln + j] % pool.length];
+    lines.push(s);
+  }
+  o.value = lines.join("\n");
+  var bits = Math.round(ln * Math.log2(pool.length) * cnt);
+  $("rs2-l").value = ln; $("rs2-c").value = cnt;
+  o.title = bits + " bits of entropy";
+}
+
+/* --- rp2: text repeater --- */
+function rp2() {
+  var o = $("rp2-out"), meta = $("rp2-meta");
+  var s = String($("rp2-in").value || ""), t = m6Num("rp2-t");
+  var sv = String($("rp2-s").value || "");
+  var sep = sv === "nl" ? "\n" : (sv === "custom" ? String($("rp2-x").value || "") : sv);
+  var num = $("rp2-num").checked;
+  if (t === null || t < 1) t = 1;
+  t = Math.min(10000, Math.round(t));
+  if (!s) {
+    if (o) o.value = "";
+    if (meta) meta.innerHTML = "<span class='jf-chip'><b>0</b>characters out</span>";
+    return;
+  }
+  var parts = [];
+  for (var i = 0; i < t; i++) parts.push((num ? (i + 1) + ". " : "") + s);
+  var res = parts.join(sep);
+  o.value = res;
+  if (meta) {
+    var kb = res.length / 1024;
+    meta.innerHTML = "<span class='jf-chip'><b>" + t + "</b>copies</span>" +
+      "<span class='jf-chip'><b>" + res.length + "</b>characters out" + (kb > 1 ? " (" + kb.toFixed(1) + " KB)" : "") + "</span>" +
+      "<span class='jf-chip'><b>" + (num ? "numbered" : (sep === "\n" ? "new lines" : (sep === "" ? "glued" : JSON.stringify(sep)))) + "</b>joined with</span>";
+  }
+}
+
+/* --- gc2: coordinate converter --- */
+function gc2Parse(v) {
+  v = String(v || "").trim().replace(/,/g, " ").replace(/[°\u00b0]/g, " ").replace(/['\u2032\u2019]/g, " ").replace(/["\u2033\u201d]/g, " ");
+  var parts = v.split(/\s+/).filter(Boolean);
+  if (!parts.length) return null;
+  if (parts.length === 1) { var d = parseFloat(parts[0]); return isFinite(d) ? d : null; }
+  var deg = parseFloat(parts[0]), min = parseFloat(parts[1] || 0), sec = parseFloat(parts[2] || 0);
+  if (!isFinite(deg)) return null;
+  if (!isFinite(min)) min = 0;
+  if (!isFinite(sec)) sec = 0;
+  var sign = deg < 0 ? -1 : 1;
+  return sign * (Math.abs(deg) + min / 60 + sec / 3600);
+}
+function gc2FmtDMS(v, pos, neg) {
+  var s = v < 0 ? neg : pos, a = Math.abs(v);
+  var deg = Math.floor(a), mfull = (a - deg) * 60, min = Math.floor(mfull), sec = (mfull - min) * 60;
+  return deg + "\u00b0 " + min + "\u2032 " + sec.toFixed(1) + "\u2033 " + s;
+}
+function gc2() {
+  var o = $("gc2-out");
+  var lat = gc2Parse($("gc2-lat").value), lon = gc2Parse($("gc2-lon").value);
+  if (lat === null || lon === null) { o.innerHTML = "Enter both a latitude and a longitude (decimal, or degrees minutes seconds)."; return; }
+  if (Math.abs(lat) > 90) { o.innerHTML = "Latitude must be within \u00b190\u00b0 \u2014 " + lat.toFixed(4) + " is outside the possible range."; return; }
+  if (Math.abs(lon) > 180) { o.innerHTML = "Longitude must be within \u00b1180\u00b0 \u2014 " + lon.toFixed(4) + " is outside the possible range."; return; }
+  o.innerHTML = "<b>" + lat.toFixed(6) + ", " + lon.toFixed(6) + "</b>" +
+    "<span class='jf-chip'><b>" + gc2FmtDMS(lat, "N", "S") + "</b>latitude DMS</span>" +
+    "<span class='jf-chip'><b>" + gc2FmtDMS(lon, "E", "W") + "</b>longitude DMS</span>" +
+    "<span class='jf-chip'><b>" + Math.floor(Math.abs(lat)) + "\u00b0 " + ((Math.abs(lat) - Math.floor(Math.abs(lat))) * 60).toFixed(3) + "\u2032 " + (lat >= 0 ? "N" : "S") + "</b>lat DDM</span>" +
+    "<span class='jf-chip'><b>" + Math.floor(Math.abs(lon)) + "\u00b0 " + ((Math.abs(lon) - Math.floor(Math.abs(lon))) * 60).toFixed(3) + "\u2032 " + (lon >= 0 ? "E" : "W") + "</b>lon DDM</span>" +
+    "<span class='jf-chip'><b>~" + Math.round(111320 * Math.cos(lat * Math.PI / 180)) + "</b>metres per degree of longitude here</span>";
+}
+
+/* --- sn2: scientific notation --- */
+var SN2_SI = [["y", 1e-24], ["z", 1e-21], ["a", 1e-18], ["f", 1e-15], ["p", 1e-12], ["n", 1e-9],
+  ["\u00b5", 1e-6], ["m", 1e-3], ["", 1], ["k", 1e3], ["M", 1e6], ["G", 1e9], ["T", 1e12], ["P", 1e15], ["E", 1e18]];
+function sn2Num(v) {
+  v = String(v || "").trim().replace(/\u00d7\s*10\s*\^?/gi, "e").replace(/\s+/g, "");
+  var m = v.match(/^([+-]?(?:\d+\.?\d*|\.\d+))([eE]([+-]?\d+))?$/);
+  if (!m) return null;
+  var base = parseFloat(m[1]), ex = m[3] ? parseInt(m[3], 10) : 0;
+  return base * Math.pow(10, ex);
+}
+function sn2() {
+  var o = $("sn2-out");
+  var v = sn2Num($("sn2-in").value);
+  if (v === null) { o.innerHTML = "Enter a number \u2014 plain (0.00000031), scientific (3.1e-7) or with a \u00d710^ part."; return; }
+  if (v === 0) { o.innerHTML = "<b>0</b><span class='jf-chip'><b>0</b>zero is its own notation</span>"; return; }
+  var ex = Math.floor(Math.log10(Math.abs(v)));
+  var mant = Number((v / Math.pow(10, ex)).toPrecision(7));
+  if (Math.abs(mant) >= 10) { mant /= 10; ex += 1; }
+  var engEx = Math.floor(ex / 3) * 3;
+  var engMant = Math.abs(v) / Math.pow(10, engEx);
+  var si = SN2_SI[0];
+  for (var i = 0; i < SN2_SI.length; i++) if (engEx >= Math.log10(SN2_SI[i][1])) si = SN2_SI[i];
+  var siVal = v / si[1];
+  o.innerHTML = "<b>" + mant + " \u00d7 10^" + ex + "</b>" +
+    "<span class='jf-chip'><b>" + (Math.abs(engMant) >= 100 ? engMant.toFixed(0) : engMant.toPrecision(4).replace(/\.?0+$/, "")) + " \u00d7 10^" + engEx + "</b>engineering</span>" +
+    "<span class='jf-chip'><b>" + (Math.abs(siVal) >= 1000 ? siVal.toExponential(2) : siVal.toPrecision(4).replace(/\.?0+$/, "")) + " " + si[0] + "</b>SI prefix</span>" +
+    "<span class='jf-chip'><b>" + ex + "</b>order of magnitude</span>";
+}
+
+/* --- ke2: caffeine decay --- */
+function ke2() {
+  var o = $("ke2-out");
+  var mg = m6Num("ke2-mg"), hl = m6Num("ke2-hl"), el = m6Num("ke2-el");
+  if (mg === null || mg <= 0 || hl === null || hl <= 0 || el === null || el < 0) {
+    o.innerHTML = "Enter a positive dose and half-life, and hours elapsed (0 or more)."; return;
+  }
+  var rem = mg * Math.pow(0.5, el / hl);
+  var chips = "";
+  for (var k = 1; k <= 4; k++) {
+    var t = el + k * hl;
+    chips += "<span class='jf-chip'><b>" + (mg * Math.pow(0.5, k)).toFixed(1) + "</b>after " + t.toFixed(0) + " h</span>";
+  }
+  var cutoff = null;
+  for (var h = el; h <= el + 24; h += 0.5) {
+    if (mg * Math.pow(0.5, (h - el) / hl) < 50) { cutoff = h; break; }
+  }
+  o.innerHTML = "<b>" + rem.toFixed(1) + " mg</b> still in your system" +
+    "<span class='jf-chip'><b>" + (100 * Math.pow(0.5, el / hl)).toFixed(1) + "%</b>of the dose left</span>" +
+    (cutoff !== null && rem >= 50 ? "<span class='jf-chip'><b>" + (cutoff - el).toFixed(1) + " h</b>until under 50 mg</span>" :
+      (rem < 50 ? "<span class='jf-chip jf-chip-bad'><b>already</b>under 50 mg now</span>" : "")) + chips;
+}
+
+/* --- lc2: Luhn checker --- */
+function lc2() {
+  var o = $("lc2-out");
+  var s = String($("lc2-in").value || "").trim().replace(/[\s-]/g, "");
+  if (!/^[0-9Xx]{1,25}$/.test(s)) {
+    o.innerHTML = "Enter digits only (2 to 25 of them). Use one X for the unknown check digit."; return;
+  }
+  if (/[Xx]/.test(s)) {
+    if (s.replace(/[^Xx]/g, "").length > 1) { o.innerHTML = "Only one X is supported."; return; }
+    var base = s.replace(/[Xx]/, "0");
+    var need = (10 - lc2Total(base) % 10) % 10;
+    o.innerHTML = "<b>check digit = " + need + "</b>" +
+      "<span class='jf-chip'><b>" + base.slice(0, -1) + need + "</b>completed string is then valid</span>" +
+      "<span class='jf-chip'><b>yes</b>one typo is caught</span>";
+    return;
+  }
+  var tot = lc2Total(s), ok = tot % 10 === 0;
+  o.innerHTML = "<b>" + (ok ? "VALID" : "check digit fails") + "</b>" +
+    "<span class='jf-chip'><b>" + tot + "</b>checksum total (mod 10 = " + tot % 10 + ")</span>" +
+    "<span class='jf-chip'><b>" + s.length + "</b>digits</span>";
+}
+function lc2Total(s) {
+  var sum = 0, dbl = false;
+  for (var i = s.length - 1; i >= 0; i--) {
+    var d = +s[i];
+    if (dbl) { d *= 2; if (d > 9) d -= 9; }
+    sum += d;
+    dbl = !dbl;
+  }
+  return sum;
+}
+
+/* wire the batch-20 engines into the shared M3 finisher */
+["pf2", "wg2", "rs2", "rp2", "gc2", "sn2", "ke2", "lc2"].forEach(function (fn) {
+  var orig = null;
+  try { orig = window[fn] || eval(fn); } catch (e) { orig = null; }
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
 
