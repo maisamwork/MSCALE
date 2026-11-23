@@ -499,6 +499,7 @@ TOOL_BODIES = {
   <div class="df2-sim"><div class="df2-sim-fill" id="df2-sim"></div></div>
   <div class="df2-legend"><span class="df2-l-add">+ added</span><span class="df2-l-del">&minus; removed</span><span class="df2-l-same">= unchanged</span></div>
   <div id="diff-out" class="diff-out df2-out"></div>
+  <div class="lr2-actions" style="margin-top:10px"><button class="btn ghost" onclick="df2Copy(this)">Copy diff report</button></div>
 </div>""",
 
 "markdown-previewer": """
@@ -942,6 +943,7 @@ TOOL_BODIES = {
   <div class="pct2-result" id="pct2-big">&mdash;</div>
   <div class="pct2-steps" id="pct2-steps"></div>
   <div class="pct2-extra" id="pct2-extra"></div>
+  <div class="lr2-actions" style="margin-top:10px"><button class="btn ghost" onclick="pc2Copy(this)">Copy result</button></div>
 </div>""",
 
 "bmi-calculator": """
@@ -1387,6 +1389,7 @@ TOOL_BODIES = {
   <div class="ci2-bars" id="dc2-bars"></div>
   <p class="tool-note">Same product at every discount (with your tax rate applied)</p>
   <div class="uc2-table" id="dc2-table"></div>
+  <div class="lr2-actions" style="margin-top:10px"><button class="btn ghost" onclick="dc2Copy(this)">Copy result</button></div>
 </div>""",
 
 "tip-calculator": """
@@ -1411,6 +1414,7 @@ TOOL_BODIES = {
     <tr><th>Per person \u2014 tip</th><td id="tp2-per-tip">\u2014</td></tr>
     <tr><th>Per person \u2014 total</th><td id="tp2-per-total">\u2014</td></tr>
   </tbody></table>
+    <div class="lr2-actions"><button class="btn ghost" onclick="tp2Copy(this)">Copy result</button></div>
 </div>""",
 
 "compound-interest-calculator": """
@@ -1457,6 +1461,7 @@ TOOL_BODIES = {
     <tr><th>Tax amount</th><td id="tx2-tax">\u2014</td></tr>
     <tr><th>Total (gross)</th><td id="tx2-gross">\u2014</td></tr>
   </tbody></table>
+  <div class="lr2-actions" style="margin-top:10px"><button class="btn ghost" onclick="gst2Copy(this)">Copy result</button></div>
   <p class="tool-note">Works for GST, VAT, sales tax \u2014 any percentage-based tax.</p>
 </div>""",
 "date-difference-calculator": """

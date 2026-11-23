@@ -5356,3 +5356,61 @@ function m3Copy(btn) {
     if (typeof window[window.M3_FN] === "function") window[window.M3_FN]();
   });
 })();
+
+
+/* ---------- F17: copy finishers on still-thin finance + diff tools ---------- */
+var DC2_SUM = "", PC2_SUM = "";
+function f17Ent(s) {
+  return String(s).replace(/&middot;/g, "\u00b7").replace(/&nbsp;/g, " ").replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">").replace(/&quot;/g, "\\x22").replace(/&amp;/g, "&");
+}
+function f17Sub(el) {
+  if (!el) return "";
+  return f17Ent((el.innerHTML || "")
+    .replace(/\s*<span[^>]*class="pct2-big-sub"[^>]*>/g, " \u2014 ")
+    .replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim());
+}
+function f17Clean(el) {
+  if (!el) return "";
+  var t = (el.textContent || "").trim();
+  return (t && t !== "\u2014") ? t : "";
+}
+/* Discount */
+(function () {
+  var o = discountCalc;
+  discountCalc = function () {
+    o();
+    DC2_SUM = f17Clean($("dc2-big")) ? f17Sub($("dc2-big")) : "";
+  };
+})();
+function dc2Copy(btn) { if (DC2_SUM) copyText(DC2_SUM, btn); }
+/* Tip */
+function tp2Copy(btn) {
+  var t = f17Clean($("tp2-tip")), tot = f17Clean($("tp2-total"));
+  if (!t) return;
+  copyText("Tip " + t + " \u00b7 Total " + tot + " \u00b7 Per person: tip " + f17Clean($("tp2-per-tip")) +
+    ", total " + f17Clean($("tp2-per-total")), btn);
+}
+/* GST / VAT */
+function gst2Copy(btn) {
+  var net = f17Clean($("tx2-net"));
+  if (!net) return;
+  var dir = $("tx2-add") && $("tx2-add").classList && $("tx2-add").classList.contains("active") ? "added to" : "removed from";
+  copyText("Tax " + f17Clean($("tx2-tax")) + " (18% style rate " + ($("tax-rate") ? $("tax-rate").value : "?") + "% " + dir + "): net " +
+    net + ", gross " + f17Clean($("tx2-gross")), btn);
+}
+/* Percentage calculator */
+(function () {
+  var o = pct2Run;
+  pct2Run = function () {
+    o();
+    var big = $("pct2-big");
+    PC2_SUM = (big && f17Clean(big)) ? f17Sub(big) : "";
+  };
+})();
+function pc2Copy(btn) { if (PC2_SUM) copyText(PC2_SUM, btn); }
+/* Text diff */
+function df2Copy(btn) {
+  var t = f17Clean($("df2-stats"));
+  if (t) copyText(t, btn);
+}
