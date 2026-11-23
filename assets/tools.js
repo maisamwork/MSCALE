@@ -6649,4 +6649,155 @@ function vd2() {
   if (typeof orig !== "function") return;
   window[fn] = function () { orig(); m3After(); };
 });
+/* ---------- M9: batch 23 new tools (kc2, sg2, sb2, ov2, be2, sf3, kb2, sa2) ---------- */
+
+/* --- kc2: calories burned (MET) --- */
+function kc2() {
+  var o = $("kc2-out");
+  var met = +String($("kc2-a").value || "3.5"), w = m7Num("kc2-w"), m = m7Num("kc2-m");
+  if (w === null || w <= 0 || m === null || m <= 0) { o.innerHTML = "Enter a positive body weight and duration."; return; }
+  var kcal = met * 3.5 * w / 200 * m;
+  var perMin = kcal / m;
+  o.innerHTML = "<b>" + kcal.toFixed(1) + " kcal</b>burned in " + nfmt(m, 0) + " minutes" +
+    "<span class='jf-chip'><b>" + perMin.toFixed(1) + "</b>kcal per minute</span>" +
+    "<span class='jf-chip'><b>" + nfmt(perMin * 60, 0) + "</b>kcal if kept up a full hour</span>" +
+    "<span class='jf-chip'><b>" + nfmt(met, 1) + " MET</b>activity intensity from the compendium table</span>" +
+    "<span class='jf-chip'><b>" + nfmt(kcal / 7.7, 0) + " g</b>carbohydrate-equivalent refuel</span>";
+}
+
+/* --- sg2: slope grade --- */
+function sg2() {
+  var o = $("sg2-out");
+  var r = m7Num("sg2-r"), rn = m7Num("sg2-n"), gIn = m7Num("sg2-g");
+  if (r === null && gIn === null) { o.innerHTML = "Enter a rise and run, or leave rise blank and enter a grade to reverse-solve."; return; }
+  if (gIn !== null) {
+    if (rn === null || rn <= 0) { o.innerHTML = "Enter the run to reverse-solve the rise from a grade."; return; }
+    r = rn * gIn / 100;
+    o.innerHTML = "<b>" + nfmt(r, 4) + "</b> rise over a run of " + nfmt(rn, 2) +
+      "<span class='jf-chip'><b>" + gIn + "%</b>the grade you entered</span>";
+    return;
+  }
+  if (rn === null || rn <= 0) { o.innerHTML = "The run must be a positive number."; return; }
+  var pct = r / rn * 100, deg = Math.atan(r / rn) * 180 / Math.PI, ratio = rn / Math.abs(r || 1e-9);
+  o.innerHTML = "<b>" + pct.toFixed(2) + "%</b> grade" +
+    "<span class='jf-chip'><b>" + deg.toFixed(2) + "\u00b0</b>angle from horizontal</span>" +
+    "<span class='jf-chip'><b>1 : " + nfmt(ratio, 1) + "</b>rise-in-run ratio</span>" +
+    (pct > 0 && pct <= 8.33 ? "<span class='jf-chip'><b>pass</b>within the 1 : 12 accessible-ramp limit</span>" : "<span class='jf-chip jf-chip-bad'><b>steep</b>exceeds the 1 : 12 accessible-ramp limit</span>");
+}
+
+/* --- sb2: split bill --- */
+function sb2() {
+  var o = $("sb2-out");
+  var b = m7Num("sb2-b"), t = m7Num("sb2-t"), p = m7Num("sb2-p");
+  if (b === null || b < 0 || t === null || t < 0 || p === null || p < 1) {
+    o.innerHTML = "Enter a non-negative bill and tip, and at least one person."; return;
+  }
+  var tip = b * t / 100, total = b + tip, per = total / p;
+  var ceilShare = Math.ceil(per * 100) / 100;
+  o.innerHTML = "<b>" + m7Money(per) + "</b>per person" +
+    "<span class='jf-chip'><b>" + m7Money(tip) + "</b>tip money (" + t + "%)</span>" +
+    "<span class='jf-chip'><b>" + m7Money(total) + "</b>grand total with tip</span>" +
+    (per !== ceilShare ? "<span class='jf-chip'><b>" + m7Money(ceilShare) + "</b>if each rounds up (" + m7Money(ceilShare * p - total) + " overage)</span>" : "<span class='jf-chip'><b>even</b>splits to the cent, nothing to round</span>");
+}
+
+/* --- ov2: overtime pay, tiered --- */
+function ov2() {
+  var o = $("ov2-out");
+  var r = m7Num("ov2-r"), h = m7Num("ov2-h"), t = m7Num("ov2-t"), x = m7Num("ov2-x");
+  if (r === null || r < 0 || h === null || h < 0 || t === null || t < 0) { o.innerHTML = "Enter a non-negative rate, hours and overtime threshold."; return; }
+  if (x === null || x <= t) x = Math.max(t + 10, 60);
+  var regH = Math.min(h, t);
+  var ot1H = Math.max(0, Math.min(h, x) - t);
+  var ot2H = Math.max(0, h - x);
+  var reg = r * regH, ot1 = r * 1.5 * ot1H, ot2 = r * 2 * ot2H;
+  o.innerHTML = "<b>" + m7Money(reg + ot1 + ot2) + "</b> gross for the week" +
+    "<span class='jf-chip'><b>" + m7Money(reg) + "</b>regular pay (" + regH + " h)</span>" +
+    "<span class='jf-chip'><b>" + m7Money(ot1) + "</b>time-and-a-half (" + ot1H + " h \u00d7 1.5)</span>" +
+    "<span class='jf-chip'><b>" + m7Money(ot2) + "</b>double time (" + ot2H + " h \u00d7 2)</span>" +
+    "<span class='jf-chip'><b>" + m7Money((reg + ot1 + ot2) / h) + "</b>blended effective rate per hour</span>";
+}
+
+/* --- be2: break-even --- */
+function be2() {
+  var o = $("be2-out");
+  var f = m7Num("be2-f"), p = m7Num("be2-p"), v = m7Num("be2-v"), mo = m7Num("be2-m");
+  if (f === null || f < 0 || p === null || p < 0 || v === null || v < 0) { o.innerHTML = "Enter non-negative costs and price."; return; }
+  var margin = p - v;
+  if (margin <= 0) { o.innerHTML = "Price is at or below variable cost \u2014 no volume can break even. Raise the price or cut unit cost first."; return; }
+  var units = f / margin;
+  o.innerHTML = "<b>" + nfmt(units, 0) + " units</b>to break even" +
+    "<span class='jf-chip'><b>" + m7Money(units * p) + "</b>revenue at break-even</span>" +
+    "<span class='jf-chip'><b>" + m7Money(margin) + "</b>margin each sale contributes</span>" +
+    (mo !== null && mo > 0 ? "<span class='jf-chip'><b>" + nfmt(units / mo, 1) + " months</b>at " + nfmt(mo, 0) + " sales a month</span>" : "") +
+    (f === 0 ? "<span class='jf-chip'><b>0</b>no fixed costs \u2014 profitable from unit one</span>" : "");
+}
+
+/* --- sf3: square footage --- */
+function sf3() {
+  var o = $("sf3-out");
+  var l = m7Num("sf3-l"), w = m7Num("sf3-w"), c = m7Num("sf3-c"), x = m7Num("sf3-x");
+  if (l === null || l <= 0 || w === null || w <= 0) { o.innerHTML = "Enter positive length and width in feet."; return; }
+  var area = l * w;
+  var parts = "<b>" + nfmt(area, 1) + " ft\u00b2</b>(" + nfmt(area * 0.092903, 1) + " m\u00b2)";
+  if (c !== null && c >= 0) {
+    if (x === null || x < 0) x = 0;
+    var cost = area * c * (1 + x / 100);
+    parts += "<span class='jf-chip'><b>" + m7Money(area * c) + "</b>cost at " + m7Money(c) + " per ft\u00b2</span>" +
+      (x > 0 ? "<span class='jf-chip'><b>" + m7Money(cost) + "</b>with " + x + "% waste added</span>" : "");
+  }
+  o.innerHTML = parts;
+}
+
+/* --- kb2: keyboard test --- */
+var KB2_SEEN = {}, KB2_COUNT = 0;
+function kb2Key(e) {
+  var k = e.key, code = e.code, kc = e.keyCode;
+  var live = $("kb2-live");
+  var label = k;
+  if (e.ctrlKey && k !== "Control") label = "Ctrl + " + label;
+  if (e.altKey && k !== "Alt") label = "Alt + " + label;
+  if (e.shiftKey && k.length > 1 && k !== "Shift") label = "Shift + " + label;
+  live.innerHTML = "<b>" + (label.length > 1 ? label : label.toUpperCase()) + "</b>" +
+    "<span class='jf-chip'><b>" + code + "</b>event.code</span>" +
+    "<span class='jf-chip'><b>" + kc + "</b>keyCode</span>" +
+    "<span class='jf-chip'><b>" + (e.repeat ? "yes" : "no") + "</b>auto-repeat</span>";
+  if (!KB2_SEEN[code || k]) { KB2_SEEN[code || k] = 1; KB2_COUNT++; }
+  var meta = $("kb2-meta");
+  if (meta) meta.innerHTML = "<span class='jf-chip'><b>" + KB2_COUNT + "</b>distinct keys detected so far</span>";
+  var log = $("kb2-log");
+  if (log) log.innerHTML = k + (kc ? "  (" + kc + ")" : "") + "\n" + log.innerHTML;
+}
+document.addEventListener("keydown", kb2Key);
+
+/* --- sa2: secret santa --- */
+function sa2() {
+  var o = $("sa2-out"), meta = $("sa2-meta");
+  var names = String($("sa2-in").value || "").split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+  var uniq = {};
+  for (var i = 0; i < names.length; i++) {
+    var key = names[i].toLowerCase();
+    if (uniq[key]) { o.innerHTML = "Duplicate name: \u201c" + names[i] + "\u201d \u2014 each person must appear once."; return; }
+    uniq[key] = 1;
+  }
+  if (names.length < 3) { o.innerHTML = "Enter at least three names, one per line."; return; }
+  var n = names.length, buf = new Uint32Array(n);
+  (window.crypto || globalThis.crypto).getRandomValues(buf);
+  for (var j = n - 1; j > 0; j--) {
+    var k2 = buf[j] % (j + 1), tmp = names[j]; names[j] = names[k2]; names[k2] = tmp;
+  }
+  var lines = [];
+  for (var g = 0; g < n; g++) lines.push(names[g] + " \u2192 " + names[(g + 1) % n]);
+  o.innerHTML = lines.join("<br>");
+  if (meta) meta.innerHTML = "<span class='jf-chip'><b>" + n + "</b>participants</span>" +
+    "<span class='jf-chip'><b>" + n + "</b>gifts given, one each</span>" +
+    "<span class='jf-chip'><b>crypto</b>shuffle source (no self-draws possible)</span>";
+}
+
+/* wire the batch-23 engines into the shared M3 finisher */
+["kc2", "sg2", "sb2", "ov2", "be2", "sf3", "kb2", "sa2"].forEach(function (fn) {
+  var orig = null;
+  try { orig = window[fn] || eval(fn); } catch (e) { orig = null; }
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
 

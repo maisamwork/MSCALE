@@ -46,6 +46,10 @@ from .mega8 import MEGA8 as _MEGA8, CONTENT8 as _CONTENT8
 CONTENT.update(_CONTENT8)
 MEGA.update(_MEGA8)
 
+from .mega9 import MEGA9 as _MEGA9, CONTENT9 as _CONTENT9
+CONTENT.update(_CONTENT9)
+MEGA.update(_MEGA9)
+
 from .blog_meta import BLOG_META as _BMETA, LENGTH_RANGES as _LR, enriched_blocks as _eb, geo_checks as _gc
 BLOG_META = _BMETA
 LENGTH_RANGES = _LR
