@@ -5414,3 +5414,315 @@ function df2Copy(btn) {
   var t = f17Clean($("df2-stats"));
   if (t) copyText(t, btn);
 }
+/* ---------- M4: batch 18 new tools (tz3 timezone, mo3 morse, st3 statistics,
+   sd3 speed/distance/time, fc3 fractions, gp3 GPA, dp3 depreciation, wq3 water) ---------- */
+function m4Num(id) {
+  var v = String($(id).value || "").trim();
+  return (v === "" || !isFinite(+v)) ? null : +v;
+}
+function m4Pad(n) { return String(n).padStart(2, "0"); }
+function m4Hms(ms) {
+  var d = new Date(ms);
+  return m4Pad(d.getUTCHours()) + ":" + m4Pad(d.getUTCMinutes());
+}
+
+/* --- tz3: IANA-accurate time zone converter --- */
+function tz3Off(tz, ms) {
+  try {
+    var p = new Intl.DateTimeFormat("en-US", { timeZone: tz, hour12: false, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" }).formatToParts(new Date(ms));
+    var g = {};
+    p.forEach(function (x) { g[x.type] = x.value; });
+    if (!g.year) return null;
+    var asUTC = Date.UTC(+g.year, +g.month - 1, +g.day, (+g.hour) % 24, +g.minute, +g.second);
+    return (asUTC - Math.floor(ms / 1000) * 1000) / 60000;
+  } catch (e) { return null; }
+}
+function tz3() {
+  var o = $("tz3-out");
+  var f = String($("tz3-f").value || ""), t = String($("tz3-t").value || "");
+  if (!f || !t) { o.innerHTML = "Pick two cities to convert between."; return; }
+  var fT = f.split("/").pop().replace(/_/g, " "), tT = t.split("/").pop().replace(/_/g, " ");
+  var v = String($("tz3-dt").value || "").replace("T", " ").trim();
+  var utc;
+  if (!v) {
+    utc = Date.now();
+  } else {
+    var m = v.split(/[- :]/).map(Number);
+    if (m.length < 5 || m.some(function (x) { return isNaN(x); })) {
+      o.innerHTML = "Enter a valid date and time, or leave the field blank to convert the current moment.";
+      return;
+    }
+    var base = Date.UTC(m[0], m[1] - 1, m[2], m[3], m[4], m[5] || 0);
+    utc = base;
+    for (var i = 0; i < 3; i++) {
+      var off0 = tz3Off(f, utc);
+      if (off0 === null) { o.innerHTML = "Unknown city selected."; return; }
+      utc = base - off0 * 60000;
+    }
+  }
+  var foff = tz3Off(f, utc), toff = tz3Off(t, utc);
+  if (foff === null || toff === null) { o.innerHTML = "Unknown city selected."; return; }
+  var dS = new Date(utc + foff * 60000), dT = new Date(utc + toff * 60000);
+  var diff = toff - foff;
+  var diffTxt = diff === 0 ? "same clock time" : Math.abs(diff / 60) + " h " + (diff > 0 ? "ahead" : "behind");
+  var dsKey = Date.UTC(dS.getUTCFullYear(), dS.getUTCMonth(), dS.getUTCDate());
+  var dtKey = Date.UTC(dT.getUTCFullYear(), dT.getUTCMonth(), dT.getUTCDate());
+  var shift = Math.round((dtKey - dsKey) / 86400000);
+  var dayTxt = shift === 0 ? "same day" : (shift > 0 ? "+" + shift + " day" : shift + " day");
+  var timeStr = m4Hms(utc + toff * 60000);
+  var dateStr = m4Pad(dT.getUTCDate()) + "/" + m4Pad(dT.getUTCMonth() + 1) + "/" + dT.getUTCFullYear();
+  o.innerHTML = "<b>" + timeStr + "</b> in " + tT + " when it is <b>" + m4Hms(utc + foff * 60000) + "</b> in " + fT +
+    "<span class='jf-chip'><b>" + dateStr + "</b>target date</span>" +
+    "<span class='jf-chip'><b>" + diffTxt + "</b>difference</span>" +
+    "<span class='jf-chip'><b>" + tz3Fmt(foff) + "</b>" + fT + " offset</span>" +
+    "<span class='jf-chip'><b>" + tz3Fmt(toff) + "</b>" + tT + " offset</span>" +
+    (shift === 0 ? "" : "<span class='jf-chip'><b>" + dayTxt + "</b>" + dateStr + "</span>");
+}
+function tz3Fmt(z) {
+  var s = z < 0 ? "\u2212" : "+", a = Math.abs(z), h = Math.floor(a / 60), m = Math.round(a % 60);
+  return "UTC" + s + h + (m ? ":" + m4Pad(m) : "");
+}
+
+/* --- mo3: morse code translator --- */
+var MO3_E = { "A": ".-", "B": "-...", "C": "-.-.", "D": "-..", "E": ".", "F": "..-.", "G": "--.", "H": "....",
+  "I": "..", "J": ".---", "K": "-.-", "L": ".-..", "M": "--", "N": "-.", "O": "---", "P": ".--.", "Q": "--.-",
+  "R": ".-.", "S": "...", "T": "-", "U": "..-", "V": "...-", "W": ".--", "X": "-..-", "Y": "-.--", "Z": "--..",
+  "0": "-----", "1": ".----", "2": "..---", "3": "...--", "4": "....-", "5": ".....", "6": "-....", "7": "--...",
+  "8": "---..", "9": "----.", ".": ".-.-.-", ",": "--..--", "?": "..--..", "!": "-.-.--", "'": ".----.",
+  "/": "-..-.", "(": "-.--.", ")": "-.--.-", "&": ".-...", ":": "---...", ";": "-.-.-.", "=": "-...-",
+  "+": ".-.-.", "-": "-....-", "_": "..--.-", '"': ".-..-.", "@": ".--.-." };
+var MO3_D = {};
+Object.keys(MO3_E).forEach(function (k) { MO3_D[MO3_E[k]] = k; });
+var MO3_MORSE = "", MO3_PLAIN = "", MO3_KIND = "e";
+function mo3() {
+  var o = $("mo3-out");
+  var s = String($("mo3-in").value || "");
+  if (!s.trim()) { o.innerHTML = "Type text above, or paste Morse code (dots, dashes, spaces \u2014 use / or | between words)."; return; }
+  var isMorse = /[\.\-]/.test(s) && !/[A-Za-z0-9]/.test(s.replace(/[/.|]/g, ""));
+  var i, outArr;
+  if (isMorse) {
+    var words = s.replace(/\|/g, "/").trim().split(/\s*\/\s*/);
+    var plain = [];
+    for (i = 0; i < words.length; i++) {
+      var ls = words[i].split(/\s+/).filter(Boolean).map(function (tok) { return MO3_D[tok] || "?"; }).join("");
+      plain.push(ls);
+    }
+    MO3_PLAIN = plain.join(" ");
+    MO3_MORSE = s.replace(/\|/g, "/").trim().split(/\s*\/\s*/).map(function (w) { return w.split(/\s+/).filter(Boolean).join(" "); }).join(" / ");
+    MO3_KIND = "d";
+    o.innerHTML = "<b>" + escHtml(MO3_PLAIN) + "</b><span class='jf-chip'><b>" + MO3_MORSE.split(" ").length + "</b>signals</span><span class='jf-chip'><b>" + MO3_PLAIN.split(/\s+/).length + "</b>words decoded</span>";
+  } else {
+    var mwords = s.toUpperCase().split(/\s+/);
+    var marr = [];
+    for (i = 0; i < mwords.length; i++) {
+      if (!mwords[i]) continue;
+      var enc = mwords[i].split("").map(function (ch) { return MO3_E[ch] !== undefined ? MO3_E[ch] : "?"; }).join(" ");
+      marr.push(enc);
+    }
+    MO3_MORSE = marr.join(" / ");
+    MO3_PLAIN = s.toUpperCase().trim().split(/\s+/).join(" ");
+    MO3_KIND = "e";
+    var units = MO3_MORSE.replace(/[^.\- ]/g, "").length * 1 + (MO3_MORSE.match(/\-/g) || []).length * 2;
+    o.innerHTML = "<b>" + escHtml(MO3_MORSE) + "</b><span class='jf-chip'><b>" + (MO3_MORSE.match(/[.\-]/g) || []).length + "</b>signals</span><span class='jf-chip'><b>~" + Math.ceil(units * 0.06) + " s</b>to key at 20 wpm</span>";
+  }
+}
+function mo3Swap() {
+  if (MO3_MORSE && MO3_KIND === "e") $("mo3-in").value = MO3_MORSE;
+  else if (MO3_PLAIN) $("mo3-in").value = MO3_PLAIN;
+  mo3();
+}
+function mo3Play(btn) {
+  var m = MO3_KIND === "e" ? MO3_MORSE : MO3_MORSE;
+  if (!m) return;
+  var AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) { btn.textContent = "Audio unsupported"; return; }
+  try {
+    var ctx = new AC(), u = 0.09, t = ctx.currentTime + 0.08;
+    var osc = ctx.createOscillator(), gain = ctx.createGain(), total = 0;
+    osc.frequency.value = 600; gain.gain.value = 0.0001;
+    osc.connect(gain); gain.connect(ctx.destination);
+    m.split("").forEach(function (ch) {
+      if (ch === ".") { gain.gain.setTargetAtTime(0.25, t, 0.005); t += u; gain.gain.setTargetAtTime(0.0001, t, 0.005); t += u; }
+      else if (ch === "-") { gain.gain.setTargetAtTime(0.25, t, 0.005); t += u * 3; gain.gain.setTargetAtTime(0.0001, t, 0.005); t += u; }
+      else if (ch === " ") { t += u * 2; }
+      else if (ch === "/") { t += u * 5; }
+    });
+    total = t - ctx.currentTime;
+    osc.start(); osc.stop(ctx.currentTime + total + 0.1);
+    if (btn) { btn.textContent = "Playing\u2026"; setTimeout(function () { btn.textContent = "Play audio"; }, total * 1000); }
+  } catch (e) { if (btn) btn.textContent = "Audio unsupported"; }
+}
+
+/* --- st3: descriptive statistics --- */
+function st3Q(a, p) {
+  var i = (a.length - 1) * p, lo = Math.floor(i), hi = Math.ceil(i);
+  return a[lo] + (a[hi] - a[lo]) * (i - lo);
+}
+function st3() {
+  var o = $("st3-out");
+  var tok = String($("st3-in").value || "").match(/-?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?/gi) || [];
+  var a = tok.map(Number).filter(function (x) { return isFinite(x); });
+  if (!a.length) { o.innerHTML = "Enter at least one number \u2014 separate with spaces, commas or new lines."; return; }
+  var s = a.slice().sort(function (x, y) { return x - y; });
+  var n = a.length, sum = a.reduce(function (p, c) { return p + c; }, 0), mean = sum / n;
+  var med = n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2;
+  var varP = a.reduce(function (p, c) { return p + (c - mean) * (c - mean); }, 0) / n;
+  var varS = n > 1 ? a.reduce(function (p, c) { return p + (c - mean) * (c - mean); }, 0) / (n - 1) : 0;
+  var q1 = st3Q(s, 0.25), q3 = st3Q(s, 0.75);
+  var f6 = function (x) { return (Math.round(x * 1e6) / 1e6).toString(); };
+  var counts = {}, best = [], bestC = 1;
+  a.forEach(function (x) {
+    var k = f6(x);
+    counts[k] = (counts[k] || 0) + 1;
+    if (counts[k] > bestC) bestC = counts[k];
+  });
+  if (bestC > 1) best = Object.keys(counts).filter(function (k) { return counts[k] === bestC; });
+  o.innerHTML = "<b>Mean " + f6(mean) + "</b> \u00b7 median <b>" + f6(med) + "</b> \u00b7 sample sd <b>" + f6(Math.sqrt(varS)) + "</b>" +
+    "<span class='jf-chip'><b>" + n + "</b>values</span><span class='jf-chip'><b>" + f6(sum) + "</b>sum</span>" +
+    "<span class='jf-chip'><b>" + f6(s[0]) + "</b>minimum</span><span class='jf-chip'><b>" + f6(s[n - 1]) + "</b>maximum</span>" +
+    "<span class='jf-chip'><b>" + f6(s[n - 1] - s[0]) + "</b>range</span>" +
+    "<span class='jf-chip'><b>" + (best.length ? best.join(", ") : "none") + "</b>mode</span>" +
+    "<span class='jf-chip'><b>" + f6(q1) + "</b>Q1 (25%)</span><span class='jf-chip'><b>" + f6(q3) + "</b>Q3 (75%)</span>" +
+    "<span class='jf-chip'><b>" + f6(q3 - q1) + "</b>interquartile range</span>" +
+    "<span class='jf-chip'><b>" + f6(varP) + "</b>variance (population)</span>" +
+    "<span class='jf-chip'><b>" + f6(varS) + "</b>variance (sample)</span>";
+}
+
+/* --- sd3: speed / distance / time --- */
+function sd3() {
+  var o = $("sd3-out"), mode = String($("sd3-m").value || "speed");
+  var d = m4Num("sd3-d"), s = m4Num("sd3-s"), t = m4Num("sd3-t");
+  var f6 = function (x) { return (Math.round(x * 1e4) / 1e4).toString(); };
+  var r, label;
+  if (mode === "speed") {
+    if (d === null || d <= 0 || t === null || t <= 0) { o.innerHTML = "Enter a positive distance and a positive time to solve for speed."; return; }
+    r = d / t; label = "Speed " + f6(r) + " km/h";
+  } else if (mode === "distance") {
+    if (s === null || s <= 0 || t === null || t < 0) { o.innerHTML = "Enter a positive speed and a time (hours) to solve for distance."; return; }
+    r = s * t; label = "Distance " + f6(r) + " km";
+  } else {
+    if (d === null || d <= 0 || s === null || s <= 0) { o.innerHTML = "Enter a positive distance and a positive speed to solve for time."; return; }
+    r = d / s; label = "Time " + Math.floor(r) + " h " + m4Pad(Math.round((r - Math.floor(r)) * 60)) + " min";
+  }
+  var chips = "";
+  if (mode === "speed") {
+    chips = "<span class='jf-chip'><b>" + f6(r / 1.609344) + "</b>mph</span><span class='jf-chip'><b>" + f6(r / 3.6) + "</b>m/s</span><span class='jf-chip'><b>" + f6(60 / r) + "</b>min per km</span>";
+  } else if (mode === "distance") {
+    chips = "<span class='jf-chip'><b>" + f6(r * 1000) + "</b>metres</span><span class='jf-chip'><b>" + f6(r / 1.609344) + "</b>miles</span>";
+  } else {
+    chips = "<span class='jf-chip'><b>" + f6(r) + "</b>hours (decimal)</span><span class='jf-chip'><b>" + f6(r * 60) + "</b>minutes</span>";
+  }
+  o.innerHTML = "<b>" + label + "</b>" + chips;
+}
+
+/* --- fc3: fraction arithmetic --- */
+function fc3Gcd(x, y) { x = Math.abs(x); y = Math.abs(y); while (y) { var t = x % y; x = y; y = t; } return x || 1; }
+function fc3() {
+  var o = $("fc3-out");
+  var a = m4Num("fc3-a"), b = m4Num("fc3-b"), c = m4Num("fc3-c"), d = m4Num("fc3-d"), op = String($("fc3-op").value || "+");
+  if (a === null || b === null || c === null || d === null) { o.innerHTML = "Fill in all four boxes (numerators and denominators)."; return; }
+  if (b === 0 || d === 0) { o.innerHTML = "Denominators cannot be zero \u2014 a number divided by nothing is undefined."; return; }
+  var num = 0, den = 1, opTxt = "+";
+  if (op === "+") { num = a * d + c * b; den = b * d; opTxt = "+"; }
+  else if (op === "-") { num = a * d - c * b; den = b * d; opTxt = "\u2212"; }
+  else if (op === "*") { num = a * c; den = b * d; opTxt = "\u00d7"; }
+  else { num = a * d; den = b * c; opTxt = "\u00f7"; }
+  if (den === 0) { o.innerHTML = "Cannot divide by a zero fraction \u2014 that is undefined."; return; }
+  if (den < 0) { num = -num; den = -den; }
+  var g = fc3Gcd(num, den), rn = num / g, rd = den / g;
+  var dec = (num / den), whole = Math.trunc(rn / rd), rem = Math.abs(rn % rd);
+  var mixTxt = (rd !== 1 && Math.abs(rn) > rd && rem !== 0) ? " \u00b7 as a mixed number: " + whole + " " + Math.abs(rem) + "/" + rd : "";
+  o.innerHTML = "<b>" + a + "/" + b + " " + opTxt + " " + c + "/" + d + " = " + rn + (rd === 1 ? "" : "/" + rd) + "</b>" +
+    "<span class='jf-chip'><b>" + dec.toFixed(4).replace(/0+$/, "").replace(/\.$/, "") + "</b>decimal</span>" +
+    (g > 1 ? "<span class='jf-chip'><b>" + num + "/" + den + "</b>before reducing (GCD " + g + ")</span>" : "<span class='jf-chip'><b>1</b>already lowest terms</span>") +
+    mixTxt;
+}
+
+/* --- gp3: weighted GPA --- */
+var GP3_ADD_HTML = '<div class="row gp3-row"><div><input class="in" type="text" placeholder="Course name (optional)" aria-label="Course" autocomplete="off"></div><div><select class="gp3-g" aria-label="Grade (4.0 scale)"><option value="4">A (4.0)</option><option value="3.7">A- (3.7)</option><option value="3.3">B+ (3.3)</option><option value="3">B (3.0)</option><option value="2.7">B- (2.7)</option><option value="2.3">C+ (2.3)</option><option value="2">C (2.0)</option><option value="1.7">C- (1.7)</option><option value="1.3">D+ (1.3)</option><option value="1">D (1.0)</option><option value="0">F (0.0)</option></select></div><div><input class="in gp3-cre" type="number" step="any" min="0" value="3" aria-label="Credits" autocomplete="off"></div><div><button type="button" class="btn ghost" onclick="gp3Del(this)" aria-label="Remove course">&times;</button></div></div>';
+function gp3() {
+  var o = $("gp3-out");
+  var rows = document.querySelectorAll(".gp3-row") || [];
+  var qp = 0, cre = 0, n = 0;
+  Array.prototype.forEach.call(rows, function (row) {
+    var gEl = row.querySelector(".gp3-g"), cEl = row.querySelector(".gp3-cre");
+    if (!gEl || !cEl) return;
+    var g = parseFloat(gEl.value), cr = parseFloat(cEl.value);
+    if (isFinite(g) && isFinite(cr) && cr > 0) { qp += g * cr; cre += cr; n++; }
+  });
+  if (!n) { o.innerHTML = "Add at least one course with a grade and credit hours."; return; }
+  var gpa = qp / cre;
+  o.innerHTML = "<b>GPA " + gpa.toFixed(2) + "</b> on the 4.0 scale" +
+    "<span class='jf-chip'><b>" + n + "</b>courses counted</span>" +
+    "<span class='jf-chip'><b>" + (Math.round(cre * 100) / 100) + "</b>total credits</span>" +
+    "<span class='jf-chip'><b>" + (Math.round(qp * 100) / 100) + "</b>quality points</span>" +
+    (gpa >= 3.6 ? "<span class='jf-chip jf-chip-bad'><b>strong</b>standing</span>" : "<span class='jf-chip'><b>keep going</b>standing</span>");
+}
+function gp3Add() {
+  var c = $("gp3-rows");
+  if (c) c.insertAdjacentHTML("beforeend", GP3_ADD_HTML);
+  gp3();
+}
+function gp3Del(b) {
+  var r = b.closest ? b.closest(".gp3-row") : (b.parentNode && b.parentNode.parentNode);
+  if (r && r.parentNode) r.parentNode.removeChild(r);
+  gp3();
+}
+
+/* --- dp3: depreciation schedule --- */
+function dp3() {
+  var o = $("dp3-out"), tbl = $("dp3-table");
+  var c = m4Num("dp3-c"), s = m4Num("dp3-s"), y = m4Num("dp3-y"), m = String($("dp3-m").value || "sl");
+  if (c === null || c <= 0 || s === null || s < 0 || y === null || Math.floor(y) !== y || y < 1) {
+    o.innerHTML = "Enter a positive cost, a non-negative salvage value and a whole number of years (1 or more).";
+    if (tbl) tbl.innerHTML = "";
+    return;
+  }
+  if (s > c) { o.innerHTML = "Salvage value cannot exceed the asset cost."; if (tbl) tbl.innerHTML = ""; return; }
+  var rows = "<thead><tr><th>Year</th><th>Depreciation</th><th>Accumulated</th><th>Book value</th></tr></thead><tbody>";
+  var bv = c, acc = 0, first = 0;
+  for (var k = 1; k <= y; k++) {
+    var dep;
+    if (m === "ddb") {
+      dep = Math.min(bv - s, bv * (2 / y));
+    } else {
+      dep = (c - s) / y;
+    }
+    if (k === y && m === "sl") dep = c - s - acc;
+    dep = Math.round(dep * 100) / 100;
+    if (k === 1) first = dep;
+    acc += dep; bv -= dep;
+    if (bv < s) { bv = s; }
+    rows += "<tr><td>" + k + "</td><td>" + dep.toFixed(2) + "</td><td>" + acc.toFixed(2) + "</td><td>" + bv.toFixed(2) + "</td></tr>";
+  }
+  rows += "</tbody>";
+  o.innerHTML = "<b>" + (m === "ddb" ? "Double declining balance" : "Straight line") + ":</b> first-year depreciation " + first.toFixed(2) +
+    "<span class='jf-chip'><b>" + (c - s > 0 ? ((c - s) / y).toFixed(2) : "0.00").toString() + "</b>per year (straight-line ref)</span>" +
+    "<span class='jf-chip'><b>" + (c - s).toFixed(2) + "</b>total depreciated</span>" +
+    "<span class='jf-chip'><b>" + bv.toFixed(2) + "</b>final book value</span>";
+  if (tbl) tbl.innerHTML = rows;
+}
+
+/* --- wq3: daily water intake --- */
+function wq3() {
+  var o = $("wq3-out");
+  var w = m4Num("wq3-w"), x = m4Num("wq3-x"), cl = String($("wq3-cl").value || "mild");
+  if (w === null || w <= 0) { o.innerHTML = "Enter your body weight in kilograms (a positive number)."; return; }
+  if (x === null || x < 0) x = 0;
+  var ml = w * 33 + Math.floor(x / 30) * 500 + (x % 30 >= 15 ? 250 : 0);
+  var climTxt = "";
+  if (cl === "hot") { ml = ml * 1.12; climTxt = "<span class='jf-chip'><b>+12%</b>hot-climate allowance</span>"; }
+  ml = Math.round(ml / 10) * 10;
+  o.innerHTML = "<b>" + (ml / 1000).toFixed(2) + " L</b> of fluid per day" +
+    "<span class='jf-chip'><b>" + Math.round(ml / 240) + "</b>US cups (240 ml)</span>" +
+    "<span class='jf-chip'><b>" + Math.round(ml / 250) + "</b>glasses (250 ml)</span>" +
+    "<span class='jf-chip'><b>" + Math.round(ml / 0.355) + "</b>remaining per waking hour (16 h)</span>" + climTxt;
+}
+
+/* wire the batch-18 engines into the shared M3 finisher (live recalc + copy + counter) */
+["tz3", "mo3", "st3", "sd3", "fc3", "gp3", "dp3", "wq3"].forEach(function (fn) {
+  var orig = window[fn] || eval(fn);
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
+
