@@ -6484,4 +6484,169 @@ function dl2() {
   if (typeof orig !== "function") return;
   window[fn] = function () { orig(); m3After(); };
 });
+/* ---------- M8: batch 22 new tools (th2, ss2, ab2, pv2, pt2, bt2, st2, vd2) ---------- */
+
+/* --- th2: take-home pay --- */
+function th2() {
+  var o = $("th2-out");
+  var g = m7Num("th2-g"), p = m7Num("th2-p"), t = m7Num("th2-t");
+  if (g === null || g < 0 || p === null || t === null || p < 0 || t < 0) {
+    o.innerHTML = "Enter non-negative gross pay, deduction percent and tax rate."; return;
+  }
+  var pre = g * p / 100, taxable = Math.max(0, g - pre), tax = taxable * t / 100, net = g - tax - pre;
+  o.innerHTML = "<b>" + m7Money(net) + "</b> take-home per year" +
+    "<span class='jf-chip'><b>" + m7Money(net / 12) + "</b>per month</span>" +
+    "<span class='jf-chip'><b>" + m7Money(net / 52) + "</b>per week</span>" +
+    "<span class='jf-chip'><b>" + m7Money(pre) + "</b>pre-tax deductions</span>" +
+    "<span class='jf-chip'><b>" + m7Money(tax) + "</b>tax on " + m7Money(taxable) + " of taxable pay</span>" +
+    (g > 0 ? "<span class='jf-chip'><b>" + ((g - net) / g * 100).toFixed(1) + "%</b>effective total deduction</span>" : "");
+}
+
+/* --- ss2: sample size --- */
+function ss2() {
+  var o = $("ss2-out"), meta = $("ss2-meta");
+  var p = m7Num("ss2-p"), m = m7Num("ss2-m"), v = m7Num("ss2-v");
+  if (p === null || p <= 0 || p >= 100 || m === null || m <= 0 || m >= 100) {
+    o.innerHTML = "Enter a baseline rate and a minimum detectable lift, both strictly between 0 and 100."; return;
+  }
+  var pp = p / 100, d = pp * m / 100;
+  var n = 7.84 * 2 * pp * (1 - pp) / (d * d);
+  n = Math.ceil(n / 10) * 10;
+  o.innerHTML = "<b>" + nfmt(n, 0) + "</b> visitors needed per variant" +
+    "<span class='jf-chip'><b>" + nfmt(n * 2, 0) + "</b>total across both variants</span>" +
+    "<span class='jf-chip'><b>" + nfmt(p * m / 100, 2) + "%</b>absolute change being detected</span>";
+  if (v !== null && v > 0) {
+    var days = (n * 2) / v;
+    meta.innerHTML = "<span class='jf-chip'><b>" + days.toFixed(1) + " days</b>to run at " + nfmt(v, 0) + " visitors/day</span>";
+  }
+}
+
+/* --- ab2: split-test significance --- */
+function ab2Phi(z) {
+  var t = 1 / (1 + 0.2316419 * Math.abs(z));
+  var d = 0.3989423 * Math.exp(-z * z / 2);
+  var p = d * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  return z >= 0 ? 1 - p : p;
+}
+function ab2() {
+  var o = $("ab2-out");
+  var va = m7Num("ab2-va"), ca = m7Num("ab2-ca"), vb = m7Num("ab2-vb"), cb = m7Num("ab2-cb");
+  if (va === null || va <= 0 || vb === null || vb <= 0 || ca === null || ca < 0 || cb === null || cb < 0 || ca > va || cb > vb) {
+    o.innerHTML = "Enter visitor counts (positive) and conversions between 0 and the visitor count."; return;
+  }
+  var pa = ca / va, pb = cb / vb;
+  var pooled = (ca + cb) / (va + vb);
+  var se = Math.sqrt(pooled * (1 - pooled) * (1 / va + 1 / vb));
+  var z = se > 0 ? (pb - pa) / se : 0;
+  var pv = 2 * (1 - ab2Phi(Math.abs(z)));
+  var sig = pv < 0.05;
+  var lift = pa > 0 ? (pb - pa) / pa * 100 : null;
+  o.innerHTML = "<b>" + (sig ? "SIGNIFICANT" : "not conclusive") + "</b> at the 95% confidence level" +
+    "<span class='jf-chip'><b>" + (pa * 100).toFixed(2) + "% \u2192 " + (pb * 100).toFixed(2) + "%</b>conversion rate A \u2192 B</span>" +
+    "<span class='jf-chip'><b>" + z.toFixed(2) + "</b>z-score</span>" +
+    "<span class='jf-chip'><b>" + (pv * 100).toFixed(1) + "%</b>p-value (" + (sig ? "under" : "over") + " 5%)</span>" +
+    (lift !== null ? "<span class='jf-chip'><b>" + (lift >= 0 ? "+" : "") + (lift >= 0 ? lift.toFixed(1) : lift.toFixed(1)) + "%</b>relative lift for B</span>" : "") +
+    "<span class='jf-chip'><b>" + (sig ? "ship it" : "keep testing") + "</b>verdict</span>";
+}
+
+/* --- pv2: pond volume --- */
+function pv2() {
+  var o = $("pv2-out");
+  var l = m7Num("pv2-l"), w = m7Num("pv2-w"), d = m7Num("pv2-d");
+  var shape = String($("pv2-s").value || "rect");
+  if (l === null || l <= 0 || d === null || d <= 0) { o.innerHTML = "Enter a positive length (or diameter) and depth in feet."; return; }
+  var cuft;
+  if (shape === "circ") {
+    cuft = Math.PI * (l / 2) * (l / 2) * d;
+  } else {
+    if (w === null || w <= 0) { o.innerHTML = "Enter a positive width for a rectangular pond."; return; }
+    cuft = l * w * d;
+  }
+  var gal = cuft * 7.48052, lit = cuft * 28.3168;
+  o.innerHTML = "<b>" + nfmt(lit, 0) + " L</b>(" + nfmt(gal, 0) + " US gal)" +
+    "<span class='jf-chip'><b>" + nfmt(cuft, 1) + " ft\u00b3</b>cubic feet of water</span>" +
+    "<span class='jf-chip'><b>" + nfmt(lit / 1000, 2) + " m\u00b3</b>cubic metres</span>" +
+    "<span class='jf-chip'><b>" + nfmt(shape === "circ" ? Math.PI * (l / 2) * (l / 2) : l * w, 1) + " ft\u00b2</b>surface area</span>" +
+    "<span class='jf-chip'><b>" + nfmt(lit / 4000, 2) + " h</b>pump hours for one full turnover at 4,000 L/h</span>";
+}
+
+/* --- pt2: paint coverage --- */
+function pt2() {
+  var o = $("pt2-out");
+  var l = m7Num("pt2-l"), w = m7Num("pt2-w"), h = m7Num("pt2-h");
+  var dd = m7Num("pt2-d"), nn = m7Num("pt2-n"), c = m7Num("pt2-c");
+  if (l === null || l <= 0 || w === null || w <= 0 || h === null || h <= 0) {
+    o.innerHTML = "Enter positive room length, width and wall height in metres."; return;
+  }
+  if (dd === null || dd < 0) dd = 0;
+  if (nn === null || nn < 0) nn = 0;
+  if (c === null || c < 1) c = 1;
+  var walls = 2 * (l + w) * h - dd * 1.8 - nn * 1.2;
+  if (walls <= 0) { o.innerHTML = "Doors and windows are larger than the walls \u2014 check the dimensions."; return; }
+  var litres = walls * c / 10;
+  var cans = Math.ceil(litres / 4);
+  o.innerHTML = "<b>" + nfmt(litres, 2) + " L</b>of paint for " + c + (c === 1 ? " coat" : " coats") +
+    "<span class='jf-chip'><b>" + nfmt(walls, 1) + " m\u00b2</b>paintable wall area (openings removed)</span>" +
+    "<span class='jf-chip'><b>" + cans + "</b>4 L cans to buy (rounded up)</span>" +
+    "<span class='jf-chip'><b>" + nfmt(litres / cans, 2) + " L</b>leftover from the last can" + "</span>";
+}
+
+/* --- bt2: BTU calculator --- */
+function bt2() {
+  var o = $("bt2-out");
+  var l = m7Num("bt2-l"), w = m7Num("bt2-w"), np = m7Num("bt2-n");
+  var s = String($("bt2-s").value || "avg"), k = String($("bt2-k").value || "no");
+  if (l === null || l <= 0 || w === null || w <= 0) { o.innerHTML = "Enter positive room length and width in metres."; return; }
+  var sqft = l * w * 10.7639;
+  var btu = sqft * 20;
+  if (s === "sunny") btu *= 1.1;
+  if (s === "shade") btu *= 0.9;
+  if (np !== null && np > 2) btu += (np - 2) * 600;
+  if (k === "yes") btu += 4000;
+  o.innerHTML = "<b>" + nfmt(Math.round(btu), 0) + " BTU/h</b>air conditioner size for this room" +
+    "<span class='jf-chip'><b>" + (btu / 3412.14).toFixed(2) + " kW</b>metric equivalent</span>" +
+    "<span class='jf-chip'><b>" + nfmt(l * w, 1) + " m\u00b2</b>floor area (" + nfmt(sqft, 0) + " ft\u00b2)</span>" +
+    "<span class='jf-chip'><b>" + nfmt(Math.round(btu) * 0.75, 0) + "</b>BTU if mostly heating instead of cooling</span>";
+}
+
+/* --- st2: screen time --- */
+function st2() {
+  var o = $("st2-out");
+  var p = m7Num("st2-p"), c = m7Num("st2-c"), t = m7Num("st2-t"), g = m7Num("st2-g"), a = m7Num("st2-a");
+  if (p === null && c === null && t === null && g === null) { o.innerHTML = "Enter at least one screen's daily hours."; return; }
+  var day = (p || 0) + (c || 0) + (t || 0) + (g || 0);
+  var yr = day * 365;
+  o.innerHTML = "<b>" + nfmt(day, 1) + " h</b>of screens per typical day" +
+    "<span class='jf-chip'><b>" + nfmt(day * 7, 1) + " h</b>per week</span>" +
+    "<span class='jf-chip'><b>" + nfmt(yr, 0) + " h</b>per year</span>" +
+    "<span class='jf-chip'><b>" + nfmt(yr / 24, 1) + " full days</b>the annual hours as 24-hour days</span>" +
+    (a !== null && a > 0 && a < 80 ? "<span class='jf-chip'><b>" + nfmt(day * 365 * (80 - a) / 24 / 365, 1) + " years</b>waking years at this pace until age 80</span>" : "");
+}
+
+/* --- vd2: voltage drop --- */
+var VD2_CM = { "14": 4110, "12": 6530, "10": 10380, "8": 16510, "6": 26240, "4": 41740, "2": 66360, "0": 105600, "00": 133100, "000": 167800, "0000": 211600 };
+function vd2() {
+  var o = $("vd2-out");
+  var i = m7Num("vd2-i"), l = m7Num("vd2-l");
+  var g = String($("vd2-g").value || "14"), m = String($("vd2-m").value || "cu"), v = m7Num("vd2-v");
+  if (i === null || i <= 0 || l === null || l <= 0 || v === null || v <= 0) { o.innerHTML = "Enter positive current, distance and system voltage."; return; }
+  var K = m === "al" ? 21.2 : 12.9;
+  var cm = VD2_CM[g] || 4110;
+  var vd = 2 * K * i * l / cm;
+  var pct = vd / v * 100;
+  var verdict = pct <= 3 ? "good \u2014 under 3%" : pct <= 5 ? "borderline \u2014 over 3%" : "too much \u2014 over 5%, go bigger wire or shorter run";
+  o.innerHTML = "<b>" + vd.toFixed(2) + " V</b>dropped across the run" +
+    "<span class='jf-chip'><b>" + (v - vd).toFixed(2) + " V</b>arrives at the load</span>" +
+    "<span class='jf-chip'><b>" + pct.toFixed(2) + "%</b>of supply voltage lost</span>" +
+    "<span class='jf-chip" + (pct > 3 ? " jf-chip-bad" : "") + "><b>" + (pct <= 3 ? "pass" : "flag") + "</b>" + verdict + "</span>" +
+    "<span class='jf-chip'><b>" + nfmt(cm, 0) + " CM</b>circular mils of " + (m === "al" ? "aluminium" : "copper") + " conductor</span>";
+}
+
+/* wire the batch-22 engines into the shared M3 finisher */
+["th2", "ss2", "ab2", "pv2", "pt2", "bt2", "st2", "vd2"].forEach(function (fn) {
+  var orig = null;
+  try { orig = window[fn] || eval(fn); } catch (e) { orig = null; }
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
 
