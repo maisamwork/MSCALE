@@ -151,7 +151,11 @@ ADV.append(("sleep-cycle-calculator","Sleep Cycle Calculator","Calculators",
   <div id="sleep-out" class="result" aria-live="polite"></div>'''))
 
 for slug, name, cat, short, about, formula, exline, uses, got, fn, extra in ADV:
+    tail = ('<div id="m3-stats" class="jf-stats" style="margin-top:12px"></div>'
+            '<div class="lr2-actions" style="margin-top:6px">'
+            '<button type="button" class="btn ghost" onclick="m3Copy(this)">Copy result</button></div>'
+            '<script>window.M3_FN="{fn}";</script>'.format(fn=fn))
     MEGA3[slug] = {"name": name, "cat": cat, "short": short,
-                   "body": f'''<div class="panel">{extra}</div>''',
+                   "body": f'''<div class="panel">{extra}{tail}</div>''',
                    "desc": f"{short}. Shows the working, runs entirely in your browser \u2014 free with no sign-up."}
     CONTENT3[slug] = calc_article((slug, name, short, about, formula, exline, uses, got, fn, extra))

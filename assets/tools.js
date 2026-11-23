@@ -5312,3 +5312,47 @@ function invCopy(btn) {
   var t = (el.textContent || "").replace(/[ \t]+/g, " ").trim();
   if (t) copyText(t, btn);
 }
+
+
+/* ---------- M3: shared finisher for the 12 mega3 advanced calculators ---------- */
+var M3_N = 0;
+var M3_FNS = ["ci", "am", "cal", "bf", "orm", "pace", "be", "roi", "up", "gr", "ec", "sleep"];
+function m3After() {
+  M3_N++;
+  var st = document.getElementById("m3-stats");
+  if (!st) return;
+  var d = new Date();
+  var h = String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0") +
+    ":" + String(d.getSeconds()).padStart(2, "0");
+  st.innerHTML = '<span class="jf-chip"><b>' + M3_N + "</b>calculations this visit</span>" +
+    '<span class="jf-chip"><b>' + h + "</b>last update</span>";
+}
+M3_FNS.forEach(function (fn) {
+  var orig = window[fn] || eval(fn);
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
+function m3Copy(btn) {
+  var fn = window.M3_FN;
+  if (typeof fn !== "string") return;
+  var el = document.getElementById(fn + "-out");
+  if (!el) return;
+  var t = String(el.textContent || "").replace(/\s+/g, " ").trim();
+  if (t) copyText(t, btn);
+}
+(function () {
+  document.addEventListener("input", function (e) {
+    var tn = e && e.target && e.target.tagName;
+    if (tn !== "INPUT" && tn !== "SELECT") return;
+    if (typeof window.M3_FN !== "string") return;
+    clearTimeout(window.__m3t);
+    window.__m3t = setTimeout(function () { if (typeof window[window.M3_FN] === "function") window[window.M3_FN](); }, 250);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (!e || e.key !== "Enter") return;
+    if (!e.target || e.target.tagName !== "INPUT") return;
+    if (typeof window.M3_FN !== "string") return;
+    e.preventDefault();
+    if (typeof window[window.M3_FN] === "function") window[window.M3_FN]();
+  });
+})();
