@@ -5725,4 +5725,321 @@ function wq3() {
   if (typeof orig !== "function") return;
   window[fn] = function () { orig(); m3After(); };
 });
+/* ---------- M5: batch 19 new tools (sc2 sci-calc, wh2 wheel, if2 inflation,
+   zs2 z-score, bn2 text-binary, iw2 ideal-weight, mc2 macros, rt2 reading-time) ---------- */
+function m5Num(id) {
+  var v = String($(id).value || "").trim();
+  return (v === "" || !isFinite(+v)) ? null : +v;
+}
+
+/* --- sc2: scientific calculator --- */
+var SC2_FNS = { sin: 1, cos: 1, tan: 1, asin: 1, acos: 1, atan: 1, ln: 1, log: 1, sqrt: 1, abs: 1 };
+var SC2_PRE = { "+": 1, "-": 1, "*": 2, "/": 2, "u": 3, "^": 4 };
+function sc2Erf(x) {
+  var s = x < 0 ? -1 : 1; x = Math.abs(x);
+  var a1 = 0.254829592, a2 = -0.284496736, a3 = 1.421413741, a4 = -1.453152027, a5 = 1.061405429, p = 0.3275911;
+  var t = 1 / (1 + p * x);
+  return s * (1 - ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t * Math.exp(-x * x));
+}
+function sc2Eval(s, mode) {
+  var D = mode === "rad" ? 1 : Math.PI / 180;
+  var toks = s.match(/\d+\.?\d*(?:[eE][+-]?\d+)?|\.\d+(?:[eE][+-]?\d+)?|[A-Za-z]+|\S/g) || [];
+  var out = [], ops = [], prev = null, i, t;
+  for (i = 0; i < toks.length; i++) {
+    t = toks[i];
+    if (/^[\d.]/.test(t)) { out.push(+t); prev = "n"; }
+    else if (/^[A-Za-z]+$/.test(t)) {
+      var low = t.toLowerCase();
+      if (low === "pi" || low === "\u03c0") { out.push(Math.PI); prev = "n"; }
+      else if (low === "e") { out.push(Math.E); prev = "n"; }
+      else if (SC2_FNS[low]) { ops.push(low); prev = "f"; }
+      else throw new Error("unknown name: " + t);
+    } else if (t === "(") { ops.push("("); prev = "("; }
+    else if (t === ")") {
+      while (ops.length && ops[ops.length - 1] !== "(") out.push(ops.pop());
+      if (!ops.length) throw new Error("unbalanced brackets");
+      ops.pop();
+      if (ops.length && SC2_FNS[ops[ops.length - 1]]) out.push(ops.pop());
+      prev = "n";
+    }
+    else if (t === "%") { out.push("%"); prev = "n"; }
+    else if (t in SC2_PRE) {
+      var op = t;
+      if (op === "-" && (prev === null || prev === "o" || prev === "(" || prev === "f")) op = "u";
+      if (op === "+" && (prev === null || prev === "o" || prev === "(")) continue;
+      var rightAssoc = (op === "^" || op === "u");
+      while (ops.length && ops[ops.length - 1] !== "(" &&
+             (SC2_PRE[ops[ops.length - 1]] > SC2_PRE[op] ||
+              (SC2_PRE[ops[ops.length - 1]] === SC2_PRE[op] && !rightAssoc))) {
+        out.push(ops.pop());
+      }
+      ops.push(op); prev = "o";
+    } else throw new Error("unexpected: " + t);
+  }
+  while (ops.length) {
+    var o = ops.pop();
+    if (o === "(") throw new Error("unbalanced brackets");
+    out.push(o);
+  }
+  var st = [], k, a, b;
+  for (k = 0; k < out.length; k++) {
+    var tk = out[k];
+    if (typeof tk === "number") { st.push(tk); continue; }
+    if (tk === "u") { a = st.pop(); st.push(-a); }
+    else if (tk === "%") { a = st.pop(); st.push(a / 100); }
+    else if (tk === "+") { b = st.pop(); a = st.pop(); st.push(a + b); }
+    else if (tk === "-") { b = st.pop(); a = st.pop(); st.push(a - b); }
+    else if (tk === "*") { b = st.pop(); a = st.pop(); st.push(a * b); }
+    else if (tk === "/") { b = st.pop(); a = st.pop(); st.push(a / b); }
+    else if (tk === "^") { b = st.pop(); a = st.pop(); st.push(Math.pow(a, b)); }
+    else if (SC2_FNS[tk]) {
+      a = st.pop();
+      if (tk === "sin") st.push(Math.sin(a * D));
+      else if (tk === "cos") st.push(Math.cos(a * D));
+      else if (tk === "tan") st.push(Math.tan(a * D));
+      else if (tk === "asin") st.push(Math.asin(a) / D);
+      else if (tk === "acos") st.push(Math.acos(a) / D);
+      else if (tk === "atan") st.push(Math.atan(a) / D);
+      else if (tk === "ln") st.push(Math.log(a));
+      else if (tk === "log") st.push(Math.log10 ? Math.log10(a) : Math.log(a) / Math.LN10);
+      else if (tk === "sqrt") st.push(Math.sqrt(a));
+      else if (tk === "abs") st.push(Math.abs(a));
+    }
+  }
+  if (st.length !== 1 || !isFinite(st[0])) throw new Error("not a finite result");
+  return st[0];
+}
+var SC2_HIST = [];
+function sc2() {
+  var o = $("sc2-out");
+  var s = String($("sc2-d").value || "")
+    .replace(/\u00d7/g, "*").replace(/\u00f7/g, "/").replace(/\u2212/g, "-")
+    .replace(/\u221a/g, "sqrt").replace(/\u03c0/g, "pi").trim();
+  if (!s) { o.innerHTML = "Type an expression or tap the keypad."; return; }
+  try {
+    var r = sc2Eval(s, String($("sc2-m").value) === "rad" ? "rad" : "deg");
+    var shown = Math.abs(r) >= 1e12 || (Math.abs(r) < 1e-9 && r !== 0) ? r.toExponential(6) : String(Math.round(r * 1e10) / 1e10);
+    SC2_HIST.unshift(s + " = " + shown);
+    SC2_HIST = SC2_HIST.slice(0, 5);
+    o.innerHTML = "<b>" + shown + "</b>";
+    var h = $("sc2-hist");
+    if (h) h.innerHTML = SC2_HIST.slice(1).map(function (x) {
+      return "<span class='jf-chip'><b>" + escHtml(x.split(" = ")[1]) + "</b>" + escHtml(x.split(" = ")[0]) + "</span>";
+    }).join("");
+  } catch (e) {
+    o.innerHTML = "Cannot parse that expression \u2014 check brackets and operators (" + escHtml(String(e.message || e)) + ").";
+  }
+}
+function sc2K(t) {
+  var inp = $("sc2-d");
+  if (!inp) return;
+  if (t === "AC") inp.value = "";
+  else if (t === "\u232b") inp.value = String(inp.value).replace(/.{1}$/, "").replace(/sin$/i, "").replace(/cos$/i, "").replace(/tan$/i, "").replace(/log$/i, "").replace(/sqrt$/i, "");
+  else inp.value = String(inp.value) + t;
+  sc2();
+}
+
+/* --- wh2: spin the wheel --- */
+var WH2_ROT = 0, WH2_HIST = [], WH2_W = "";
+function wh2Opts() {
+  var seen = {}, arr = [];
+  String($("wh2-in").value || "").split("\n").forEach(function (s) {
+    s = s.trim();
+    if (s && !seen[s]) { seen[s] = 1; arr.push(s); }
+  });
+  return arr;
+}
+function wh2WinnerAll(rot, n) {
+  var seg = (Math.PI * 2) / n;
+  var p = (1.5 * Math.PI - rot) % (Math.PI * 2);
+  if (p < 0) p += Math.PI * 2;
+  return Math.min(n - 1, Math.floor(p / seg));
+}
+function wh2Draw() {
+  var cv = $("wh2-canvas");
+  if (!cv || !cv.getContext) return;
+  var ctx = cv.getContext("2d");
+  if (!ctx) return;
+  var opts = wh2Opts(), n = opts.length, w = cv.width, h = cv.height, cx = w / 2, cy = h / 2, R = Math.min(cx, cy) - 6;
+  ctx.clearRect(0, 0, w, h);
+  for (var i = 0; i < n; i++) {
+    var a0 = i * (Math.PI * 2) / n + WH2_ROT, a1 = (i + 1) * (Math.PI * 2) / n + WH2_ROT;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, a0, a1); ctx.closePath();
+    ctx.fillStyle = "hsl(" + Math.round(i * 360 / n) + ", 70%, " + (i % 2 ? 62 : 48) + "%)";
+    ctx.fill(); ctx.strokeStyle = "#1d2230"; ctx.stroke();
+  }
+  ctx.fillStyle = "#f5f7fa"; ctx.font = "bold " + Math.max(11, Math.round(R / 9)) + "px sans-serif";
+  ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  for (i = 0; i < n; i++) {
+    var mid = (i + 0.5) * (Math.PI * 2) / n + WH2_ROT;
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(mid);
+    ctx.fillText(opts[i].slice(0, 14), R - 12, 0);
+    ctx.restore();
+  }
+  ctx.beginPath(); ctx.arc(cx, cy, 14, 0, Math.PI * 2); ctx.fillStyle = "#ff7000"; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(cx - 10, 2); ctx.lineTo(cx + 10, 2); ctx.lineTo(cx, 26); ctx.closePath();
+  ctx.fillStyle = "#ff7000"; ctx.fill();
+}
+function wh2Spin(btn) {
+  var opts = wh2Opts();
+  var o = $("wh2-out");
+  if (opts.length < 2) { if (o) o.innerHTML = "Add at least two options, one per line."; return; }
+  var start = WH2_ROT, target = start + Math.PI * 2 * (5 + Math.random() * 3), t0 = null, DUR = 3800;
+  if (btn) btn.disabled = true;
+  function frame(ts) {
+    if (!t0) t0 = ts;
+    var k = Math.min(1, (ts - t0) / DUR), e = 1 - Math.pow(1 - k, 3);
+    WH2_ROT = start + (target - start) * e;
+    wh2Draw();
+    if (k < 1) requestAnimationFrame(frame);
+    else {
+      if (btn) btn.disabled = false;
+      var idx = wh2WinnerAll(WH2_ROT, opts.length);
+      WH2_W = opts[idx];
+      var o2 = $("wh2-out");
+      if (o2) {
+        o2.innerHTML = "<b>\u{1F3AF} " + escHtml(WH2_W) + "</b>";
+        var hist = $("wh2-hist");
+        WH2_HIST.unshift(WH2_W);
+        WH2_HIST = WH2_HIST.slice(0, 8);
+        if (hist) hist.innerHTML = "<span class='jf-chip'><b>" + WH2_HIST.length + "</b>spins this visit</span>" +
+          WH2_HIST.slice(0, 5).map(function (w2, j) { return "<span class='jf-chip'><b>" + (j + 1) + "</b>" + escHtml(w2) + "</span>"; }).join("");
+      }
+    }
+  }
+  requestAnimationFrame(frame);
+}
+function wh2Copy(btn) {
+  if (WH2_W) copyText(WH2_W, btn);
+}
+
+/* --- if2: inflation --- */
+function if2() {
+  var o = $("if2-out");
+  var m = m5Num("if2-m"), r = m5Num("if2-r"), y = m5Num("if2-y"), mo = String($("if2-mo").value || "fwd");
+  if (m === null || m <= 0 || r === null || r < 0 || y === null || y <= 0) {
+    o.innerHTML = "Enter a positive amount, a non-negative rate and a positive number of years."; return;
+  }
+  var f = Math.pow(1 + r / 100, y);
+  var v = mo === "bwd" ? m / f : m * f;
+  o.innerHTML = "<b>" + v.toFixed(2) + "</b> " + (mo === "bwd" ? "in today's money" : "in " + Math.round(y) + " years") +
+    "<span class='jf-chip'><b>" + f.toFixed(4) + "</b>total multiplier</span>" +
+    "<span class='jf-chip'><b>" + ((f - 1) * 100).toFixed(1) + "%</b>cumulative inflation</span>" +
+    "<span class='jf-chip'><b>" + (mo === "bwd" ? (m - v).toFixed(2) + " lost" : (v - m).toFixed(2) + " needed above " + m.toFixed(2)) + "</b>gap</span>";
+}
+
+/* --- zs2: z-score --- */
+function zs2() {
+  var o = $("zs2-out");
+  var x = m5Num("zs2-x"), mu = m5Num("zs2-mu"), sd = m5Num("zs2-sd");
+  if (x === null || mu === null || sd === null || sd <= 0) {
+    o.innerHTML = "Enter your value, the mean and a positive standard deviation."; return;
+  }
+  var z = (x - mu) / sd;
+  var phi = 0.5 * (1 + sc2Erf(z / Math.SQRT2));
+  var pPct = phi * 100;
+  o.innerHTML = "<b>z = " + z.toFixed(2) + "</b>" +
+    "<span class='jf-chip'><b>" + pPct.toFixed(2) + "%</b>score at or below</span>" +
+    "<span class='jf-chip'><b>" + (100 - pPct).toFixed(2) + "%</b>score higher</span>" +
+    "<span class='jf-chip'><b>" + (2 * (1 - phi) * 100).toFixed(2) + "%</b>in two-tailed tail beyond |z|</span>";
+}
+
+/* --- bn2: text <-> binary --- */
+function bn2ByteBits(b) {
+  var s = b.toString(2);
+  while (s.length < 8) s = "0" + s;
+  return s;
+}
+function bn2() {
+  var o = $("bn2-out"), meta = $("bn2-meta");
+  var s = String($("bn2-in").value || ""), m = String($("bn2-m").value || "tobin");
+  if (!o) return;
+  try {
+    if (m === "totext") {
+      var clean = s.replace(/[^01]/g, "");
+      if (!clean.length) { o.value = ""; if (meta) meta.innerHTML = "<span class='jf-chip'><b>0</b>bits decoded</span>"; return; }
+      var pad = (8 - clean.length % 8) % 8;
+      clean = "0".repeat(pad) + clean;
+      var bytes = new Uint8Array(clean.length / 8);
+      for (var i = 0; i < bytes.length; i++) bytes[i] = parseInt(clean.substr(i * 8, 8), 2);
+      var txt = new TextDecoder().decode(bytes);
+      o.value = txt;
+      if (meta) meta.innerHTML = "<span class='jf-chip'><b>" + bytes.length + "</b>bytes decoded</span><span class='jf-chip'><b>" + txt.length + "</b>characters</span>";
+    } else {
+      var bs = new TextEncoder().encode(s);
+      var groups = [];
+      for (var j = 0; j < bs.length; j++) groups.push(bn2ByteBits(bs[j]));
+      o.value = groups.join(" ");
+      if (meta) meta.innerHTML = "<span class='jf-chip'><b>" + bs.length + "</b>bytes encoded</span><span class='jf-chip'><b>" + bs.length * 8 + "</b>bits</span>";
+    }
+  } catch (e) {
+    o.value = "";
+    if (meta) meta.innerHTML = "<span class='jf-chip jf-chip-bad'><b>error</b>cannot decode that byte sequence</span>";
+  }
+}
+function bn2Swap() {
+  var o = $("bn2-out");
+  if (o && o.value) { $("bn2-in").value = o.value; bn2(); }
+}
+
+/* --- iw2: ideal weight --- */
+function iw2() {
+  var o = $("iw2-out");
+  var h = m5Num("iw2-h"), g = String($("iw2-g").value || "m");
+  if (h === null || h <= 0) { o.innerHTML = "Enter a positive height in centimetres."; return; }
+  var inch = h / 2.54, over = Math.max(0, inch - 60);
+  var D = g === "f" ? 45.5 + 2.3 * over : 50 + 2.3 * over;
+  var Ro = g === "f" ? 49 + 1.7 * over : 52 + 1.9 * over;
+  var Mi = g === "f" ? 53.1 + 1.36 * over : 56.2 + 1.41 * over;
+  var Ha = g === "f" ? 45.5 + 2.2 * over : 48 + 2.7 * over;
+  var m2 = Math.pow(h / 100, 2);
+  var lo = 18.5 * m2, hi = 24.9 * m2;
+  o.innerHTML = "<b>Devine " + D.toFixed(1) + " kg</b>" +
+    "<span class='jf-chip'><b>" + Ro.toFixed(1) + "</b>Robinson kg</span>" +
+    "<span class='jf-chip'><b>" + Mi.toFixed(1) + "</b>Miller kg</span>" +
+    "<span class='jf-chip'><b>" + Ha.toFixed(1) + "</b>Hamwi kg</span>" +
+    "<span class='jf-chip'><b>" + lo.toFixed(1) + "\u2013" + hi.toFixed(1) + "</b>healthy BMI range kg</span>";
+}
+
+/* --- mc2: macros --- */
+function mc2() {
+  var o = $("mc2-out");
+  var c = m5Num("mc2-c"), g = String($("mc2-g").value || "bal");
+  if (c === null || c <= 0) { o.innerHTML = "Enter a positive daily calorie target."; return; }
+  var SPLIT = { bal: [30, 40, 30], hp: [40, 30, 30], lc: [40, 20, 40] };
+  var sp = SPLIT[g] || SPLIT.bal;
+  var p = c * sp[0] / 100 / 4, cb = c * sp[1] / 100 / 4, ft = c * sp[2] / 100 / 9;
+  o.innerHTML = "<b>" + Math.round(p) + " g protein</b>" +
+    "<span class='jf-chip'><b>" + Math.round(cb) + "</b>g carbs</span>" +
+    "<span class='jf-chip'><b>" + Math.round(ft) + "</b>g fat</span>" +
+    "<span class='jf-chip'><b>" + sp.join("/") + "</b>P/C/F split</span>" +
+    "<span class='jf-chip'><b>" + Math.round(p * 4) + "</b>kcal from protein</span>";
+}
+
+/* --- rt2: reading time --- */
+function rt2() {
+  var o = $("rt2-out");
+  var s = String($("rt2-in").value || "");
+  var words = (s.match(/[A-Za-z0-9'\u2019-]+/g) || []).length;
+  var chars = s.trim().length;
+  if (!words) { o.innerHTML = "Paste some text above to estimate its reading time."; return; }
+  var wpm = +String($("rt2-s").value || "200") || 200;
+  var mins = words / wpm;
+  var mm = Math.floor(mins), ss = Math.round((mins - mm) * 60);
+  if (ss === 60) { mm++; ss = 0; }
+  o.innerHTML = "<b>" + mm + " min " + m4Pad(ss) + " s</b> at " + wpm + " wpm" +
+    "<span class='jf-chip'><b>" + words + "</b>words</span>" +
+    "<span class='jf-chip'><b>" + chars + "</b>characters</span>" +
+    "<span class='jf-chip'><b>" + (words / 130).toFixed(1) + "</b>minutes spoken</span>" +
+    "<span class='jf-chip'><b>" + (words / 300).toFixed(1) + "</b>printed pages</span>";
+}
+
+/* wire the batch-19 engines into the shared M3 finisher */
+function wh2() { wh2Draw(); }
+["sc2", "wh2", "if2", "zs2", "bn2", "iw2", "mc2", "rt2"].forEach(function (fn) {
+  var orig = null;
+  try { orig = window[fn] || eval(fn); } catch (e) { orig = null; }
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
 
