@@ -6274,4 +6274,214 @@ function lc2Total(s) {
   if (typeof orig !== "function") return;
   window[fn] = function () { orig(); m3After(); };
 });
+/* ---------- M7: batch 21 new tools (cm2, mg2, an2, fe2, fl2, rd2, rc2, dl2) ---------- */
+function m7Num(id) {
+  var v = String($(id).value || "").trim();
+  return (v === "" || !isFinite(+v)) ? null : +v;
+}
+function m7Money(n) {
+  return n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+/* --- cm2: commission calculator --- */
+function cm2() {
+  var o = $("cm2-out");
+  var s = m7Num("cm2-s"), r = m7Num("cm2-r"), y = m7Num("cm2-y");
+  if (s === null || s < 0 || r === null || r < 0) {
+    o.innerHTML = "Enter a non-negative sale price and commission rate."; return;
+  }
+  if (y === null || y < 0) y = 100;
+  if (y > 100) y = 100;
+  var com = s * r / 100;
+  var mine = com * y / 100, house = com - mine;
+  o.innerHTML = "<b>" + m7Money(com) + "</b> gross commission" +
+    "<span class='jf-chip'><b>" + m7Money(mine) + "</b>your share (" + y + "% of the commission)</span>" +
+    "<span class='jf-chip'><b>" + m7Money(house) + "</b>house/others keep (" + (100 - y) + "%)</span>" +
+    "<span class='jf-chip'><b>" + m7Money(mine * 12) + "</b>your share if this deal repeated monthly</span>" +
+    (s > 0 ? "<span class='jf-chip'><b>" + (com / s * 100).toFixed(2) + "%</b>effective rate on the sale</span>" : "");
+}
+
+/* --- mg2: meeting cost --- */
+function mg2() {
+  var o = $("mg2-out");
+  var n = m7Num("mg2-n"), r = m7Num("mg2-r"), d = m7Num("mg2-d"), w = m7Num("mg2-w");
+  if (n === null || n < 1 || r === null || r < 0 || d === null || d <= 0) {
+    o.innerHTML = "Enter the attendee count, an hourly cost and a length in minutes."; return;
+  }
+  if (w === null || w < 0) w = 1;
+  var hrs = d / 60, cost = n * r * hrs;
+  o.innerHTML = "<b>" + m7Money(cost) + "</b>per meeting" +
+    "<span class='jf-chip'><b>" + nfmt(cost * w, 0) + "</b>per week (" + w + "\u00d7)</span>" +
+    "<span class='jf-chip'><b>" + nfmt(cost * w * 46, 0) + "</b>per year (46 working weeks)</span>" +
+    "<span class='jf-chip'><b>" + nfmt(n * hrs, 1) + " h</b>person-hours consumed per meeting</span>" +
+    "<span class='jf-chip'><b>" + nfmt(n * hrs * w * 46, 0) + " h</b>person-hours per year</span>";
+}
+
+/* --- an2: angle converter --- */
+function an2() {
+  var o = $("an2-out");
+  var v = m7Num("an2-v");
+  var u = String($("an2-u").value || "deg");
+  if (v === null) { o.innerHTML = "Enter a numeric angle value."; return; }
+  var F = { "deg": 1, "rad": 180 / Math.PI, "gon": 0.9, "turn": 360, "amin": 1 / 60, "asec": 1 / 3600 };
+  var deg = v * F[u];
+  var rad = deg * Math.PI / 180;
+  var piForm = null;
+  if (Math.abs(rad / Math.PI - Math.round(rad / Math.PI * 2) / 2) < 1e-9) {
+    var h = Math.round(rad / Math.PI * 2) / 2;
+    piForm = (h === 0 ? "0" : (h === 1 ? "\u03c0" : (Math.abs(h) < 1 ? (Math.abs(h) === 0.5 ? "\u03c0/2" : (Math.abs(h) === 0.25 ? "\u03c0/4" : (Math.abs(h) === 0.75 ? "3\u03c0/4" : ""))) : h + "\u03c0"))) + (h < 0 ? " (negative)" : "");
+  }
+  o.innerHTML = "<b>" + nfmt(deg, 4) + "\u00b0</b> degrees" +
+    "<span class='jf-chip'><b>" + rad.toPrecision(6).replace(/0+$/, "").replace(/\.$/, "") + " rad</b>radians" + (piForm ? " (" + piForm + ")" : "") + "</span>" +
+    "<span class='jf-chip'><b>" + nfmt(deg / 0.9, 4) + "</b>gradians (gon)</span>" +
+    "<span class='jf-chip'><b>" + nfmt(deg / 360, 4) + "</b>turns</span>" +
+    "<span class='jf-chip'><b>" + nfmt(deg * 60, 0) + "\u2032</b>arcminutes</span>" +
+    "<span class='jf-chip'><b>" + nfmt(deg * 3600, 0) + "\u2033</b>arcseconds</span>";
+}
+
+/* --- fe2: fuel economy converter --- */
+function fe2() {
+  var o = $("fe2-out");
+  var v = m7Num("fe2-v");
+  var u = String($("fe2-u").value || "us");
+  if (v === null || v < 0) { o.innerHTML = "Enter a non-negative fuel economy value."; return; }
+  var TO_KML = { "us": 1.60934 / 3.78541, "uk": 1.60934 / 4.54609, "kml": 1 };
+  var kml = u === "l100" ? 100 / v : v * TO_KML[u];
+  o.innerHTML = "<b>" + (100 / kml).toFixed(2) + " L/100 km</b>" +
+    "<span class='jf-chip'><b>" + kml.toFixed(2) + "</b>km/L</span>" +
+    "<span class='jf-chip'><b>" + (kml / (1.60934 / 3.78541)).toFixed(2) + "</b>mpg (US)</span>" +
+    "<span class='jf-chip'><b>" + (kml / (1.60934 / 4.54609)).toFixed(2) + "</b>mpg (UK, imperial)</span>" +
+    "<span class='jf-chip'><b>" + (100 * 1.60934 / 3.78541).toFixed(3) + " \u00f7 mpg US</b>quick rule gives L/100 km</span>";
+}
+
+/* --- fl2: Flesch reading level --- */
+function fl2Syl(word) {
+  var w = word.toLowerCase().replace(/[^a-z]/g, "");
+  if (!w) return 0;
+  var g = w.match(/[aeiouy]+/g);
+  var n = g ? g.length : 0;
+  if (n > 1 && /e$/.test(w)) n--;
+  return Math.max(1, n);
+}
+function fl2() {
+  var o = $("fl2-out");
+  var t = String($("fl2-in").value || "").trim();
+  if (!t) { o.innerHTML = "Paste some text \u2014 a paragraph or the whole article \u2014 and it is scored instantly."; return; }
+  var sents = t.split(/[.!?\u2026]+(?:\s|$)/).filter(Boolean);
+  var words = t.match(/[A-Za-z\u00c0-\u024f'-]+/g) || [];
+  var syl = 0;
+  for (var i = 0; i < words.length; i++) syl += fl2Syl(words[i]);
+  if (!sents.length || !words.length) { o.innerHTML = "Not enough text to score \u2014 add at least one full sentence."; return; }
+  var wps = words.length / sents.length, spw = syl / words.length;
+  var fre = 206.835 - 1.015 * wps - 84.6 * spw;
+  var fk = 0.39 * wps + 11.8 * spw - 15.59;
+  var label = fre >= 90 ? "very easy" : fre >= 80 ? "easy" : fre >= 70 ? "fairly easy" :
+    fre >= 60 ? "plain English (standard)" : fre >= 50 ? "fairly difficult" : fre >= 30 ? "difficult" : "very confusing";
+  o.innerHTML = "<b>" + fre.toFixed(1) + "</b> Flesch Reading Ease \u2014 " + label +
+    "<span class='jf-chip'><b>" + (fk < 0 ? 0 : fk.toFixed(1)) + "</b>Flesch\u2013Kincaid grade level</span>" +
+    "<span class='jf-chip'><b>" + words.length + "</b>words</span>" +
+    "<span class='jf-chip'><b>" + sents.length + "</b>sentences</span>" +
+    "<span class='jf-chip'><b>" + wps.toFixed(1) + "</b>words per sentence (aim \u2264 20)</span>" +
+    "<span class='jf-chip'><b>" + nfmt(spw, 2) + "</b>syllables per word</span>";
+}
+
+/* --- rd2: random decimals (crypto) --- */
+function rd2() {
+  var o = $("rd2-out");
+  var mn = m7Num("rd2-min"), mx = m7Num("rd2-max"), d = m7Num("rd2-d"), c = m7Num("rd2-c");
+  if (mn === null || mx === null) { o.innerHTML = "Enter a minimum and a maximum for the range."; return; }
+  if (mx <= mn) { o.innerHTML = "The maximum must be greater than the minimum."; return; }
+  d = d === null ? 2 : Math.max(0, Math.min(8, Math.round(d)));
+  c = c === null ? 10 : Math.max(1, Math.min(200, Math.round(c)));
+  var buf = new Uint32Array(c);
+  (window.crypto || globalThis.crypto).getRandomValues(buf);
+  var lines = [], lo = Infinity, hi = -Infinity, sum = 0, i, val;
+  for (i = 0; i < c; i++) {
+    val = mn + (mx - mn) * buf[i] / 4294967296;
+    val = +val.toFixed(d);
+    lines.push(val.toFixed(d));
+    if (val < lo) lo = val;
+    if (val > hi) hi = val;
+    sum += val;
+  }
+  o.value = lines.join("\n");
+  o.title = c + " uniform draws from " + mn + " to " + mx + " at " + d + " decimals";
+  var meta = $("rd2-meta");
+  if (meta) meta.innerHTML = "<span class='jf-chip'><b>" + nfmt(lo, d) + "</b>lowest draw</span>" +
+    "<span class='jf-chip'><b>" + nfmt(hi, d) + "</b>highest draw</span>" +
+    "<span class='jf-chip'><b>" + nfmt(sum / c, d + 2) + "</b>mean of the draws</span>";
+}
+
+/* --- rc2: recipe scaler --- */
+function rc2Frac(v) {
+  var whole = Math.floor(Math.abs(v)), frac = Math.abs(v) - whole;
+  var e = Math.round(frac * 8), sign = v < 0 ? "\u2212" : "";
+  if (e >= 8) { whole += 1; e = 0; }
+  function g(a, b) { return b ? g(b, a % b) : a; }
+  var dd = 8 / g(e || 8, 8), nn = (e || 0) * dd / 8;
+  var f = (whole ? sign + whole : "") + (e ? (whole ? " " : sign) + nn + "/" + dd : "");
+  return f || "0";
+}
+function rc2() {
+  var o = $("rc2-out");
+  var org = m7Num("rc2-o"), nw = m7Num("rc2-n");
+  var t = String($("rc2-in").value || "").trim();
+  if (!t) { o.innerHTML = "Paste your ingredient lines \u2014 one per row, amount first."; return; }
+  if (org === null || org <= 0 || nw === null || nw <= 0) { o.innerHTML = "Enter the original servings and the desired servings (both positive)."; return; }
+  var k = nw / org, lines = t.split("\n"), out = [], changed = 0;
+  for (var i = 0; i < lines.length; i++) {
+    var L = lines[i];
+    var m = L.match(/^\s*(\d+(?:\.\d+)?)(?:\s+(\d+)\s*\/\s*(\d+))?\s+(.*)$/);
+    if (!m) { out.push(L); continue; }
+    var amt = +m[1] + (m[2] ? (+m[2]) / (+m[3]) : 0);
+    if (!isFinite(amt) || amt <= 0) { out.push(L); continue; }
+    changed++;
+    out.push(rc2Frac(amt * k) + " " + m[4]);
+  }
+  if (!changed) { o.innerHTML = "No amounts recognised \u2014 each line should start with the quantity (e.g. \u201c2 1/2 cups flour\u201d)."; return; }
+  o.value = out.join("\n");
+  var meta = $("rc2-meta");
+  if (meta) meta.innerHTML = "<span class='jf-chip'><b>" + nfmt(k, 4) + "\u00d7</b>scale factor</span>" +
+    "<span class='jf-chip'><b>" + changed + "</b>quantities rescaled</span>";
+}
+
+/* --- dl2: dilution solver --- */
+function dl2() {
+  var o = $("dl2-out");
+  var c1 = m7Num("dl2-c1"), v1 = m7Num("dl2-v1"), c2 = m7Num("dl2-c2"), v2 = m7Num("dl2-v2");
+  var solve = String($("dl2-s").value || "v2");
+  if (solve === "v1") {
+    if (c1 === null || c1 <= 0 || c2 === null || c2 <= 0 || v2 === null || v2 <= 0) { o.innerHTML = "Fill C\u2081, C\u2082 and V\u2082 with positive numbers to solve for V\u2081."; return; }
+    var r1 = c2 * v2 / c1;
+    o.innerHTML = "<b>" + nfmt(r1, 4) + "</b> V\u2081 (volume of stock needed)" +
+      "<span class='jf-chip'><b>" + nfmt(v2 - r1, 4) + "</b>solvent to add</span>" +
+      "<span class='jf-chip'><b>" + nfmt(v2 / r1, 2) + "\u00d7</b>dilution factor</span>";
+    return;
+  }
+  if (solve === "v2") {
+    if (c1 === null || c1 <= 0 || c2 === null || c2 <= 0 || v1 === null || v1 <= 0) { o.innerHTML = "Fill C\u2081, C\u2082 and V\u2081 with positive numbers to solve for V\u2082."; return; }
+    var r2 = c1 * v1 / c2;
+    o.innerHTML = "<b>" + nfmt(r2, 4) + "</b> V\u2082 (final volume)" +
+      "<span class='jf-chip'><b>" + nfmt(r2 - v1, 4) + "</b>solvent to add</span>" +
+      "<span class='jf-chip'><b>" + nfmt(r2 / v1, 2) + "\u00d7</b>dilution factor</span>";
+    return;
+  }
+  if (solve === "c1") {
+    if (c2 === null || c2 <= 0 || v1 === null || v1 <= 0 || v2 === null || v2 <= 0) { o.innerHTML = "Fill C\u2082, V\u2081 and V\u2082 with positive numbers to solve for C\u2081."; return; }
+    o.innerHTML = "<b>" + nfmt(c2 * v2 / v1, 4) + "</b> C\u2081 (stock concentration needed)" +
+      "<span class='jf-chip'><b>" + nfmt(v2 / v1, 2) + "\u00d7</b>dilution factor</span>";
+    return;
+  }
+  if (c1 === null || c1 <= 0 || v1 === null || v1 <= 0 || v2 === null || v2 <= 0) { o.innerHTML = "Fill C\u2081, V\u2081 and V\u2082 with positive numbers to solve for C\u2082."; return; }
+  o.innerHTML = "<b>" + nfmt(c1 * v1 / v2, 4) + "</b> C\u2082 (resulting concentration)" +
+    "<span class='jf-chip'><b>" + nfmt(v2 / v1, 2) + "\u00d7</b>dilution factor</span>";
+}
+
+/* wire the batch-21 engines into the shared M3 finisher */
+["cm2", "mg2", "an2", "fe2", "fl2", "rd2", "rc2", "dl2"].forEach(function (fn) {
+  var orig = null;
+  try { orig = window[fn] || eval(fn); } catch (e) { orig = null; }
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
 

@@ -38,6 +38,10 @@ MEGA.update(_MEGA4)
 MEGA.update(_MEGA5)
 MEGA.update(_MEGA6)
 
+from .mega7 import MEGA7 as _MEGA7, CONTENT7 as _CONTENT7
+CONTENT.update(_CONTENT7)
+MEGA.update(_MEGA7)
+
 from .blog_meta import BLOG_META as _BMETA, LENGTH_RANGES as _LR, enriched_blocks as _eb, geo_checks as _gc
 BLOG_META = _BMETA
 LENGTH_RANGES = _LR
