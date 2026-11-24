@@ -9206,3 +9206,890 @@ function st4() {
   window[fn] = function () { orig(); m3After(); };
 });
 /* ===================== END M29 SECTION ===================== */
+/* ===================== M30 SECTION: batch 30 engines (70 flagship tools) ===================== */
+/* A: finance & work part 1 */
+
+function w01() {
+  var o = $("w01-out"); if (!o) return;
+  var r = _n("w01-a");
+  if (r === null || r <= 0) { o.innerHTML = "Enter the annual growth or inflation rate as a percentage."; return; }
+  var y = 72 / r, ex = Math.log(2) / Math.log(1 + r / 100), gap = Math.abs((y - ex) * 12);
+  o.innerHTML = "<b>" + nfmt(y, 1) + " years</b>to double at " + nfmt(r, 1) + "% a year \u2014 the exact compound answer is " + nfmt(ex, 2) + " years" +
+    "<span class='jf-chip'><b>quadruple in " + nfmt(2 * y, 1) + " years</b>and eight-fold by " + nfmt(3 * y, 1) + " \u2014 the rule keeps scaling</span>" +
+    (ex <= 0 || isNaN(ex) ? "" : (gap < 0.15 ? "<span class='jf-chip'><b>spot on</b>the shortcut trails exact compounding by only " + nfmt(gap, 1) + " months here</span>" : "<span class='jf-chip jf-chip-bad'><b>drifts " + nfmt(Math.abs(y - ex) * 12, 0) + " months</b>the shortcut earns its keep near 8%, not at extremes</span>"));
+}
+
+function w02() {
+  var o = $("w02-out"); if (!o) return;
+  var p = _n("w02-a"), r = _n("w02-b"), y = _n("w02-c");
+  if (p === null || p < 0 || r === null || y === null || y <= 0) { o.innerHTML = "Enter the monthly deposit, expected annual return and years of deposits."; return; }
+  var n = Math.round(y * 12), i = r / 1200, fv;
+  if (i === 0) fv = p * n; else fv = p * (Math.pow(1 + i, n) - 1) / i;
+  fv = Math.floor(fv);
+  var inv = p * n, gr = fv - inv, gPct = fv > 0 ? gr / fv * 100 : 0;
+  o.innerHTML = "<b>$" + nfmt(fv, 0) + "</b>after " + nfmt(y, 0) + " years of $" + nfmt(p, 2) + " monthly deposits at " + nfmt(r, 1) + "%" +
+    "<span class='jf-chip'><b>$" + nfmt(inv, 0) + "</b>is contributions \u2014 $" + nfmt(gr, 0) + " of growth is " + nfmt(gPct, 1) + "% of the total</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(gr / Math.max(n, 1), 2) + " a month</b>is growth once interest compounds on interest</span>" +
+    "<span class='jf-chip'><b>" + nfmt(fv / Math.max(inv, 0.01), 2) + "\u00d7</b>every deposited dollar became this much</span>";
+}
+
+function w03() {
+  var o = $("w03-out"); if (!o) return;
+  var f = _n("w03-a"), r = _n("w03-b"), y = _n("w03-c");
+  if (f === null || f <= 0 || r === null || r <= 0 || y === null || y < 0) { o.innerHTML = "Enter the future amount, the discount rate and the years until paid."; return; }
+  var pv = f / Math.pow(1 + r / 100, y), cent = pv / f * 100, half = Math.log(2) / Math.log(1 + r / 100);
+  o.innerHTML = "<b>$" + nfmt(pv, 0) + "</b>today \u2014 what $" + nfmt(f, 0) + " due in " + nfmt(y, 0) + " years is worth at a " + nfmt(r, 1) + "% discount rate" +
+    "<span class='jf-chip'><b>" + nfmt(cent, 0) + "\u00a2</b>the price of a future dollar at this rate</span>" +
+    "<span class='jf-chip'><b>" + nfmt(half, 1) + " years</b>until the present value halves at this discount rate</span>" +
+    "<span class='jf-chip'><b>higher rates cut deeper</b>test 12% and watch the present value collapse</span>";
+}
+
+function w04() {
+  var o = $("w04-out"); if (!o) return;
+  var a = _n("w04-a"), r = _n("w04-b"), y = _n("w04-c");
+  if (a === null || a < 0 || r === null || r < 0 || y === null || y < 0) { o.innerHTML = "Enter the amount, the inflation rate and the years ahead."; return; }
+  var defl = Math.pow(1 + r / 100, y), real = a / defl, need = a * defl, loss = (1 - real / Math.max(a, 0.01)) * 100;
+  o.innerHTML = "<b>$" + nfmt(real, 2) + "</b>is what today's $" + nfmt(a, 0) + " will buy after " + nfmt(y, 0) + " years at " + nfmt(r, 1) + "% inflation" +
+    "<span class='jf-chip'><b>" + nfmt(loss, 1) + "% gone</b>of the buying power, without spending a cent</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(need, 2) + "</b>is the amount that keeps the same lifestyle in " + nfmt(y, 0) + " years</span>" +
+    "<span class='jf-chip'><b>" + nfmt(defl, 3) + "\u00d7</b>the price level multiple \u2014 everything you buy wears it</span>";
+}
+
+function w05() {
+  var o = $("w05-out"); if (!o) return;
+  var mi = _n("w05-a"), mo = _n("w05-b"), m = _n("w05-c");
+  if (mi === null || mi <= 0 || mo === null || m === null || m <= 0) { o.innerHTML = "Enter the money in, the money out and the months held."; return; }
+  var roi = (mo - mi) / mi * 100, ann = (Math.pow(mo / mi, 12 / m) - 1) * 100;
+  o.innerHTML = "<b>" + nfmt(roi, 1) + "% total</b>" + (roi >= 0 ? "gain" : "loss") + " over " + nfmt(m, 0) + " months \u2014 annualized that is " + nfmt(ann, 1) + "%" +
+    "<span class='jf-chip'><b>$" + nfmt(mo / mi * 100, 0) + " back</b>behind every $100 you put in</span>" +
+    "<span class='jf-chip " + (ann >= 7 ? "" : "jf-chip-bad") + "'><b>" + (ann >= 7 ? "beats 7%" : "trails 7%") + "</b>the index-fund hurdle this holding clears or misses annually</span>";
+}
+
+function w06() {
+  var o = $("w06-out"); if (!o) return;
+  var rev = _n("w06-a"), cost = _n("w06-b");
+  if (rev === null || rev <= 0 || cost === null || cost < 0) { o.innerHTML = "Enter the revenue and the direct costs."; return; }
+  var gross = rev - cost, margin = gross / rev * 100, markup = cost > 0 ? gross / cost * 100 : 0;
+  o.innerHTML = "<b>$" + nfmt(gross, 0) + " gross</b>on $" + nfmt(rev, 0) + " of revenue \u2014 a " + nfmt(margin, 1) + "% margin" +
+    "<span class='jf-chip'><b>" + nfmt(markup, 2) + "% markup</b>on cost \u2014 a different number with a different story</span>" +
+    "<span class='jf-chip'><b>" + nfmt(cost / rev * 100, 0) + "\u00a2</b>of every sales dollar goes straight back out in direct costs</span>";
+}
+
+function w07() {
+  var o = $("w07-out"); if (!o) return;
+  var total = _n("w07-a"), rate = _n("w07-b");
+  if (total === null || total <= 0 || rate === null || rate < 0) { o.innerHTML = "Enter the tax-inclusive total and the tax rate."; return; }
+  var pre = total / (1 + rate / 100), tax = total - pre, wrong = total * rate / 100;
+  o.innerHTML = "<b>$" + nfmt(pre, 2) + " pre-tax</b>and $" + nfmt(tax, 2) + " of tax inside a $" + nfmt(total, 2) + " receipt at " + nfmt(rate, 2) + "%" +
+    "<span class='jf-chip jf-chip-bad'><b>$" + nfmt(wrong, 2) + " is wrong</b>subtracting " + nfmt(rate, 0) + "% of the total double-counts tax already inside it</span>" +
+    "<span class='jf-chip'><b>total \u00f7 (1 + rate)</b>is the only correct route \u2014 bookmark the formula</span>";
+}
+
+function w08() {
+  var o = $("w08-out"); if (!o) return;
+  var sal = _n("w08-a"), ch = _n("w08-b"), rh = _n("w08-c");
+  if (sal === null || sal <= 0 || ch === null || ch <= 0) { o.innerHTML = "Enter the annual salary and the contracted hours per week."; return; }
+  var hourly = sal / (ch * 52), real = rh !== null && rh > 0 ? sal / (rh * 52) : hourly;
+  o.innerHTML = "<b>$" + hourly.toFixed(2) + " an hour</b>on the " + nfmt(ch, 0) + "-hour contract" +
+    "<span class='jf-chip'><b>$" + nfmt(real, 2) + "</b>the rate " + nfmt(rh, 0) + " real hours actually delivers \u2014 " + nfmt((1 - real / hourly) * 100, 1) + "% less</span>" +
+    "<span class='jf-chip'><b>" + nfmt(ch * 52, 0) + " contract hours</b>a year \u2014 " + nfmt(rh * 52, 0) + " when the 45-hour weeks are honest</span>";
+}
+
+function w09() {
+  var o = $("w09-out"); if (!o) return;
+  var hr = _n("w09-a"), bh = _n("w09-b"), bw = _n("w09-c"), oh = _n("w09-d"), sal = _n("w09-e");
+  if (hr === null || hr <= 0 || bh === null || bh <= 0 || bw === null || bw <= 0) { o.innerHTML = "Enter the contract hourly rate, billable hours and billable weeks."; return; }
+  var keep = oh === null ? 1 : 1 - oh / 100, net = hr * bh * bw * keep;
+  o.innerHTML = "<b>$" + nfmt(net, 0) + " net</b>from $" + nfmt(hr, 2) + " \u00d7 " + nfmt(bh, 0) + " hours \u00d7 " + nfmt(bw, 0) + " weeks with " + nfmt(oh, 0) + "% overhead" +
+    "<span class='jf-chip " + (net >= sal ? "" : "jf-chip-bad") + "'><b>" + (net >= sal ? "$" + nfmt(net - sal, 0) + " ahead" : "$" + nfmt(sal - net, 0) + " short") + "</b>of the $" + nfmt(sal, 0) + " salary on the table</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(sal / Math.max(keep, 0.01) / bh / bw, 2) + "</b>the break-even hourly rate against a $" + nfmt(sal, 0) + " salary</span>";
+}
+
+function w10() {
+  var o = $("w10-out"); if (!o) return;
+  var sal = _n("w10-a"), oh = _n("w10-b"), days = _n("w10-c");
+  if (sal === null || sal <= 0 || days === null || days <= 0) { o.innerHTML = "Enter the salary and the real billable days per year."; return; }
+  var mult = 1 + (oh === null ? 0 : oh / 100), dr = sal * mult / days;
+  o.innerHTML = "<b>$" + nfmt(dr, 0) + " a day</b>to match a $" + nfmt(sal, 0) + " salary with " + nfmt(oh, 0) + "% overhead across " + nfmt(days, 0) + " billable days" +
+    "<span class='jf-chip'><b>$" + nfmt(sal * mult / (days - 20), 2) + "</b>if you only sell " + nfmt(days - 20, 0) + " \u2014 every idle day raises the rate</span>" +
+    "<span class='jf-chip'><b>" + nfmt(365 - days, 0) + " days</b>holiday, rain and admin already netted out of the quote</span>";
+}
+
+function w11() {
+  var o = $("w11-out"); if (!o) return;
+  var st = _n("w11-a"), ot = _n("w11-b"), rate = _n("w11-c"), mult = _n("w11-d");
+  if (st === null || st < 0 || ot === null || ot < 0 || rate === null || rate <= 0) { o.innerHTML = "Enter the straight-time hours, overtime hours and base hourly rate."; return; }
+  var base = st * rate, otp = ot * rate * (mult === null ? 1.5 : mult), total = base + otp, prem = total > 0 ? otp / total * 100 : 0;
+  o.innerHTML = "<b>$" + nfmt(total, 0) + "</b>for " + nfmt(st, 0) + " straight hours plus " + nfmt(ot, 0) + " at " + nfmt(mult, 1) + "\u00d7 on $" + nfmt(rate, 2) +
+    "<span class='jf-chip'><b>$" + nfmt(otp, 0) + " premium</b>" + nfmt(prem, 1) + "% of the weekly total</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(total * 52, 0) + " a year</b>if this week repeated itself forever</span>" +
+    (ot > 8 ? "<span class='jf-chip jf-chip-bad'><b>burn territory</b>double-digit weekly overtime erodes more than it pays</span>" : "");
+}
+
+function w12() {
+  var o = $("w12-out"); if (!o) return;
+  var mi = _n("w12-a"), full = _n("w12-b"), fuel = _n("w12-c");
+  if (mi === null || mi <= 0 || full === null || full <= 0) { o.innerHTML = "Enter the business miles and the full claim rate per mile."; return; }
+  var claim = mi * full, fo = fuel === null || fuel < 0 ? 0 : mi * fuel;
+  o.innerHTML = "<b>$" + claim.toFixed(2) + " claim</b>" + nfmt(mi, 0) + " business miles at $" + full.toFixed(2) + " per mile" +
+    "<span class='jf-chip'><b>$" + fo.toFixed(2) + "</b>the same miles at a fuel-only $" + fuel.toFixed(2) + " rate</span>" +
+    (claim > fo ? "<span class='jf-chip jf-chip-bad'><b>$" + (claim - fo).toFixed(2) + " lost</b>a lazy log gives this much back to the tax office</span>" : "") +
+    "<span class='jf-chip'><b>78% keep</b>administrative depreciation, insurance and wear \u2014 the share the full rate recognises</span>";
+}
+
+function w13() {
+  var o = $("w13-out"); if (!o) return;
+  var pay = _n("w13-a"), age = _n("w13-b"), yrs = _n("w13-c");
+  if (pay === null || pay <= 0 || age === null || age <= 0 || yrs === null || yrs <= 0) { o.innerHTML = "Enter the capped weekly pay, the age and the full years of service."; return; }
+  var eff = Math.min(Math.floor(yrs), 20), weeks = 0, i, a;
+  for (i = 0; i < eff; i++) { a = age - i; weeks += a < 22 ? 0.5 : (a < 41 ? 1 : 1.5); }
+  o.innerHTML = "<b>" + nfmt(weeks, 1) + " weeks \u2014 $" + nfmt(weeks * pay, 0) + "</b>statutory pay for a " + nfmt(age, 0) + "-year-old with " + nfmt(yrs, 0) + " full years" +
+    "<span class='jf-chip'><b>half pay under 22</b>full week 22\u201340, one-and-a-half from 41 \u2014 the age ladder</span>" +
+    (yrs > 20 ? "<span class='jf-chip jf-chip-bad'><b>20-year cap</b>" + nfmt(Math.floor(yrs) - 20, 0) + " service years stop counting for statutory pay</span>" : "<span class='jf-chip'><b>earned in full</b>the whole service record counts at this age</span>") +
+    "<span class='jf-chip'><b>$719 is the cap</b>weekly pay above it still uses $719 \u2014 contractual terms may add more</span>";
+}
+
+function w14() {
+  var o = $("w14-out"); if (!o) return;
+  var sa = _n("w14-a"), ba = _n("w14-b"), ca = _n("w14-c"), sb = _n("w14-d"), bb = _n("w14-e"), cb = _n("w14-f");
+  if (sa === null || sb === null || sb === 0) { o.innerHTML = "Enter both salaries to compare offers."; return; }
+  var va = sa + (ba === null ? 0 : ba) - (ca === null ? 0 : ca), vb = sb + (bb === null ? 0 : bb) - (cb === null ? 0 : cb);
+  var win = va >= vb ? "A" : "B", gap = Math.abs(va - vb);
+  o.innerHTML = "<b>" + win + " wins by $" + nfmt(gap, 0) + "</b>\u2014 $" + nfmt(Math.max(va, vb), 0) + " true value against $" + nfmt(Math.min(va, vb), 0) +
+    "<span class='jf-chip'><b>$" + nfmt(va, 0) + "</b>Offer A after $" + nfmt(ba === null ? 0 : ba, 0) + " benefits and $" + nfmt(ca === null ? 0 : ca, 0) + " commuting</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(vb, 0) + "</b>Offer B after $" + nfmt(bb === null ? 0 : bb, 0) + " benefits and $" + nfmt(cb === null ? 0 : cb, 0) + " setup</span>" +
+    "<span class='jf-chip'><b>" + nfmt(gap / Math.min(va, vb) * 100, 1) + "% more</b>the smaller salary really pays \u2014 annual, before tax</span>";
+}
+
+function w15() {
+  var o = $("w15-out"); if (!o) return;
+  var n = _n("w15-a"), fmt = _n("w15-e");
+  if (n === null || n < 2) { o.innerHTML = "Enter at least 2 teams or participants."; return; }
+  var et = n % 2 === 0 ? n : n + 1, rounds = et - 1, matches = n * (n - 1) / 2, per = Math.floor(et / 2);
+  o.innerHTML = "<b>" + nfmt(matches, 0) + " matches</b>across " + nfmt(rounds, 0) + " rounds for " + nfmt(n, 0) + " teams \u2014 " + nfmt(per, 0) + " games every round" +
+    "<span class='jf-chip'><b>" + nfmt(matches * 2, 0) + " fixtures</b>when the double format sends everyone home and away</span>" +
+    (n % 2 !== 0 ? "<span class='jf-chip jf-chip-bad'><b>one bye per round</b>an odd field always leaves one team idle</span>" : "<span class='jf-chip'><b>everyone plays</b>an even field runs with no byes at all</span>") +
+    "<span class='jf-chip'><b>circle method</b>rotate one team while holding another fixed to build the rounds</span>";
+}
+
+function w16() {
+  var o = $("w16-out"); if (!o) return;
+  var team = _n("w16-a"), sk = _n("w16-b"), avg = _n("w16-c"), single = _n("w16-d");
+  if (team === null || team <= 0 || sk === null || sk <= 0 || avg === null || avg < 1 || avg > 5) { o.innerHTML = "Enter the team size, skills tracked and an average proficiency from 1 to 5."; return; }
+  var cov = avg / 5 * 100, hands = team * avg / sk;
+  o.innerHTML = "<b>" + nfmt(cov, 0) + "% coverage</b>" + nfmt(team, 0) + " people averaging " + nfmt(avg, 1) + " of 5 across " + nfmt(sk, 0) + " skills" +
+    "<span class='jf-chip " + (single === null || single === 0 ? "" : "jf-chip-bad") + "'><b>" + nfmt(single === null ? 0 : single, 0) + " single-holder" + (single === 1 ? "" : "s") + "</b>skills only one person can run \u2014 cross-training is overdue</span>" +
+    "<span class='jf-chip'><b>" + nfmt(hands, 1) + "</b>proficiency-weighted hands on each skill</span>" +
+    "<span class='jf-chip'><b>4 of 5 is the bar</b>for production systems, aim the matrix upward</span>";
+}
+
+function w17() {
+  var o = $("w17-out"); if (!o) return;
+  var a = _n("w17-a"), b = _n("w17-b"), c = _n("w17-c"), d = _n("w17-d");
+  if (a === null || b === null || c === null || d === null) { o.innerHTML = "Enter the count for each quadrant \u2014 zero is allowed."; return; }
+  var total = a + b + c + d;
+  if (total <= 0) { o.innerHTML = "Enter at least one task across the quadrants."; return; }
+  var reclaim = (c + d) / total * 100;
+  o.innerHTML = "<b>do " + nfmt(a, 0) + " \u00b7 schedule " + nfmt(b, 0) + " \u00b7 delegate " + nfmt(c, 0) + " \u00b7 drop " + nfmt(d, 0) + "</b>" + nfmt(total, 0) + " tasks sorted into the quadrants" +
+    "<span class='jf-chip " + (reclaim >= 25 ? "" : "jf-chip-bad") + "'><b>" + nfmt(reclaim, 1) + "% reclaimable</b>of the list never needed you personally</span>" +
+    "<span class='jf-chip'><b>" + nfmt(a, 0) + " do-now</b>keeps the top of the board honest \u2014 more than five is a red flag</span>" +
+    (b > a ? "<span class='jf-chip'><b>schedule beats do</b>" + nfmt(b, 0) + " items waiting to become urgent</span>" : "");
+}
+
+function w18() {
+  var o = $("w18-out"); if (!o) return;
+  var s = _n("w18-a"), w = _n("w18-b"), c = _n("w18-c"), ch = _n("w18-d");
+  if (s === null || w === null || c === null || ch === null) { o.innerHTML = "Enter the weekly hours for sleep, work, commute and chores."; return; }
+  var committed = s + w + c + ch, free = 168 - committed, perDay = free / 7, pct = free / (7 * 16) * 100;
+  o.innerHTML = "<b>" + nfmt(free, 1) + " free hours</b>after " + nfmt(committed, 1) + " committed of the 168 you own each week" +
+    (free < 0 ? "<span class='jf-chip jf-chip-bad'><b>overdrawn by " + nfmt(-free, 1) + " hours</b>this timetable does not exist \u2014 something must go</span>" : "<span class='jf-chip'><b>" + nfmt(perDay, 1) + " a day</b>and " + nfmt(pct, 1) + "% of waking time \u2014 " + nfmt(free * 52, 0) + " hours a year</span>") +
+    "<span class='jf-chip'><b>365 hours</b>back per year from one reclaimed daily hour</span>" +
+    "<span class='jf-chip'><b>sleep 56</b>is the eight-hour floor \u2014 cutting sleep to win hours is a loss</span>";
+}
+/* B: converters & numbers */
+
+function w19() {
+  var o = $("w19-out"); if (!o) return;
+  var m = _n("w19-a");
+  if (m === null || m < 0) { o.innerHTML = "Enter the distance in metres."; return; }
+  o.innerHTML = "<b>" + nfmt(m * 1.09361, 2) + " yards</b>" + nfmt(m, 2) + " metres \u2014 the field and the pool speak different units" +
+    "<span class='jf-chip'><b>" + nfmt(m * 3.28084, 2) + " feet</b>the same distance for the imperial tape</span>" +
+    "<span class='jf-chip'><b>1.09361</b>yards per metre \u2014 memorise it and this tool stays as a checklist</span>";
+}
+
+function w20() {
+  var o = $("w20-out"); if (!o) return;
+  var p = _n("w20-a");
+  if (p === null || p < 0) { o.innerHTML = "Enter the volume in US pints."; return; }
+  o.innerHTML = "<b>" + nfmt(p * 0.473176, 2) + " litres</b>" + nfmt(p, 2) + " US pints \u2014 the bottle shop conversion" +
+    "<span class='jf-chip'><b>" + nfmt(2 / 0.473176, 2) + " pints</b>fit inside a 2-litre bottle \u2014 buy one big and one small</span>" +
+    "<span class='jf-chip'><b>473 ml</b>the US pint \u2014 nowhere near the imperial 568 ml</span>";
+}
+
+function w21() {
+  var o = $("w21-out"); if (!o) return;
+  var p = _n("w21-a");
+  if (p === null || p < 0) { o.innerHTML = "Enter the volume in imperial pints."; return; }
+  var us = p * 0.568261 / 0.473176;
+  o.innerHTML = "<b>" + us.toFixed(2) + " US pints</b>" + nfmt(p, 2) + " imperial pints \u2014 the UK pour is 20% bigger" +
+    "<span class='jf-chip'><b>" + nfmt(p * (0.568261 - 0.473176) * 1000, 0) + " ml</b>extra liquid across a round of " + nfmt(p, 0) + "</span>" +
+    "<span class='jf-chip'><b>568 vs 473 ml</b>the two pints side by side \u2014 never mix them on a spec sheet</span>";
+}
+
+function w22() {
+  var o = $("w22-out"); if (!o) return;
+  var w = _n("w22-a"), v = _n("w22-b");
+  if (w === null || w < 0) { o.innerHTML = "Enter the power in watts."; return; }
+  var volts = v === null || v <= 0 ? 120 : v;
+  o.innerHTML = "<b>" + nfmt(w / 745.7, 2) + " hp</b>" + nfmt(w, 0) + " watts \u2014 the electric-motor rating, not boiler horse" +
+    "<span class='jf-chip'><b>" + nfmt(w / volts, 1) + " amps</b>at " + nfmt(volts, 0) + " V \u2014 this decides the extension lead</span>" +
+    "<span class='jf-chip'><b>745.7 W</b>to the horsepower \u2014 metric hp is 735.5, mind the label</span>";
+}
+
+function w23() {
+  var o = $("w23-out"); if (!o) return;
+  var b = _n("w23-a");
+  if (b === null || b < 0) { o.innerHTML = "Enter the pressure in bar."; return; }
+  o.innerHTML = "<b>" + nfmt(b * 14.5038, 1) + " psi</b>" + nfmt(b, 2) + " bar \u2014 the door sticker wearing another badge" +
+    "<span class='jf-chip'><b>" + nfmt(b * 100, 0) + " kPa</b>the SI way to print the same pressure</span>" +
+    "<span class='jf-chip'><b>1 bar = 14.5 psi</b>close enough to one atmosphere for tyre work</span>";
+}
+
+function w24() {
+  var o = $("w24-out"); if (!o) return;
+  var k = _n("w24-a");
+  if (k === null || k < 0) { o.innerHTML = "Enter the speed in knots."; return; }
+  o.innerHTML = "<b>" + nfmt(k * 1.15078, 2) + " mph</b>" + nfmt(k, 2) + " knots \u2014 the nautical mile per hour" +
+    "<span class='jf-chip'><b>" + nfmt(k * 0.514444, 2) + " m/s</b>physics-homework units for the same wind</span>" +
+    "<span class='jf-chip'><b>1.15078</b>miles per knot \u2014 the nautical mile stretches 15%</span>";
+}
+
+function w25() {
+  var o = $("w25-out"); if (!o) return;
+  var l = _n("w25-a");
+  if (l === null || l <= 0) { o.innerHTML = "Enter the consumption in litres per 100 km."; return; }
+  o.innerHTML = "<b>" + (235.214583 / l).toFixed(2) + " US mpg</b>" + nfmt(l, 1) + " L/100 km \u2014 the EU label meets the US sticker" +
+    "<span class='jf-chip'><b>" + nfmt(282.480936 / l, 2) + " mpg(UK)</b>because the imperial gallon is bigger</span>" +
+    "<span class='jf-chip'><b>" + nfmt(235.214583 / 50, 1) + " L/100 km</b>is what 50 US mpg reads as in Europe</span>";
+}
+
+function w26() {
+  var o = $("w26-out"); if (!o) return;
+  var sf = _n("w26-a"), price = _n("w26-b");
+  if (sf === null || sf < 0) { o.innerHTML = "Enter the area in square feet."; return; }
+  var m2 = sf * 0.09290304;
+  o.innerHTML = "<b>" + nfmt(m2, 2) + " m\u00b2</b>" + nfmt(sf, 0) + " sq ft \u2014 the same floor by two vocabularies" +
+    (price !== null && price > 0 ? "<span class='jf-chip'><b>$" + nfmt(price / m2, 0) + " per m\u00b2</b>over this floor \u2014 $" + nfmt(price / sf, 0) + " per sq ft</span>" : "<span class='jf-chip'><b>price optional</b>add a total price to price the square metre</span>") +
+    "<span class='jf-chip'><b>10.764 sq ft</b>per square metre \u2014 divide by it to go back</span>";
+}
+
+function w27() {
+  var o = $("w27-out"); if (!o) return;
+  var cf = _n("w27-a");
+  if (cf === null || cf < 0) { o.innerHTML = "Enter the volume in cubic feet."; return; }
+  var m3 = cf * 0.0283168466;
+  o.innerHTML = "<b>" + nfmt(m3, 2) + " m\u00b3</b>" + nfmt(cf, 0) + " cubic feet \u2014 three chest-freezer boxes and more" +
+    "<span class='jf-chip'><b>" + nfmt(m3 * 1000, 0) + " litres</b>the same volume on the water-bottle scale</span>" +
+    "<span class='jf-chip'><b>28.3 litres</b>to every cubic foot \u2014 the freezer-sized constant</span>";
+}
+
+function w28() {
+  var o = $("w28-out"); if (!o) return;
+  var m = _n("w28-a");
+  if (m === null || m < 0) { o.innerHTML = "Enter the number of minutes."; return; }
+  var d = m / 1440;
+  o.innerHTML = "<b>" + nfmt(d, 2) + " days</b>" + nfmt(m, 0) + " minutes \u2014 over three full sun-ups at these counts" +
+    "<span class='jf-chip'><b>" + nfmt(m / 480, 1) + " workdays</b>eight-hour days, if only the job counts</span>" +
+    "<span class='jf-chip'><b>" + nfmt(d / 7, 2) + " weeks</b>the calendar spread of the same minutes</span>";
+}
+
+function w29() {
+  var o = $("w29-out"); if (!o) return;
+  var w = _n("w29-a");
+  if (w === null || w < 0) { o.innerHTML = "Enter the number of weeks."; return; }
+  o.innerHTML = "<b>" + nfmt(w / 4.34812, 1) + " months</b>" + nfmt(w, 0) + " weeks against the 4.35-week average month" +
+    "<span class='jf-chip jf-chip-bad'><b>" + nfmt(w / 4, 1) + " months</b>payroll's flat-4 answer \u2014 always the bigger, friendlier number</span>" +
+    "<span class='jf-chip'><b>4.348 weeks</b>a real month \u2014 52.178 weeks over twelve</span>";
+}
+
+function w30() {
+  var o = $("w30-out"); if (!o) return;
+  var s = _n("w30-a");
+  if (s === null || s < 0) { o.innerHTML = "Enter the number of seconds."; return; }
+  o.innerHTML = "<b>" + nfmt(s / 86400, 2) + " days</b>" + nfmt(s, 0) + " seconds \u2014 just under three full sun-ups at these counts" +
+    "<span class='jf-chip'><b>" + nfmt(s / 28800, 1) + " workdays</b>eight-hour shifts back to back</span>" +
+    "<span class='jf-chip'><b>" + nfmt(s / 3600, 1) + " hours</b>the same stretch in plain clock time</span>";
+}
+
+function w31() {
+  var o = $("w31-out"); if (!o) return;
+  var b = _v("w31-a").replace(/\s+/g, "");
+  if (!b) { o.innerHTML = "Enter a binary string of 1s and 0s."; return; }
+  if (!/^[01]+$/.test(b)) { o.innerHTML = "Binary reads only 1s and 0s \u2014 strip the rest and try again."; return; }
+  var dec = parseInt(b, 2), hex = dec.toString(16).toUpperCase();
+  var pad = b.length % 4 === 0 ? b : new Array(4 - (b.length % 4) + 1).join("0") + b;
+  var nib = pad.replace(/(.{4})(?=.)/g, "$1 | ");
+  o.innerHTML = "<b>" + hex + "</b>" + b + " in hex \u2014 " + nfmt(dec, 0) + " decimal underneath" +
+    "<span class='jf-chip'><b>" + nfmt(dec, 0) + "</b>the same value in decimal \u2014 " + (b.length === 8 ? "one byte" : b.length + " bits") + "</span>" +
+    "<span class='jf-chip'><b>" + nib + "</b>two nibbles, one hex digit each</span>" +
+    (hex.length === 2 ? "<span class='jf-chip'><b>" + parseInt(hex[0], 16) + " \u00d7 16 + " + parseInt(hex[1], 16) + "</b>rebuilds the decimal by hand</span>" : "");
+}
+
+function w32() {
+  var o = $("w32-out"); if (!o) return;
+  var t = _v("w32-a").trim();
+  if (!t) { o.innerHTML = "Enter an octal number \u2014 chmod values like 755 fit here."; return; }
+  if (!/^[0-7]+$/.test(t)) { o.innerHTML = "Octal uses only the digits 0 to 7."; return; }
+  var dec = parseInt(t, 8), hex = dec.toString(16).toUpperCase();
+  var rwx = "", j, bit;
+  for (j = 6; j >= 0; j -= 3) {
+    bit = (dec >> j) & 7;
+    rwx += (bit & 4 ? "r" : "-") + (bit & 2 ? "w" : "-") + (bit & 1 ? "x" : "-");
+  }
+  o.innerHTML = "<b>" + nfmt(dec, 0) + " decimal</b>" + t + " octal \u2014 and " + hex + " in hex" +
+    "<span class='jf-chip'><b>" + rwx + "</b>" + (dec <= 511 && t.length <= 3 ? "the classic permission string \u2014 owner, group, others" : "the permission reading when the digits are file modes") + "</span>" +
+    "<span class='jf-chip'><b>4-2-1</b>each octal digit adds read, write, execute \u2014 " + t.split("").join("-") + " here</span>";
+}
+
+function w33() {
+  var o = $("w33-out"); if (!o) return;
+  var d = _n("w33-a"), m = _n("w33-b"), y = _n("w33-c");
+  if (d === null || d < 1 || d > 31 || m === null || m < 1 || m > 12 || y === null || y < 1) { o.innerHTML = "Enter a day 1\u201331, a month from the list and a positive year."; return; }
+  function rom(n) {
+    var v = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1],
+      s = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"], r = "", i;
+    n = Math.floor(n);
+    for (i = 0; i < v.length; i++) { while (n >= v[i]) { r += s[i]; n -= v[i]; } }
+    return r;
+  }
+  if (y > 3999) { o.innerHTML = "Roman numerals call it a day near 3,999 \u2014 overlines beyond that are rare in text."; return; }
+  var rd = rom(d), rm = rom(m), ry = rom(y);
+  o.innerHTML = "<b>" + rd + " \u00b7 " + rm + " \u00b7 " + ry + "</b>" + d + " " + m + " " + y + " \u2014 the engraving format" +
+    "<span class='jf-chip'><b>" + d + ", " + m + ", " + y + "</b>reads straight back from the numerals</span>" +
+    "<span class='jf-chip'><b>" + rd.length + "\u2013" + ry.length + " symbols</b>day and year \u2014 the year always dominates the carving</span>";
+}
+
+function w34() {
+  var o = $("w34-out"); if (!o) return;
+  var h = _v("w34-a").replace("#", "").trim(), a = _n("w34-b");
+  if (!h) { o.innerHTML = "Enter a hex colour \u2014 with or without the #."; return; }
+  if (/^[0-9a-fA-F]{3}$/.test(h)) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) { o.innerHTML = "Hex colours read 6 digits (or 3 expanded) \u2014 this one does not parse."; return; }
+  var al = a === null ? 1 : Math.min(1, Math.max(0, a));
+  var r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
+  var a8 = Math.round(al * 255).toString(16).padStart(2, "0");
+  var aStr = String(Math.round(al * 100) / 100);
+  o.innerHTML = "<b>rgba(" + r + ", " + g + ", " + b + ", " + aStr + ")</b>#" + h.toLowerCase() + " at " + nfmt(al * 100, 0) + "% \u2014 screen-ready" +
+    "<span class='jf-chip'><b>#" + h.toLowerCase() + a8 + "</b>the 8-digit form CSS accepts</span>" +
+    "<span class='jf-chip'><b>" + Math.round(al * 255) + "</b>the alpha channel as 0\u2013255 \u2014 " + nfmt(al * 100, 0) + "% of full</span>";
+}
+
+function w35() {
+  var o = $("w35-out"); if (!o) return;
+  var n = _n("w35-a"), k = _n("w35-b"), k2 = _n("w35-c");
+  if (n === null || n < 1 || k === null || k < 1 || k > n || k2 === null || k2 < 0 || k2 > k) { o.innerHTML = "Enter a pool size, numbers drawn, and a match count from 0 up to the numbers drawn."; return; }
+  function comb(a, b) {
+    if (b < 0 || b > a) return 0;
+    var r = 1, i;
+    for (i = 1; i <= b; i++) r = r * (a - b + i) / i;
+    return r;
+  }
+  var total = comb(n, k), lower = total / Math.max(comb(k, k2) * comb(n - k, k - k2), 1);
+  o.innerHTML = "<b>1 in " + nfmt(total, 0) + "</b>the " + nfmt(k, 0) + "-of-" + nfmt(n, 0) + " jackpot \u2014 every line an independent prayer" +
+    "<span class='jf-chip'><b>" + nfmt(total, 0) + "</b>combinations cover the whole board \u2014 buying all of them costs more than the prize usually pays</span>" +
+    (k2 > 0 && k2 < k ? "<span class='jf-chip'><b>1 in " + nfmt(lower, 1) + "</b>to match " + nfmt(k2, 0) + " of " + nfmt(k, 0) + " \u2014 the small-print tier</span>" : "") +
+    "<span class='jf-chip'><b>C(n,k)</b>n! over k!(n\u2212k)! \u2014 order never matters in a draw</span>";
+}
+
+function w36() {
+  var o = $("w36-out"); if (!o) return;
+  var p = _n("w36-a"), prize = _n("w36-b"), cost = _n("w36-c");
+  if (p === null || p < 0 || p > 100 || prize === null || prize < 0 || cost === null || cost < 0) { o.innerHTML = "Enter a win probability 0\u2013100%, a prize amount and a cost per play."; return; }
+  var ev = p / 100 * prize, net = ev - cost, per100 = net * 100;
+  o.innerHTML = "<b>$" + nfmt(ev, 2) + " expected</b>each $" + nfmt(cost, 2) + " play \u2014 a " + nfmt(p, 2) + "% shot at $" + nfmt(prize, 0) +
+    "<span class='jf-chip " + (net < 0 ? "jf-chip-bad" : "") + "'><b>" + (net < 0 ? "\u2212$" + nfmt(-net, 2) : "$" + nfmt(net, 2)) + "</b>the average result of one play" + (net < 0 ? " \u2014 the house edge speaking" : "") + "</span>" +
+    "<span class='jf-chip " + (net < 0 ? "jf-chip-bad" : "") + "'><b>" + (net < 0 ? "\u2212$" + nfmt(-per100, 0) : "$" + nfmt(per100, 0)) + "</b>" + (net < 0 ? "lost" : "won") + " across 100 plays before luck intervenes</span>" +
+    "<span class='jf-chip'><b>" + nfmt(cost / Math.max(ev, 0.01), 1) + "\u00d7</b>cost against value \u2014 the price of the dream</span>";
+}
+/* C: math, science & sport */
+
+function w37() {
+  var o = $("w37-out"); if (!o) return;
+  var x = _n("w37-a");
+  if (x === null || !isFinite(x)) { o.innerHTML = "Enter the decimal value to convert."; return; }
+  var sgn = x < 0 ? "-" : "", ax = Math.abs(x), d, best = null, bestd = 1;
+  for (d = 1; d <= 100000; d++) {
+    var num = Math.round(ax * d);
+    if (Math.abs(ax - num / d) < 1e-9) { best = num; bestd = d; break; }
+  }
+  if (best === null) { o.innerHTML = "This decimal does not resolve to a tidy fraction within six digits of denominator."; return; }
+  var g = function (a, b) { return b === 0 ? a : g(b, a % b); }, gc = g(best, bestd);
+  var inch = 25.4 * (best / gc) / (bestd / gc);
+  o.innerHTML = "<b>" + sgn + (best / gc) + "/" + (bestd / gc) + "</b>" + nfmt(x, 4) + " exactly" +
+    "<span class='jf-chip'><b>" + nfmt(Math.round(inch * 100 + 1e-7) / 100, 2) + " mm</b>if the fraction reads as inches \u2014 lathe and router reality</span>" +
+    "<span class='jf-chip'><b>1/" + nfmt(bestd / gc, 0) + "ths</b>the denominator the decimal speaks</span>";
+}
+
+function w38() {
+  var o = $("w38-out"); if (!o) return;
+  var p1 = _n("w38-a"), p2 = _n("w38-b");
+  if (p1 === null || p1 < 0 || p2 === null || p2 < 0) { o.innerHTML = "Enter both percentages as positive numbers."; return; }
+  var both = p1 * p2 / 100, naive = p1 + p2;
+  o.innerHTML = "<b>" + nfmt(both, 2) + "%</b>of the whole \u2014 " + nfmt(p1, 1) + "% of " + nfmt(p2, 1) + "%, percentages multiply" +
+    "<span class='jf-chip jf-chip-bad'><b>" + nfmt(naive, 0) + "% is the trap</b>adding them is the classic additive mistake</span>" +
+    "<span class='jf-chip'><b>" + nfmt(both / 100, 4) + "</b>as a bare multiplier \u2014 what the spreadsheet holds</span>";
+}
+
+function w39() {
+  var o = $("w39-out"); if (!o) return;
+  var v1 = _n("w39-a"), w1 = _n("w39-b"), v2 = _n("w39-c"), w2 = _n("w39-d");
+  if (v1 === null || w1 === null || v2 === null || w2 === null || w1 <= 0 || w2 <= 0) { o.innerHTML = "Enter both values and both weights (weights must be positive)."; return; }
+  var mean = (v1 * w1 + v2 * w2) / (w1 + w2), plain = (v1 + v2) / 2;
+  o.innerHTML = "<b>" + nfmt(mean, 2) + " average</b>" + nfmt(v1, 2) + " weighted " + nfmt(w1, 1) + " against " + nfmt(v2, 2) + " weighted " + nfmt(w2, 1) +
+    "<span class='jf-chip'><b>" + nfmt(plain, 2) + "</b>the unweighted average \u2014 flattered by the outlier</span>" +
+    "<span class='jf-chip'><b>" + nfmt(w1 / (w1 + w2) * 100, 0) + "% of weight</b>sits on the " + nfmt(v1, 0) + "</span>";
+}
+
+function w40() {
+  var o = $("w40-out"); if (!o) return;
+  var a = _n("w40-a"), r = _n("w40-b"), n = _n("w40-c");
+  if (a === null || r === null || n === null || n < 1) { o.innerHTML = "Enter the first term, the ratio and the number of terms (1 or more)."; return; }
+  var sum = r === 1 ? a * n : a * (Math.pow(r, n) - 1) / (r - 1), nth = a * Math.pow(r, n - 1);
+  o.innerHTML = "<b>" + nfmt(sum, 2) + "</b>" + nfmt(n, 0) + " terms starting at " + nfmt(a, 2) + " with ratio " + nfmt(r, 2) +
+    "<span class='jf-chip'><b>" + nfmt(nth, 2) + "</b>the last term alone \u2014 " + nfmt(Math.abs(sum) > 0 ? Math.abs(nth / sum) * 100 : 0, 1) + "% of the whole sum</span>" +
+    "<span class='jf-chip'><b>a(r\u207f \u2212 1)/(r \u2212 1)</b>the whole series in one line of algebra</span>" +
+    (r > 1 ? "<span class='jf-chip jf-chip-bad'><b>exponential drag</b>r &gt; 1 doubles the tail faster than intuition</span>" : "");
+}
+
+function w41() {
+  var o = $("w41-out"); if (!o) return;
+  var n = _n("w41-a"), k = _n("w41-b");
+  if (n === null || n < 1 || k === null || k < 0 || k > n) { o.innerHTML = "Enter the number of items and how many are chosen (0 to n)."; return; }
+  var p = 1, i, j;
+  for (i = 0; i < k; i++) p = p * (n - i);
+  var c = p;
+  for (j = 2; j <= k; j++) c = c / j;
+  c = Math.round(c);
+  o.innerHTML = "<b>" + nfmt(p, 0) + " orders</b>from " + nfmt(n, 0) + " take " + nfmt(k, 0) + " \u2014 permutations count podiums" +
+    "<span class='jf-chip'><b>" + nfmt(c, 0) + " teams</b>combinations: the order forgotten</span>" +
+    "<span class='jf-chip'><b>" + nfmt(p / Math.max(c, 1), 0) + "\u00d7</b>the gap is " + nfmt(k, 0) + "! \u2014 pure order sensitivity</span>";
+}
+
+function w42() {
+  var o = $("w42-out"); if (!o) return;
+  var a = _n("w42-a"), m = _n("w42-b");
+  if (a === null || m === null || m === 0) { o.innerHTML = "Enter a and the modulus \u2014 the modulus cannot be 0."; return; }
+  var mod = ((a % m) + m) % m, q = Math.floor(a / m);
+  o.innerHTML = "<b>" + nfmt(a, 0) + " mod " + nfmt(m, 0) + " = " + nfmt(mod, 0) + "</b>" + nfmt(q, 0) + " full " + nfmt(m, 0) + "s and " + nfmt(mod, 0) + " left over" +
+    "<span class='jf-chip'><b>" + nfmt(m - (Math.abs(a) % m === 0 ? m : Math.abs(a) % m), 0) + "</b>is what \u2212" + nfmt(Math.abs(a), 0) + " mod " + nfmt(m, 0) + " returns \u2014 maths and JS agree once nudged</span>" +
+    "<span class='jf-chip'><b>clock logic</b>every multiple of " + nfmt(m, 0) + " collapses to 0</span>";
+}
+
+function w43() {
+  var o = $("w43-out"); if (!o) return;
+  var x = _n("w43-a");
+  if (x === null || !isFinite(x)) { o.innerHTML = "Enter the value to cube."; return; }
+  o.innerHTML = "<b>" + nfmt(x * x * x, 4) + "</b>" + nfmt(x, 2) + " cubed" +
+    "<span class='jf-chip'><b>" + nfmt(x * x, 4) + "</b>" + nfmt(x, 2) + " squared \u2014 one extra multiply is " + nfmt(Math.abs(x), 0) + "\u00d7 more</span>" +
+    (x > 0 ? "<span class='jf-chip'><b>" + nfmt(Math.pow(x, 1 / 3), 3) + "</b>the cube root of the cube, closing the loop</span>" : "");
+}
+
+function w44() {
+  var o = $("w44-out"); if (!o) return;
+  var t = _n("w44-a");
+  if (t === null || t < -50 || t > 60) { o.innerHTML = "Enter the air temperature between \u221250\u00b0C and 60\u00b0C."; return; }
+  var v = 331.3 + 0.606 * t;
+  o.innerHTML = "<b>" + nfmt(v, 0) + " m/s</b>sound at " + nfmt(t, 1) + "\u00b0C \u2014 each degree adds 0.606 to the speed" +
+    "<span class='jf-chip'><b>" + nfmt(v * 4 / 1000, 1) + " km</b>away if thunder follows the lightning by four seconds</span>" +
+    "<span class='jf-chip'><b>seconds \u00f7 3</b>the storm-distance counting rule in kilometres</span>";
+}
+
+function w45() {
+  var o = $("w45-out"); if (!o) return;
+  var h = _n("w45-a"), mm = _n("w45-b");
+  if (h === null || h < 0 || h > 23 || mm === null || mm < 0 || mm > 59) { o.innerHTML = "Enter the bedtime hour 0\u201323 and minutes 0\u201359."; return; }
+  var base = h * 60 + mm + 15;
+  function rise(cy) {
+    var t = (base + cy * 90) % 1440;
+    return String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(Math.round(t % 60)).padStart(2, "0");
+  }
+  o.innerHTML = "<b>" + rise(6) + "</b>rise after six full 90-minute cycles from " + String(h).padStart(2, "0") + ":" + String(mm).padStart(2, "0") + " plus 15 minutes falling asleep" +
+    "<span class='jf-chip'><b>" + rise(5) + "</b>five cycles \u2014 shorter, still waking in the light stage</span>" +
+    "<span class='jf-chip'><b>" + rise(7) + "</b>seven cycles when the morning allows</span>" +
+    "<span class='jf-chip'><b>90 minutes</b>per sleep cycle \u2014 waking between them feels like rising</span>";
+}
+
+function w46() {
+  var o = $("w46-out"); if (!o) return;
+  var pw = _n("w46-a"), wt = _n("w46-b");
+  if (pw === null || pw <= 0 || wt === null || wt <= 0) { o.innerHTML = "Enter the sustained power in watts and the rider weight in kg."; return; }
+  var rat = pw / wt, alt = pw / (wt - 2);
+  o.innerHTML = "<b>" + nfmt(rat, 2) + " W/kg</b>" + nfmt(pw, 0) + " watts from a " + nfmt(wt, 1) + " kg rider" +
+    "<span class='jf-chip'><b>" + nfmt(alt, 2) + "+</b>after dropping 2 kg \u2014 free speed</span>" +
+    "<span class='jf-chip " + (rat >= 4 ? "" : "jf-chip-bad") + "'><b>" + (rat >= 4 ? "race grade" : "under 4") + "</b>4\u20135 W/kg separates racing from enthusiast riding</span>";
+}
+
+function w47() {
+  var o = $("w47-out"); if (!o) return;
+  var t5 = _n("w47-a");
+  if (t5 === null || t5 <= 0) { o.innerHTML = "Enter your 5K time in minutes."; return; }
+  var pps = t5 * 60 / 5;
+  function pc(s) { return Math.floor(s / 60) + ":" + String(Math.round(s % 60)).padStart(2, "0"); }
+  o.innerHTML = "<b>" + pc(pps) + " per km</b>a " + nfmt(t5, 1) + "-minute 5K \u2014 the honest recreational standard" +
+    "<span class='jf-chip'><b>" + pc(pps * 31 / 30) + " opener</b>go out three percent slower and bank the finish</span>" +
+    "<span class='jf-chip'><b>" + pc(pps * 29 / 30) + " closer</b>where the last third lands when pacing holds</span>" +
+    "<span class='jf-chip'><b>" + pc(pps * 10) + " for 10K</b>straight doubling is fair at this pace</span>";
+}
+
+function w48() {
+  var o = $("w48-out"); if (!o) return;
+  var sc = _n("w48-a"), cr = _n("w48-b"), sl = _n("w48-c");
+  if (sc === null || cr === null || sl === null || sl <= 0) { o.innerHTML = "Enter the adjusted gross score, course rating and slope rating."; return; }
+  var diff = (sc - cr) * 113 / sl, idx = diff * 0.96;
+  o.innerHTML = "<b>" + nfmt(diff, 2) + " differential</b>a " + nfmt(sc, 0) + " on a " + nfmt(cr, 1) + "-rated, " + nfmt(sl, 0) + "-slope course" +
+    "<span class='jf-chip'><b>" + nfmt(idx, 1) + " index</b>after the 0.96 discount \u2014 the number opponents see</span>" +
+    "<span class='jf-chip'><b>+" + nfmt(sc - cr, 1) + " strokes</b>over the course rating \u2014 the raw gap before slope</span>" +
+    (diff > 18 ? "<span class='jf-chip jf-chip-bad'><b>18+ differential</b>the course has done damage \u2014 try the forward tees</span>" : "");
+}
+
+function w49() {
+  var o = $("w49-out"); if (!o) return;
+  var h1 = _n("w49-a"), h2 = _n("w49-b");
+  if (h1 === null || h1 <= 0 || h2 === null || h2 <= 0 || h2 > h1) { o.innerHTML = "Enter the heart rate at stop and one minute later."; return; }
+  var drop = h1 - h2;
+  o.innerHTML = "<b>" + nfmt(drop, 0) + " bpm drop</b>from " + nfmt(h1, 0) + " to " + nfmt(h2, 0) + " within the first minute" +
+    "<span class='jf-chip " + (drop >= 12 ? "" : "jf-chip-bad") + "'><b>" + (drop >= 12 ? "inside the band" : "under 12 bpm") + "</b>" + (drop >= 12 ? "your engine clears oxygen debt briskly" : "fatigue, heat or dehydration are the prime suspects") + "</span>" +
+    "<span class='jf-chip'><b>20+ bpm</b>athletic recovery \u2014 the number interval training chases</span>";
+}
+
+function w50() {
+  var o = $("w50-out"); if (!o) return;
+  var tm = _n("w50-a"), dist = _n("w50-c");
+  if (tm === null || tm <= 0 || dist === null || dist <= 0) { o.innerHTML = "Enter the row time in minutes and the distance in metres."; return; }
+  var sp = tm * 60 / (dist / 500), watts = 2.80 / Math.pow(sp / 500, 3);
+  function pc2(s) { return Math.floor(s / 60) + ":" + String((Math.round(s % 60) < 10 ? "0" : "") + Math.round(s % 60)); }
+  o.innerHTML = "<b>" + pc2(sp) + " split</b>" + pc2(tm * 60) + " for " + nfmt(dist, 0) + " m \u2014 the classic test time" +
+    "<span class='jf-chip'><b>" + nfmt(watts, 1) + " watts</b>the whole piece at that pace \u2014 erg screen power</span>" +
+    "<span class='jf-chip'><b>" + nfmt(dist / 500, 0) + " \u00d7 500 m</b>segments \u2014 rowers count in half-kilometres</span>";
+}
+
+function w51() {
+  var o = $("w51-out"); if (!o) return;
+  var rep = _n("w51-a"), pool = _n("w51-b"), proj = _n("w51-c");
+  if (rep === null || rep <= 0 || proj === null || proj <= 0) { o.innerHTML = "Enter the repeat time in seconds per 100 m and the distance to project."; return; }
+  var p95 = pool === null || pool <= 0 ? 25 : pool;
+  var total = rep * proj / 100, mins = Math.floor(total / 60), secs = Math.round(total % 60);
+  o.innerHTML = "<b>" + mins + ":" + String(secs).padStart(2, "0") + " for " + nfmt(proj, 0) + " m</b>a " + nfmt(rep, 0) + "-second hundred carried the distance" +
+    "<span class='jf-chip'><b>" + nfmt(100 / p95, 0) + " lengths</b>per hundred in the " + nfmt(p95, 0) + " m pool</span>" +
+    "<span class='jf-chip'><b>" + nfmt(proj / 100, 0) + " hundreds</b>back to back \u2014 the count the session holds</span>" +
+    "<span class='jf-chip'><b>" + nfmt(100 / rep, 2) + " m/s</b>every stroke converting time into distance</span>";
+}
+
+function w52() {
+  var o = $("w52-out"); if (!o) return;
+  var kg = _n("w52-a"), gr = _n("w52-c"), type = _n("w52-b");
+  if (kg === null || kg <= 0 || gr === null || gr < 0) { o.innerHTML = "Enter the dog's weight in kg and the grams eaten."; return; }
+  var mg = type === null ? 5.5 : type, dose = gr * mg / kg;
+  var verdict, cls;
+  if (dose < 1.5) { verdict = "usually benign \u2014 mild tummy risk only"; cls = ""; }
+  else if (dose < 9) { verdict = "mild zone \u2014 watch for vomiting and restlessness"; cls = ""; }
+  else if (dose < 20) { verdict = "watch band: restlessness and a call to the vet"; cls = "jf-chip-bad"; }
+  else if (dose < 40) { verdict = "urgent \u2014 tremors and seizures are on the table"; cls = "jf-chip-bad"; }
+  else { verdict = "emergency \u2014 this dose can be lethal at this weight"; cls = "jf-chip-bad"; }
+  o.innerHTML = "<b>" + nfmt(dose, 1) + " mg/kg</b>theobromine \u2014 " + nfmt(gr, 0) + " g of " + (mg >= 20 ? "cocoa powder" : mg >= 5.5 ? "dark chocolate" : mg >= 2.2 ? "milk chocolate" : "white chocolate") + " in a " + nfmt(kg, 1) + " kg dog" +
+    "<span class='jf-chip " + cls + "'><b>" + verdict + "</b>based on theobromine, which dogs clear slowly</span>" +
+    "<span class='jf-chip'><b>" + nfmt(gr * mg, 0) + " mg</b>total theobromine delivered in one sitting</span>" +
+    (mg >= 5.5 ? "<span class='jf-chip jf-chip-bad'><b>dark over milk</b>cocoa powder doubles again \u2014 the type matters more than the size</span>" : "");
+}
+/* D: dev, text & home */
+
+function w53() {
+  var o = $("w53-out"); if (!o) return;
+  var a = _v("w53-a"), b = _v("w53-b");
+  if (!a && !b) { o.innerHTML = "Paste the two versions \u2014 original and revision."; return; }
+  function lines(s) { return s.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(function (l) { return l.length > 0; }); }
+  var la = lines(a), lb = lines(b), added = [], removed = [];
+  var runiq = {}, duniq = {};
+  la.forEach(function (l) { duniq[l] = (duniq[l] || 0) + 1; });
+  lb.forEach(function (l) { runiq[l] = (runiq[l] || 0) + 1; });
+  lb.forEach(function (l) { if (duniq[l] > 0) duniq[l]--; else added.push(l); });
+  la.forEach(function (l) { if (runiq[l] > 0) runiq[l]--; else removed.push(l); });
+  function chip(arr, cls) {
+    if (!arr.length) return "";
+    var first = arr[0].length > 40 ? arr[0].slice(0, 40) + "\u2026" : arr[0];
+    return "<span class='jf-chip " + cls + "'><b>" + (cls ? "+ " : "\u2212 ") + first.replace(/</g, "&lt;") + "</b>" + (arr.length > 1 ? (arr.length - 1) + " more like it" : "the flagged line") + "</span>";
+  }
+  o.innerHTML = "<b>" + added.length + " added \u00b7 " + removed.length + " removed</b>the two versions disagree in exactly " + (added.length + removed.length) + " place" + (added.length + removed.length === 1 ? "" : "s") +
+    chip(added, "jf-chip-bad") + chip(removed, "") +
+    (added.length + removed.length === 0 ? "<span class='jf-chip'><b>identical</b>every line matches \u2014 nothing to review</span>" : "");
+}
+
+function w54() {
+  var o = $("w54-out"); if (!o) return;
+  var t = _v("w54-a");
+  if (!t) { o.innerHTML = "Paste the lines to sort \u2014 one item per line."; return; }
+  var order = _v("w54-b") || "az", dup = _v("w54-c") || "keep";
+  var ln = t.split(/\r?\n/).map(function (l) { return l.trim(); }).filter(function (l) { return l.length > 0; });
+  var before = ln.length;
+  if (dup === "drop") {
+    var seen = {}, out = [];
+    ln.forEach(function (l) { if (!seen[l]) { seen[l] = 1; out.push(l); } });
+    ln = out;
+  }
+  if (order === "num") ln.sort(function (a, b) { return parseFloat(a) - parseFloat(b); });
+  else if (order === "za") ln.sort(function (a, b) { return b.localeCompare(a); });
+  else ln.sort(function (a, b) { return a.localeCompare(b); });
+  o.innerHTML = "<b>" + ln.length + " line" + (ln.length === 1 ? "" : "s") + " out</b>" + before + " went in" + (dup === "drop" && before > ln.length ? " \u2014 " + (before - ln.length) + " duplicate" + (before - ln.length === 1 ? "" : "s") + " folded" : "") +
+    "<span class='jf-chip'><b>" + (ln.slice(0, 3).join(" \u00b7 ") || "\u2014") + "</b>first three lines, already in their new order</span>" +
+    "<ul style='margin:8px 0 0 18px'>" + ln.slice(0, 20).map(function (l) { return "<li>" + l.replace(/</g, "&lt;") + "</li>"; }).join("") + (ln.length > 20 ? "<li>\u2026 " + (ln.length - 20) + " more</li>" : "") + "</ul>";
+}
+
+function w55() {
+  var o = $("w55-out"); if (!o) return;
+  var t = _v("w55-a"), c = _n("w55-b"), join = _v("w55-c");
+  if (!t) { o.innerHTML = "Type the text to repeat."; return; }
+  if (c === null || c < 1 || c > 100000) { o.innerHTML = "Enter a repeat count between 1 and 100,000."; return; }
+  var sep = join === "newline" ? "\n" : (join === null ? "" : join);
+  var arr = new Array(c);
+  for (var i = 0; i < c; i++) arr[i] = t;
+  var res = arr.join(sep);
+  o.innerHTML = "<b>" + nfmt(res.length, 0) + " characters</b>" + nfmt(c, 0) + "\u00d7 repeated \u2014 the length read-out layout testing needs" +
+    "<span class='jf-chip'><b>" + nfmt(t.length, 0) + "\u00d7" + nfmt(c, 0) + "</b>base length times count" + (sep === "\n" ? " plus " + nfmt(c - 1, 0) + " new lines" : sep ? " plus " + nfmt((c - 1) * sep.length, 0) + " separator characters" : "") + "</span>" +
+    (res.length > 300 ? "<span class='jf-chip'><b>long output</b>" + nfmt(res.length / 1000, 1) + " KB of text \u2014 copy rather than read</span>" : "<span class='jf-chip'><b>sample</b>" + res.slice(0, 60).replace(/</g, "&lt;") + (res.length > 60 ? "\u2026" : "") + "</span>");
+}
+
+function w56() {
+  var o = $("w56-out"); if (!o) return;
+  var t = _v("w56-a");
+  if (!t) { o.innerHTML = "Paste the data, config or log to scan for NaN leaks."; return; }
+  var lns = t.split(/\r?\n/), nanLines = [], nullLines = [], undef = 0, inf = 0;
+  lns.forEach(function (l, idx) {
+    if (/\bNaN\b/.test(l)) nanLines.push(idx + 1);
+    if (/\bnull\b/.test(l)) nullLines.push(idx + 1);
+    if (/\bundefined\b/.test(l)) undef++;
+    if (/\bInfinity\b/.test(l)) inf++;
+  });
+  o.innerHTML = "<b>" + nanLines.length + " NaN \u00b7 " + nullLines.length + " null</b>leaks in the paste \u2014 found at the door, not in the chart" +
+    (nanLines.length ? "<span class='jf-chip jf-chip-bad'><b>lines " + nanLines.slice(0, 4).join(", ") + (nanLines.length > 4 ? "\u2026" : "") + "</b>where the NaNs sit \u2014 each one poisons a numeric column</span>" : "<span class='jf-chip'><b>NaN-free</b>no silent not-a-number in this paste</span>") +
+    (nullLines.length ? "<span class='jf-chip'><b>" + nullLines.length + " nulls</b>legit in some stacks \u2014 confirm, then keep or strip</span>" : "") +
+    (undef + inf > 0 ? "<span class='jf-chip jf-chip-bad'><b>" + (undef + inf) + " more</b>undefined or Infinity tokens also present</span>" : "");
+}
+
+function w57() {
+  var o = $("w57-out"); if (!o) return;
+  var t = _v("w57-a");
+  if (!t) { o.innerHTML = "Paste the HTML table \u2014 tr and td tags are all it reads."; return; }
+  var rows = t.match(/<tr[^>]*>([\s\S]*?)<\/tr>/gi) || [];
+  if (!rows.length) { o.innerHTML = "No table rows found \u2014 the paste needs tr elements with td cells."; return; }
+  var csv = [], counts = [], maxc = 0, i;
+  rows.forEach(function (r) {
+    var cells = (r.match(/<(?:t[dh])[^>]*>([\s\S]*?)<\/(?:t[dh])>/gi) || []).map(function (c2) {
+      return c2.replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"").replace(/&nbsp;/g, " ").trim();
+    });
+    if (cells.length > maxc) maxc = cells.length;
+    counts.push(cells.length);
+    csv.push(cells.map(function (c3) { return /["\n,]/.test(c3) ? "\"" + c3.replace(/"/g, "\"\"") + "\"" : c3; }).join(","));
+  });
+  var short = [];
+  for (i = 0; i < counts.length; i++) { if (counts[i] < maxc) short.push(i + 1); }
+  o.innerHTML = "<b>" + csv.length + " CSV lines</b>from a " + rows.length + "-row table \u2014 commas intact inside quotes" +
+    "<span class='jf-chip'><b>" + maxc + " columns</b>the widest row \u2014 " + (short.length ? "shorter rows get flagged below" : "every row matches it") + "</span>" +
+    (short.length ? "<span class='jf-chip jf-chip-bad'><b>rows " + short.slice(0, 4).join(", ") + "</b>short by cell count \u2014 pad or fix at the source</span>" : "") +
+    "<span class='jf-chip'><b>CSV-safe</b>quotes doubled, commas preserved \u2014 paste straight into a spreadsheet</span>";
+}
+
+function w58() {
+  var o = $("w58-out"); if (!o) return;
+  var t = _v("w58-a");
+  if (!t) { o.innerHTML = "Paste the YAML \u2014 keys, nesting and lists are read back as structure first, values second."; return; }
+  var lns = t.split(/\r?\n/), keys = 0, lists = 0, depth = 0, i;
+  for (i = 0; i < lns.length; i++) {
+    var l = lns[i];
+    if (!l.trim() || /^\s*#/.test(l)) continue;
+    var ind = (l.match(/^ */) || [""])[0].length;
+    var lvl = Math.ceil(ind / 2) + (ind % 2 === 0 ? 0 : 1);
+    if (lvl > depth) depth = lvl;
+    if (/^\s*-\s+/.test(l)) { lists++; continue; }
+    if (/^[ \t]*[A-Za-z0-9_"'\-\. ]+:(\s|$)/.test(l)) keys++;
+  }
+  o.innerHTML = "<b>" + keys + " keys \u00b7 " + depth + " level" + (depth === 1 ? "" : "s") + " deep</b>nested structure flagged and ordered" +
+    "<span class='jf-chip " + (lists ? "" : "jf-chip") + "'><b>" + lists + " list item" + (lists === 1 ? "" : "s") + "</b>sequences at the deepest indent</span>" +
+    "<span class='jf-chip'><b>indent = structure</b>YAML has no braces \u2014 two spaces per level is the whole grammar</span>" +
+    (keys > 50 ? "<span class='jf-chip jf-chip-bad'><b>wide config</b>" + keys + " keys invite drift \u2014 consider splitting the file</span>" : "");
+}
+
+function w59() {
+  var o = $("w59-out"); if (!o) return;
+  var et = _v("w59-a").trim();
+  if (!et) { o.innerHTML = "Paste the ETag header value, quotes and all."; return; }
+  var weak = /^W\//.test(et), core = et.replace(/^W\//, "").replace(/"/g, "");
+  o.innerHTML = "<b>" + (weak ? "weak validator" : "strong validator") + "</b>" + (weak ? "W/ prefix \u2014 semantically equal, not byte-equal" : "no W/ prefix \u2014 a cache reusing it claims the body is byte-identical") +
+    "<span class='jf-chip'><b>" + (core.slice(0, 24) || "\u2014") + (core.length > 24 ? "\u2026" : "") + "</b>the opaque validator core \u2014 compare only, never parse meaning from it</span>" +
+    "<span class='jf-chip'><b>If-None-Match</b>the request header it answers \u2014 a 304 saves the full download</span>" +
+    (weak ? "<span class='jf-chip jf-chip-bad'><b>no byte promises</b>a weak hit can hand back a technically different body</span>" : "<span class='jf-chip'><b>quotes are part of it</b>the server compares the quoted value exactly \u2014 keep the quotes in tests</span>");
+}
+
+function w60() {
+  var o = $("w60-out"); if (!o) return;
+  var ua = _v("w60-a");
+  if (!ua) { o.innerHTML = "Paste a user-agent string to read it apart."; return; }
+  function grab(re) { var m = ua.match(re); return m ? m[1] : null; }
+  var chrome = grab(/Chrome[\/ ]([\d.]+)/), edge = grab(/Edg(?:e|A|iOS)?[\/ ]([\d.]+)/), fx = grab(/Firefox[\/ ]([\d.]+)/),
+    safari = /Safari\//.test(ua) && !chrome && !edge, ie = /MSIE |Trident\//.test(ua);
+  var osLab = null;
+  if (/Windows NT/.test(ua)) osLab = /Windows NT 10/.test(ua) ? "Windows 10/11" : "Windows (NT " + (grab(/Windows NT ([\d.]+)/) || "") + ")";
+  else if (/Mac OS X|Macintosh/.test(ua)) osLab = "macOS";
+  else if (/Android/.test(ua)) osLab = "Android";
+  else if (/iPhone|iPad/.test(ua)) osLab = "iOS";
+  else if (/Linux/.test(ua)) osLab = "Linux";
+  var eng = ie ? "Trident" : (edge || chrome) ? "Blink" : /Gecko\/|Firefox/.test(ua) ? "Gecko" : /KHTML|WebKit/.test(ua) ? "WebKit" : "\u2014";
+  var wide = /x86_64|x64|WOW64|Win64|arm64/.test(ua), mobile = /Mobile|iPhone|Android/.test(ua);
+  var browser = edge ? "Edg(e) " + edge.split(".")[0] : chrome ? "Chrome " + chrome.split(".")[0] : fx ? "Firefox " + fx.split(".")[0] : safari ? "Safari" : ie ? "Internet Explorer" : "unknown browser";
+  o.innerHTML = "<b>" + (eng === "\u2014" ? "no engine token" : eng) + " \u00b7 " + (osLab || "unknown OS") + " \u00b7 " + (ie ? "legacy" : wide ? "64-bit desktop" : mobile ? "mobile" : "width unstated") + "</b>parsed from the string clients send on every single request" +
+    "<span class='jf-chip " + "jf-chip" + "'><b>" + browser + "</b>the browser layer \u2014" + (eng === "Blink" ? " forked from WebKit into " : " running ") + eng + "</span>" +
+    (chrome && /KHTML/.test(ua) ? "<span class='jf-chip jf-chip-bad'><b>KHTML relic</b>the fossil marks the whole WebKit family tree \u2014 history, not logic</span>" : "") +
+    (ie ? "<span class='jf-chip jf-chip-bad'><b>legacy client</b>every feature flag must assume the floor this browser sets</span>" : "<span class='jf-chip'><b>analytics value</b>server logs read this same string a billion times a day</span>");
+}
+
+function w61() {
+  var o = $("w61-out"); if (!o) return;
+  var met = (_v("w61-a") || "GET").toUpperCase();
+  var M = {
+    GET: ["read-only \u2014 safe and idempotent", "yes", "yes", "yes"],
+    POST: ["creates or processes \u2014 never safe, never idempotent", "no", "no", "contractual"],
+    PUT: ["replaces the whole resource", "no", "yes", "no"],
+    PATCH: ["changes parts \u2014 nothing more", "no", "contractual", "no"],
+    DELETE: ["removes the resource", "no", "contractual", "no"],
+    HEAD: ["GET without the body \u2014 headers only", "yes", "yes", "yes"],
+    OPTIONS: ["asks what the server allows", "yes", "yes", "no"]
+  }[met];
+  if (!M) { o.innerHTML = "Pick a method from the list \u2014 GET, POST, PUT, PATCH, DELETE, HEAD or OPTIONS."; return; }
+  o.innerHTML = "<b>" + met + "</b>" + M[0] +
+    "<span class='jf-chip " + (M[1] === "yes" ? "" : "jf-chip-bad") + "'><b>" + M[1] + " \u2014 safe</b>" + (M[1] === "yes" ? "reads only \u2014 proxies and prefetchers love it" : "mutates something on every call") + "</span>" +
+    "<span class='jf-chip " + (M[2] === "yes" ? "" : "jf-chip-bad") + "'><b>" + M[2] + " \u2014 idempotent</b>" + (M[2] === "yes" ? "replays are harmless \u2014 safe to retry" : "retries can double the damage \u2014 design for it") + "</span>" +
+    "<span class='jf-chip " + (M[3] === "yes" ? "" : "jf-chip-bad") + "'><b>" + M[3] + " \u2014 cacheable</b>" + (met === "PATCH" ? "the exact reason PUT and PATCH differ in real APIs" : M[3] === "yes" ? "responses can be stored and reused" : "browsers keep it out of the store") + "</span>";
+}
+
+function w62() {
+  var o = $("w62-out"); if (!o) return;
+  var ip = _v("w62-a"), pf = _n("w62-b");
+  if (!ip || pf === null || pf < 0 || pf > 32) { o.innerHTML = "Enter an IPv4 address and a prefix length 0\u201332."; return; }
+  var oc = ip.split(".").map(Number);
+  if (oc.length !== 4 || oc.some(function (x) { return x < 0 || x > 255 || isNaN(x); })) { o.innerHTML = "That is not a valid IPv4 address \u2014 four octets, 0\u2013255 each."; return; }
+  var n = ((oc[0] << 24) >>> 0) + (oc[1] << 16) + (oc[2] << 8) + oc[3];
+  var mask = pf === 0 ? 0 : (0xFFFFFFFF << (32 - pf)) >>> 0;
+  var net = (n & mask) >>> 0, bcast = (net | (~mask >>> 0)) >>> 0, total = Math.pow(2, 32 - pf);
+  var hosts = pf >= 31 ? total : total - 2;
+  function ip2(x) { return [(x >>> 24) & 255, (x >>> 16) & 255, (x >>> 8) & 255, x & 255].join("."); }
+  o.innerHTML = "<b>" + ip2(net) + "/" + pf + "</b>the network " + ip + " sits on" +
+    "<span class='jf-chip'><b>" + ip2(bcast) + "</b>broadcast \u2014 never assign it to a device</span>" +
+    "<span class='jf-chip " + (hosts === 0 ? "jf-chip-bad" : "") + "'><b>" + nfmt(hosts, 0) + " usable</b>of " + nfmt(total, 0) + " addresses" + (pf < 31 ? " minus the wire pair" : "") + "</span>" +
+    "<span class='jf-chip'><b>mask " + ip2(mask) + "</b>" + nfmt(32 - pf, 0) + " host bits do the counting</span>";
+}
+
+function w63() {
+  var o = $("w63-out"); if (!o) return;
+  var bed = _n("w63-a"), clo = _n("w63-b"), yrs = _n("w63-c");
+  if (bed === null || bed < 0 || clo === null || clo < 0 || yrs === null || yrs < 0) { o.innerHTML = "Enter bedrooms, closets and years lived there \u2014 all may be zero."; return; }
+  var small = Math.round(bed * 4 + clo * 1 + yrs), medium = Math.round(bed * 4.5 + clo * 1.5), large = bed * 3 + Math.round(yrs / 3), total = small + medium + large;
+  o.innerHTML = "<b>" + total + " boxes</b>" + nfmt(bed, 0) + " bedrooms, " + nfmt(clo, 0) + " closets and " + nfmt(yrs, 0) + " years of accumulation" +
+    "<span class='jf-chip'><b>" + small + " / " + medium + " / " + large + "</b>small \u00b7 medium \u00b7 large \u2014 the trailer-load breakdown</span>" +
+    (bed === 0 && clo === 0 && yrs === 0 ? "" : "<span class='jf-chip jf-chip-bad'><b>books escape the rule</b>they double the estimate in a tenth of the volume</span>") +
+    "<span class='jf-chip'><b>years compound</b>every year adds multiples \u2014 nobody owns the same " + nfmt(yrs, 0) + " items twice</span>";
+}
+
+function w64() {
+  var o = $("w64-out"); if (!o) return;
+  var a = _n("w64-a"), dep = _n("w64-b");
+  if (a === null || a <= 0 || dep === null || dep <= 0) { o.innerHTML = "Enter the bed area in square metres and the mulch depth in centimetres."; return; }
+  var vol = a * dep / 100, bags = Math.ceil(vol / 0.06);
+  o.innerHTML = "<b>" + nfmt(vol, 2) + " m\u00b3</b>a " + nfmt(a, 0) + " m\u00b2 bed " + nfmt(dep, 1) + " cm deep \u2014 the garden-centre run" +
+    "<span class='jf-chip'><b>" + bags + " bags</b>of 60 litres \u2014 " + nfmt(vol * 1000, 0) + " litres asked, one bag of margin</span>" +
+    "<span class='jf-chip " + (dep < 5 ? "jf-chip-bad" : "") + "'><b>" + nfmt(dep, 1) + " cm " + (dep < 5 ? "is thin" : "is respectable") + "</b>weeds punch through anything under 5 cm</span>";
+}
+
+function w65() {
+  var o = $("w65-out"); if (!o) return;
+  var l = _n("w65-a"), w = _n("w65-b"), h = _n("w65-c"), coats = _n("w65-d");
+  if (l === null || l <= 0 || w === null || w <= 0 || h === null || h <= 0) { o.innerHTML = "Enter the room length, width and ceiling height in metres."; return; }
+  var c = coats === null || coats < 1 ? 2 : coats;
+  var gross = 2 * (l + w) * h + l * w, usable = gross * 0.65, litres = usable * c / 10;
+  o.innerHTML = "<b>" + nfmt(litres, 1) + " litres</b>" + nfmt(c, 0) + " coats over " + nfmt(usable, 0) + " usable square metres at 10 m\u00b2 a litre" +
+    "<span class='jf-chip'><b>" + nfmt(usable, 0) + " m\u00b2 usable</b>after doors and windows take their cut from " + nfmt(gross, 1) + " m\u00b2 of wall plus ceiling</span>" +
+    "<span class='jf-chip'><b>" + nfmt(litres / c, 1) + " L a coat</b>buy the " + (Math.ceil(litres / 2.5) * 5) + "-litre tub" + (litres % 2.5 > 0 ? " \u2014 paint sold in 2.5s" : "") + "</span>" +
+    (c < 2 ? "<span class='jf-chip jf-chip-bad'><b>one coat shows</b>alternate-direction second coats are what hide the roller</span>" : "");
+}
+
+function w66() {
+  var o = $("w66-out"); if (!o) return;
+  var l = _n("w66-a"), w = _n("w66-b"), dep = _n("w66-c");
+  if (l === null || l <= 0 || w === null || w <= 0 || dep === null || dep <= 0) { o.innerHTML = "Enter the path length, width and compacted depth in centimetres."; return; }
+  var vol = l * w * dep / 100, t = vol * 1.6, bags = Math.ceil(t / 0.5);
+  o.innerHTML = "<b>" + nfmt(t, 2) + " tonnes</b>a " + nfmt(l, 1) + " by " + nfmt(w, 1) + " path at " + nfmt(dep, 1) + " cm \u2014 " + nfmt(vol, 2) + " m\u00b3 compacted" +
+    "<span class='jf-chip'><b>" + bags + " bulk bags</b>half-tonne deliveries</span>" +
+    "<span class='jf-chip'><b>1.6 t/m\u00b3</b>the compacted gravel density doing the work</span>" +
+    "<span class='jf-chip " + (dep < 4 ? "jf-chip-bad" : "") + "'><b>" + nfmt(dep, 1) + " cm " + (dep < 4 ? "rolls under wheels" : "holds a path") + "</b>footpaths live at 5 cm, drives at 10</span>";
+}
+
+function w67() {
+  var o = $("w67-out"); if (!o) return;
+  var l = _n("w67-a"), w = _n("w67-b"), sp = _n("w67-c");
+  if (l === null || l <= 0 || w === null || w <= 0 || sp === null || sp <= 0) { o.innerHTML = "Enter the bed length, width and plant spacing in centimetres."; return; }
+  var across = Math.floor(l / (sp / 100) + 1e-9), down = Math.floor(w / (sp / 100) + 1e-9), plants = across * down, dens = plants / (l * w);
+  o.innerHTML = "<b>" + plants + " plants</b>in a " + nfmt(l, 1) + " by " + nfmt(w, 1) + " bed at " + nfmt(sp, 0) + " cm \u2014 " + across + " across, " + down + " down, none competing" +
+    "<span class='jf-chip'><b>" + nfmt(dens, 1) + " per m\u00b2</b>the density " + plants + " plants in " + nfmt(l * w, 1) + " m\u00b2 lands at</span>" +
+    "<span class='jf-chip " + "jf-chip" + "'><b>" + nfmt(sp, 0) + " cm centres</b>the spacing plants want at full size \u2014 not at planting day</span>";
+}
+
+function w68() {
+  var o = $("w68-out"); if (!o) return;
+  var th = _n("w68-a"), k = _n("w68-b"), area = _n("w68-c"), dt = _n("w68-d");
+  if (th === null || th <= 0 || k === null || k <= 0 || area === null || area <= 0 || dt === null || dt <= 0) { o.innerHTML = "Enter thickness, conductivity, wall area and the temperature gap \u2014 all positive."; return; }
+  var R = th / k, U = 1 / R, loss = U * area * dt;
+  o.innerHTML = "<b>R-" + nfmt(R, 2) + "</b>a " + nfmt(th * 100, 0) + " cm layer at " + nfmt(k, 3) + " W/mK \u2014 " + (loss > 400 ? "still leaking" : "holding the line") +
+    "<span class='jf-chip " + (loss > 400 ? "jf-chip-bad" : "") + "'><b>" + nfmt(loss, 0) + " watts</b>out on a " + nfmt(dt, 0) + "-degree day across " + nfmt(area, 0) + " m\u00b2</span>" +
+    "<span class='jf-chip'><b>" + nfmt(U, 3) + " \u00d7 " + nfmt(area, 0) + " \u00d7 " + nfmt(dt, 0) + "</b>the heat-flow sum \u2014 U \u00d7 area \u00d7 \u0394T, in watts</span>" +
+    (loss > 400 ? "<span class='jf-chip jf-chip-bad'><b>bridging to come</b>studs and sills add 15\u201325% on top of these figures</span>" : "");
+}
+
+function w69() {
+  var o = $("w69-out"); if (!o) return;
+  var area = _n("w69-a"), tg = _n("w69-b"), np = _n("w69-c"), bag = _n("w69-d");
+  if (area === null || area <= 0 || tg === null || tg <= 0 || np === null || np <= 0 || np > 100 || bag === null || bag <= 0) { o.innerHTML = "Enter area, nitrogen target, bag N percentage and bag weight \u2014 all positive."; return; }
+  var need = area * tg, prod = need / (np / 100), kg = prod / 1000, cover = bag * 1000 / (tg / (np / 100));
+  o.innerHTML = "<b>" + nfmt(kg, 2) + " kg</b>of " + nfmt(np, 0) + "% product for " + nfmt(area, 0) + " m\u00b2 at a " + nfmt(tg, 1) + " g/m\u00b2 N target" +
+    "<span class='jf-chip'><b>" + nfmt(need, 0) + " g of N</b>the actual target \u2014 the rest of the bag is carrier</span>" +
+    "<span class='jf-chip'><b>" + nfmt(cover, 0) + " m\u00b2</b>one " + nfmt(bag, 0) + " kg bag covers at this rate \u2014 " + nfmt(cover / area, 1) + "\u00d7 the lawn</span>" +
+    "<span class='jf-chip'><b>feed the number, not the bag</b>grams per square metre overrides habit every time</span>";
+}
+
+function w70() {
+  var o = $("w70-out"); if (!o) return;
+  var a = _v("w70-a"), b = _v("w70-b");
+  if (!a || !b) { o.innerHTML = "Enter the from date and the target date."; return; }
+  function p12(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2], 12, 0, 0); }
+  var d1 = p12(a), d2 = p12(b);
+  if (isNaN(d1.getTime()) || isNaN(d2.getTime())) { o.innerHTML = "Those dates do not parse \u2014 use the date pickers and try again."; return; }
+  var days = Math.round((d2 - d1) / 86400000);
+  if (days < 0) { o.innerHTML = "The target sits " + nfmt(-days, 0) + " days before the start \u2014 flip the two dates."; return; }
+  var wk = days / 7, wkEnds = 0, i, cur, nxt;
+  for (i = 0; i < days; i++) {
+    cur = new Date(d1.getTime() + i * 86400000);
+    if (cur.getDay() === 6) {
+      nxt = new Date(d1.getTime() + (i + 1) * 86400000);
+      if (nxt.getTime() <= d2.getTime()) wkEnds++;
+    }
+  }
+  o.innerHTML = "<b>" + days + " days</b>from " + a + " to " + b + " \u2014 the whole window counted" +
+    "<span class='jf-chip " + "jf-chip" + "'><b>" + nfmt(wk, 1) + " weeks</b>with " + wkEnds + " full weekend" + (wkEnds === 1 ? "" : "s") + " inside for the jobs that need one</span>" +
+    (wkEnds > 0 ? "<span class='jf-chip'><b>weekends do the heavy lifting</b>" + wkEnds + " of them carry the posting and the shopping</span>" : "<span class='jf-chip jf-chip-bad'><b>no full weekend</b>the window opens and closes mid-week</span>") +
+    "<span class='jf-chip'><b>midnight-safe</b>counted at noon, so daylight saving cannot steal a day</span>";
+}
+/* M30 wiring: wrap all 70 new engines so every run feeds the shared M3 finisher */
+["w01","w02","w03","w04","w05","w06","w07","w08","w09","w10","w11","w12","w13","w14","w15","w16","w17","w18","w19","w20","w21","w22","w23","w24","w25","w26","w27","w28","w29","w30","w31","w32","w33","w34","w35","w36","w37","w38","w39","w40","w41","w42","w43","w44","w45","w46","w47","w48","w49","w50","w51","w52","w53","w54","w55","w56","w57","w58","w59","w60","w61","w62","w63","w64","w65","w66","w67","w68","w69","w70"].forEach(function (fn) {
+  var orig = null;
+  try { orig = window[fn] || eval(fn); } catch (e) { orig = null; }
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
+/* ===================== END M30 SECTION ===================== */
