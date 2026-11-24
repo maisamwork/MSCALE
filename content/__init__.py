@@ -79,3 +79,19 @@ MEGA.update(_MEGA14)
 from .mega15 import MEGA15 as _MEGA15, CONTENT15 as _CONTENT15
 CONTENT.update(_CONTENT15)
 MEGA.update(_MEGA15)
+
+from .mega16 import MEGA16 as _MEGA16, CONTENT16 as _CONTENT16
+CONTENT.update(_CONTENT16)
+MEGA.update(_MEGA16)
+
+from .mega17 import MEGA17 as _MEGA17, CONTENT17 as _CONTENT17
+CONTENT.update(_CONTENT17)
+MEGA.update(_MEGA17)
+
+from .mega18 import MEGA18 as _MEGA18, CONTENT18 as _CONTENT18
+CONTENT.update(_CONTENT18)
+MEGA.update(_MEGA18)
+
+from .mega19 import MEGA19 as _MEGA19, CONTENT19 as _CONTENT19
+CONTENT.update(_CONTENT19)
+MEGA.update(_MEGA19)

@@ -8389,3 +8389,820 @@ function lp2() {
   window[fn] = function () { orig(); m3After(); };
 });
 /* ===================== END M28 SECTION ===================== */
+/* ===================== M29 SECTION: batch 29 engines (70 flagship tools) ===================== */
+/* A: finance & work part 1 */
+
+function ov3() {
+  var o = $("ov3-out"); var h = _n("ov3-h"), r = _n("ov3-r"), m = parseFloat(_v("ov3-m"));
+  if (!o) return;
+  if (h === null || h <= 0 || r === null || r <= 0) { o.innerHTML = "Enter the hours worked and the base rate."; return; }
+  var st = Math.min(h, 40) * r, ot = Math.max(0, h - 40), otp = ot * r * m, tot = st + otp;
+  o.innerHTML = "<b>$" + nfmt(tot, 2) + "</b>for the week \u2014 " + nfmt(Math.min(h, 40), 0) + " straight + " + nfmt(ot, 0) + " overtime hours" +
+    "<span class='jf-chip'><b>$" + nfmt(st, 2) + "</b>straight-time pay</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(otp, 2) + "</b>overtime pay at " + m + "\u00d7</span>" +
+    (ot > 0 ? "<span class='jf-chip'><b>$" + nfmt(r * m, 2) + "/h</b>the OT rate for that slice</span><span class='jf-chip'><b>$" + nfmt(tot / h, 2) + "/h</b>effective rate of the whole week</span>" : "<span class='jf-chip'><b>no overtime</b>the week stayed at or under 40 hours</span>");
+}
+
+function hs3() {
+  var o = $("hs3-out"); var h = _n("hs3-h"), w = _n("hs3-w"), k = _n("hs3-k");
+  if (!o) return;
+  if (h === null || h <= 0 || w === null || w <= 0) { o.innerHTML = "Enter the hourly rate and weekly hours."; return; }
+  if (k === null || k <= 0) k = 52;
+  var ann = h * w * k;
+  o.innerHTML = "<b>$" + nfmt(ann, 0) + "</b>a year for $" + nfmt(h, 2) + "/h \u00d7 " + nfmt(w, 0) + " h \u00d7 " + nfmt(k, 0) + " paid weeks" +
+    "<span class='jf-chip'><b>$" + nfmt(ann / 12, 2) + "</b>per month</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(ann / 26, 2) + "</b>per fortnight</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(h * w, 2) + "</b>per week</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(h * w / 5, 2) + "</b>per working day (5-day week)</span>";
+}
+
+function ce3() {
+  var o = $("ce3-out"); var b = _n("ce3-b"), s = _n("ce3-s"), rr = _n("ce3-r"), d = _n("ce3-d");
+  if (!o) return;
+  if (b === null || s === null || rr === null) { o.innerHTML = "Enter the base, expected sales and commission rate."; return; }
+  var inc = b + s * rr / 100;
+  o.innerHTML = "<b>$" + nfmt(inc, 0) + "</b>total \u2014 $" + nfmt(b, 0) + " base + $" + nfmt(s * rr / 100, 0) + " commission on $" + nfmt(s, 0) + " at " + nfmt(rr, 1) + "%" +
+    "<span class='jf-chip'><b>$" + nfmt(inc / 12, 0) + "</b>per month on average</span>" +
+    (d !== null && d > 0 ? "<span class='jf-chip'><b>$" + nfmt(inc / d, 0) + "</b>per deal across " + nfmt(d, 0) + " closes</span>" : "") +
+    "<span class='jf-chip'><b>" + nfmt(s * rr / 100 / 12, 0) + "</b>commission dollars landing each month</span>";
+}
+
+function gt2() {
+  var o = $("gt2-out"); var b = _n("gt2-b"), q = parseFloat(_v("gt2-q")), n = _n("gt2-n");
+  if (!o) return;
+  if (b === null || b <= 0) { o.innerHTML = "Enter the bill total."; return; }
+  if (n === null || n <= 0) n = 1;
+  var tip = b * q / 100;
+  o.innerHTML = "<b>$" + nfmt(tip, 2) + "</b>tip at " + q + "% on $" + nfmt(b, 2) + " \u2014 $" + nfmt(b + tip, 2) + " all in" +
+    "<span class='jf-chip'><b>$" + nfmt(b * 0.15, 2) + "</b>if 15%</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(b * 0.18, 2) + "</b>if 18%</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(b * 0.22, 2) + "</b>if 22%</span>" +
+    (n > 1 ? "<span class='jf-chip'><b>$" + nfmt((b + tip) / n, 2) + "</b>each, split " + nfmt(n, 0) + " ways</span>" : "");
+}
+
+function bo2() {
+  var o = $("bo2-out"); var a = _n("bo2-a"), b = _n("bo2-b"), c = _n("bo2-c"), d = _n("bo2-d"), e = _n("bo2-e"), f = _n("bo2-f");
+  if (!o) return;
+  var z = function (x) { return x === null ? 0 : Math.max(0, x); };
+  var tot = z(a) + z(b) + z(c) + z(d) + z(e) + z(f);
+  var items = [["rent / mortgage", z(a)], ["energy", z(b)], ["internet", z(c)], ["phone", z(d)], ["insurance", z(e)], ["other", z(f)]];
+  items.sort(function (x, y) { return y[1] - x[1]; });
+  o.innerHTML = "<b>$" + nfmt(tot, 0) + "</b>a month of fixed bills \u2014 $" + nfmt(tot * 12, 0) + " a year" +
+    "<span class='jf-chip'><b>$" + nfmt(tot * 12 / 52, 2) + "</b>bite per weekly pay-day</span>" +
+    (items[0][1] > 0 ? "<span class='jf-chip'><b>" + items[0][0] + ": $" + nfmt(items[0][1], 0) + "</b>the biggest single drain</span>" : "") +
+    "<span class='jf-chip'><b>$" + nfmt((items[0][1] + items[1][1]) * 0.25 * 12, 0) + "/yr</b>cutting the top two lines by a quarter</span>";
+}
+
+function gr2() {
+  var o = $("gr2-out"); var a = _n("gr2-a"), c = _n("gr2-c"), rr = _n("gr2-r");
+  if (!o) return;
+  if (rr === null || rr <= 0) { o.innerHTML = "Enter the weekly per-adult baseline."; return; }
+  if (a === null || a < 0) a = 0; if (c === null || c < 0) c = 0;
+  var wk = a * rr + c * 0.67 * rr;
+  o.innerHTML = "<b>$" + nfmt(wk, 0) + "</b>a week \u2014 $" + nfmt(wk * 4.33, 0) + " a month, $" + nfmt(wk * 52, 0) + " a year" +
+    "<span class='jf-chip'><b>$" + nfmt(wk * 52 / 365, 2) + "</b>per day for the whole household</span>" +
+    "<span class='jf-chip'><b>children \u00d70.67</b>" + nfmt(c, 0) + " counted at two-thirds baseline</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(rr * 0.1 * 52, 0) + "/yr</b>cutting 10% of the weekly baseline</span>";
+}
+
+function nw2() {
+  var o = $("nw2-out"); var c = _n("nw2-c"), i = _n("nw2-i"), h = _n("nw2-h"), x = _n("nw2-o"), m = _n("nw2-m"), l = _n("nw2-l");
+  if (!o) return;
+  var z = function (q) { return q === null ? 0 : Math.max(0, q); };
+  var assets = z(c) + z(i) + z(h) + z(x), debts = z(m) + z(l), nw = assets - debts;
+  o.innerHTML = "<b>$" + nfmt(nw, 0) + "</b>net worth \u2014 $" + nfmt(assets, 0) + " owned against $" + nfmt(debts, 0) + " owed" +
+    "<span class='jf-chip'><b>" + nfmt(assets ? debts / assets * 100 : 0, 1) + "%</b>debt-to-asset ratio (under 50% reads healthy)</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(z(c) + z(i), 0) + "</b>liquid slice (cash + investments)</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(nw / 2, 0) + "</b>remaining if everything owed doubled</span>";
+}
+
+function ln3() {
+  var o = $("ln3-out"); var c = _n("ln3-c"), i = _n("ln3-i"), d = _n("ln3-d"), e = _n("ln3-e");
+  if (!o) return;
+  var z = function (q) { return q === null ? 0 : Math.max(0, q); };
+  var liq = z(c) + z(i) - z(d);
+  o.innerHTML = "<b>$" + nfmt(liq, 0) + "</b>liquid \u2014 " + (z(e) > 0 ? "<b>" + nfmt(liq / e, 1) + " months</b> of $" + nfmt(e, 0) + " spending" : "add expenses to read a runway") +
+    (z(e) > 0 ? "<span class='jf-chip'><b>" + nfmt(liq / e, 1) + " mo</b>runway before any new income</span><span class='jf-chip'><b>$" + nfmt(e * 6 + z(d), 0) + "</b>the six-month fund target</span>" : "");
+}
+
+function ef3() {
+  var o = $("ef3-out"); var e = _n("ef3-e"), s = _n("ef3-s"), c = _n("ef3-c");
+  if (!o) return;
+  if (e === null || e <= 0) { o.innerHTML = "Enter your essential monthly expenses."; return; }
+  if (s === null) s = 0; if (c === null || c <= 0) c = 0;
+  var t6 = e * 6, gap = t6 - s;
+  o.innerHTML = "<b>$" + nfmt(t6, 0) + "</b>is the six-month target \u2014 " + (gap > 0 ? "$" + nfmt(gap, 0) + " to go" : "fully funded, $" + nfmt(-gap, 0) + " to spare") +
+    "<span class='jf-chip'><b>$" + nfmt(e * 3, 0) + "</b>three-month minimum target</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(e * 9, 0) + "</b>nine-month freelancer target</span>" +
+    (c > 0 && gap > 0 ? "<span class='jf-chip'><b>" + nfmt(gap / c, 1) + " months</b>to close the gap at $" + nfmt(c, 0) + "/month</span>" : "");
+}
+
+function sf2() {
+  var o = $("sf2-out"); var p = _n("sf2-p"), rr = _n("sf2-r"), y = _n("sf2-y"), g = _n("sf2-g");
+  if (!o) return;
+  if (p === null || p <= 0 || y === null || y <= 0) { o.innerHTML = "Enter the monthly deposit and the years."; return; }
+  var n = Math.round(y * 12), i = (rr === null ? 0 : Math.max(0, rr)) / 1200;
+  var fv = i === 0 ? p * n : p * ((Math.pow(1 + i, n) - 1) / i);
+  var dep = p * n, interest = fv - dep, goal = (g === null ? 0 : g);
+  o.innerHTML = "<b>$" + nfmt(fv, 2) + "</b>after " + nfmt(y, 0) + " years \u2014 $" + nfmt(dep, 0) + " deposited, $" + nfmt(interest, 2) + " earned" +
+    "<span class='jf-chip'><b>" + nfmt(dep ? interest / dep * 100 : 0, 1) + "%</b>return over what you paid in</span>" +
+    (goal > 0 ? (fv >= goal ? "<span class='jf-chip'><b>goal met</b>the fund clears the $" + nfmt(goal, 0) + " target</span>" : "<span class='jf-chip jf-chip-bad'><b>$" + nfmt(goal - fv, 0) + " short</b>against the $" + nfmt(goal, 0) + " goal</span>") : "") +
+    "<span class='jf-chip'><b>$" + nfmt(p / (1 + i), 0) + "</b>is what month one is worth at the end</span>";
+}
+
+function sr3() {
+  var o = $("sr3-out"); var i = _n("sr3-i"), e = _n("sr3-e");
+  if (!o) return;
+  if (i === null || i <= 0 || e === null || e < 0) { o.innerHTML = "Enter take-home income and monthly expenses."; return; }
+  var sav = i - e, rate = sav / i * 100;
+  o.innerHTML = "<b>" + nfmt(rate, 1) + "%</b>savings rate \u2014 $" + nfmt(sav, 0) + " kept of $" + nfmt(i, 0) + " earned" +
+    "<span class='jf-chip" + (rate >= 15 ? "'><b>meets the 15% floor</b" : " jf-chip-bad'><b>under the 15% floor</b") + ">the common planning baseline</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(sav * 12 / 365, 2) + "</b>banked per day</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(sav * 12 * 3, 0) + "</b>over three years before any growth</span>";
+}
+
+function cu2() {
+  var o = $("cu2-out"); var b = _n("cu2-b"), l = _n("cu2-l");
+  if (!o) return;
+  if (l === null || l <= 0 || b === null || b < 0) { o.innerHTML = "Enter the total balances and total limits."; return; }
+  var u = b / l * 100;
+  o.innerHTML = "<b>" + nfmt(u, 1) + "%</b>utilization \u2014 $" + nfmt(b, 0) + " across $" + nfmt(l, 0) + " of limits" +
+    "<span class='jf-chip" + (u < 30 ? "'><b>meets 30% guideline</b" : " jf-chip-bad'><b>over the 30% guideline</b") + ">the scoring ceiling</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(l * 0.30, 0) + "</b>balance ceiling at 30%</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(l * 0.25, 0) + "</b>balances under a quarter of limits read ideal</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(l * 0.10, 0) + "</b>the elite 10% zone \u2014 where scores peak</span>";
+}
+
+function au2() {
+  var o = $("au2-out"); var p = _n("au2-p"), d = _n("au2-d"), rr = _n("au2-r"), t = _n("au2-t");
+  if (!o) return;
+  if (p === null || p <= 0 || t === null || t <= 0) { o.innerHTML = "Enter the car price and the term in months."; return; }
+  var l = p - (d === null ? 0 : Math.max(0, d)), i = (rr === null ? 0 : Math.max(0, rr)) / 1200;
+  var pm = i === 0 ? l / t : l * i / (1 - Math.pow(1 + i, -t));
+  o.innerHTML = "<b>$" + nfmt(pm, 2) + "</b>/month on $" + nfmt(l, 0) + " financed for " + nfmt(t, 0) + " months at " + nfmt(rr === null ? 0 : rr, 2) + "%" +
+    "<span class='jf-chip'><b>$" + nfmt(pm * t - l, 2) + "</b>interest over the life of the loan</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(pm / (l / 1000), 2) + "</b>per $1,000 borrowed \u2014 the trade-sheet rate</span>" +
+    "<span class='jf-chip'><b>+$1,000 down</b>trims about $" + nfmt(pm / (l / 1000), 2) + " off monthly</span>";
+}
+
+function lv2() {
+  var o = $("lv2-out"); var lm = _n("lv2-l"), ld = _n("lv2-d"), lt = _n("lv2-t"), bm = _n("lv2-b"), bt = _n("lv2-n"), rv = _n("lv2-r");
+  if (!o) return;
+  if (lm === null || bm === null) { o.innerHTML = "Enter the lease monthly and the buy monthly."; return; }
+  var le = (ld === null ? 0 : ld) + lm * (lt === null ? 36 : lt);
+  var bu = bm * (bt === null ? 60 : bt) - (rv === null ? 0 : rv);
+  o.innerHTML = "<b>$" + nfmt(le, 0) + "</b>to lease vs <b>$" + nfmt(bu, 0) + "</b> to buy-and-resell \u2014 $" + nfmt(Math.abs(le - bu), 0) + " difference" +
+    "<span class='jf-chip'><b>$" + nfmt(le / (lt || 36), 2) + "/mo</b>lease, true monthly cost</span>" +
+    "<span class='jf-chip'><b>$" + nfmt((bu - (ld || 0)) / (bt || 60), 2) + "/mo</b>buy, net of resale</span>" +
+    (le < bu ? "<span class='jf-chip'><b>lease cheaper</b>by term end \u2014 buy wins only past it</span>" : "<span class='jf-chip'><b>buy cheaper</b>the asset pays part of itself back</span>");
+}
+
+function gp4() {
+  var o = $("gp4-out"); var b = _n("gp4-b"), v = _n("gp4-v"), p = _n("gp4-p");
+  if (!o) return;
+  if (b === null || v === null) { o.innerHTML = "Enter the loan balance and the vehicle's current value."; return; }
+  var gap = Math.max(0, b - v);
+  o.innerHTML = "<b>$" + nfmt(gap, 0) + "</b>gap \u2014 what a write-off today would leave you owing" +
+    "<span class='jf-chip " + (gap > (p || 0) ? "'><b>worth it</b>the gap dwarfs the policy</span>" : "'><b>skim it</b>the gap is smaller than the cover</span>") +
+    "<span class='jf-chip'><b>" + nfmt(v ? gap / v * 100 : 0, 1) + "%</b>of the vehicle's value is unfunded</span>" +
+    "<span class='jf-chip'><b>nearest to zero</b>value and balance cross around year 2\u20133</span>";
+}
+
+function cd3() {
+  var o = $("cd3-out"); var p = _n("cd3-p"), y = _n("cd3-y");
+  if (!o) return;
+  if (p === null || p <= 0 || y === null || y <= 0) { o.innerHTML = "Enter the purchase price and years held."; return; }
+  var v = p * 0.85 * Math.pow(0.9, Math.max(0, y - 1));
+  o.innerHTML = "<b>$" + nfmt(v, 0) + "</b>remaining value after " + nfmt(y, 0) + " year(s) \u2014 $" + nfmt(p - v, 0) + " lost, " + nfmt((p - v) / p * 100, 1) + "%" +
+    "<span class='jf-chip'><b>$" + nfmt(p * 0.85, 0) + "</b>value after year one (the 15% hit)</span>" +
+    "<span class='jf-chip'><b>$" + nfmt((p - v) / (12 * y), 2) + "/mo</b>the quiet monthly burn</span>" +
+    "<span class='jf-chip'><b>10%/yr default</b>after the first year \u2014 brand reality varies</span>";
+}
+
+function mr3() {
+  var o = $("mr3-out"); var l = _n("mr3-l"), ro = _n("mr3-o"), rn = _n("mr3-n"), c = _n("mr3-c"), y = _n("mr3-y");
+  if (!o) return;
+  if (l === null || l <= 0 || y === null || y <= 0 || ro === null || rn === null) { o.innerHTML = "Enter the balance, both rates, costs and years."; return; }
+  function pmt(r) { var i = r / 1200, n = Math.round(y * 12); return i === 0 ? l / n : l * i / (1 - Math.pow(1 + i, -n)); }
+  var p1 = pmt(ro), p2 = pmt(rn), sv = p1 - p2, n = Math.round(y * 12);
+  if (sv <= 0) { o.innerHTML = "The new rate does not reduce the payment \u2014 nothing to break even."; return; }
+  var be = c / sv;
+  o.innerHTML = "<b>$" + nfmt(p2, 2) + "</b>new monthly (was $" + nfmt(p1, 2) + ") \u2014 saving $" + nfmt(sv, 2) + "/month" +
+    "<span class='jf-chip'><b>month " + nfmt(be, 1) + "</b>break-even on the closing costs</span>" +
+    "<span class='jf-chip " + (be <= n ? "'><b>$" + nfmt(sv * n - c, 0) + " net</b" : " jf-chip-bad'><b>$" + nfmt(c - sv * n, 0) + " net loss</b") + ">over the full " + nfmt(y, 0) + "-year ride</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(sv * 12, 0) + "/yr</b>first-year saving before the closing costs</span>";
+}
+
+function er2() {
+  var o = $("er2-out"); var k = _n("er2-k"), a = _n("er2-a"), b = _n("er2-b"), y = _n("er2-y");
+  if (!o) return;
+  if (k === null || a === null || b === null) { o.innerHTML = "Enter the monthly usage and both rates."; return; }
+  var ma = k * a, mb = k * b, df = ma - mb, yr = y === null ? 1 : y;
+  o.innerHTML = "<b>$" + nfmt(mb, 2) + "</b>vs $" + nfmt(ma, 2) + " a month \u2014 $" + nfmt(df, 2) + (" difference on " + nfmt(k, 0) + " kWh") +
+    "<span class='jf-chip'><b>$" + nfmt(df * 12, 2) + "/yr</b>annual difference</span>" +
+    (df !== 0 ? "<span class='jf-chip'><b>" + nfmt(df > 0 ? b : a, 3) + " $/kWh</b>the winning rate at exactly this usage</span>" : "") +
+    "<span class='jf-chip'><b>$" + nfmt(df * 12 * yr, 0) + "</b>across the " + nfmt(yr, 0) + "-year contract</span>";
+}
+
+function sp4() {
+  var o = $("sp4-out"); var c = _n("sp4-c"), i = _n("sp4-i"), p = _n("sp4-p"), r = _n("sp4-r");
+  if (!o) return;
+  if (c === null || c <= 0) { o.innerHTML = "Enter the system cost."; return; }
+  var net = c * (1 - (i === null ? 0 : Math.max(0, i)) / 100);
+  var prod = p === null ? 0 : p, rate = r === null ? 0 : r;
+  var sav = prod * rate;
+  o.innerHTML = "<b>" + (sav > 0 ? nfmt(net / sav, 1) + " years" : "no rate entered") + "</b>payback on $" + nfmt(net, 0) + " net cost" +
+    (sav > 0 ? "<span class='jf-chip'><b>$" + nfmt(sav, 0) + "/yr</b>electricity it displaces</span><span class='jf-chip'><b>$" + nfmt(sav * 25 - net, 0) + "</b>profit across a 25-year life</span>" : "") +
+    "<span class='jf-chip'><b>0.5%/yr fade</b>later years save slightly less than year one</span>";
+}
+
+function th3() {
+  var o = $("th3-out"); var b = _n("th3-b"), d = _n("th3-d"), h = _n("th3-h"), m = _n("th3-m");
+  if (!o) return;
+  if (b === null || b <= 0 || d === null || d <= 0) { o.innerHTML = "Enter the annual heating bill and degrees of set-back."; return; }
+  var sav = b * 0.03 * d * ((h === null ? 8 : h) / 24) * ((m === null ? 5 : m) / 12);
+  o.innerHTML = "<b>$" + nfmt(sav, 0) + "</b>kept this season \u2014 " + nfmt(d, 0) + "\u00b0F set back for " + nfmt(h === null ? 8 : h, 0) + " h/day" +
+    "<span class='jf-chip'><b>" + nfmt(0.03 * (h === null ? 8 : h) * 100 / 24, 1) + "%/day</b>per degree, per the 3%-rule</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(sav / (m || 5), 2) + "/mo</b>spread across the season</span>" +
+    (sav >= 50 ? "<span class='jf-chip'><b>covers the smart-stat</b>in about " + nfmt(250 / sav, 1) + " seasons</span>" : "");
+}
+
+function wh3() {
+  var o = $("wh3-out"); var g = _n("wh3-g"), t = _n("wh3-t"), r = _n("wh3-r");
+  if (!o) return;
+  if (g === null || g <= 0 || t === null || t <= 0) { o.innerHTML = "Enter the daily gallons and the temperature rise."; return; }
+  var kwh = g * 8.34 * t / 3412, rate = r === null ? 0.16 : r;
+  o.innerHTML = "<b>" + nfmt(kwh, 2) + " kWh</b>a day \u2014 $" + nfmt(kwh * 30 * rate, 2) + "/month at $" + nfmt(rate, 2) + "/kWh" +
+    "<span class='jf-chip'><b>$" + nfmt(kwh * 365 * rate, 0) + "/yr</b>the annual line item</span>" +
+    "<span class='jf-chip'><b>" + nfmt(t / 25, 1) + " min</b>of electric-kettle minutes, daily, for perspective</span>";
+}
+
+function ho2() {
+  var o = $("ho2-out"); var g = _n("ho2-g"), p = _n("ho2-p"), s = _n("ho2-s"), m = _n("ho2-m");
+  if (!o) return;
+  if (g === null || g <= 0 || p === null || p <= 0) { o.innerHTML = "Enter the delivery gallons and the price per gallon."; return; }
+  var fill = g * p, season = s === null ? g : s, mo = m === null ? 6 : m;
+  o.innerHTML = "<b>$" + nfmt(fill, 0) + "</b>per fill-up of " + nfmt(g, 0) + " gallons \u2014 season: $" + nfmt(season * p, 0) +
+    "<span class='jf-chip'><b>$" + nfmt(season * p / mo, 0) + "/mo</b>the even monthly budget line</span>" +
+    "<span class='jf-chip'><b>" + nfmt(season / g, 1) + " deliveries</b>at this burn rate</span>" +
+    "<span class='jf-chip'><b>$0.50 swing</b>in price/gallon moves the season $" + nfmt(season * 0.5, 0) + "</span>";
+}
+
+function mc3() {
+  var o = $("mc3-out"); var r = _n("mc3-r"), s = _n("mc3-s"), b = _n("mc3-b"), w = _n("mc3-w");
+  if (!o) return;
+  if (r === null || r <= 0 || s === null || s <= 0) { o.innerHTML = "Enter the recipe cost and the servings."; return; }
+  var ps = r / s, bought = b === null ? 0 : b, wk = w === null ? 0 : w;
+  o.innerHTML = "<b>$" + nfmt(ps, 2) + "</b>/serving \u2014 " + (bought > 0 ? "<b>$" + nfmt(bought - ps, 2) + " cheaper</b> per serving than the $" + nfmt(bought, 2) + " alternative" : "") +
+    (bought > 0 && wk > 0 ? "<span class='jf-chip'><b>$" + nfmt((bought - ps) * wk * 48, 0) + "/yr</b>at " + nfmt(wk, 0) + " prepped lunches a week</span>" +
+    "<span class='jf-chip'><b>" + nfmt((bought - ps) * wk * 48 / r, 0) + " batches/yr</b>the recipe cooked on repeat, plate for plate</span>" : "") +
+    "<span class='jf-chip'><b>protein swings cost</b>pulses and frozen veg rarely move the number</span>";
+}
+
+function bb2() {
+  var o = $("bb2-out"); var q1 = _n("bb2-q1"), p1 = _n("bb2-p1"), q2 = _n("bb2-q2"), p2 = _n("bb2-p2");
+  if (!o) return;
+  if (!q1 || !p1 || !q2 || !p2) { o.innerHTML = "Enter both pack quantities and prices."; return; }
+  if (q1 <= 0 || q2 <= 0) { o.innerHTML = "Pack quantities must be positive."; return; }
+  var u1 = p1 / q1, u2 = p2 / q2;
+  o.innerHTML = "<b>$" + nfmt(u2, 3) + "</b> vs <b>$" + nfmt(u1, 3) + "</b> per unit \u2014 bulk saves " + nfmt((1 - u2 / u1) * 100, 1) + "%" +
+    "<span class='jf-chip'><b>" + nfmt(q2 / q1, 1) + "\u00d7</b>the bulk pack equals this many small ones</span>" +
+    (u2 < u1 ? "<span class='jf-chip'><b>$" + nfmt(p1 * (q2 / q1) - p2, 2) + " pocketed</b>buying bulk for this many units</span>" : "<span class='jf-chip jf-chip-bad'><b>bulk loses</b>the small pack is cheaper per unit</span>") +
+    "<span class='jf-chip'><b>15\u201320%+</b>is a genuinely real bulk saving on stable goods</span>";
+}
+
+function su3() {
+  var o = $("su3-out"); var n = _n("su3-n"), t = _n("su3-t"), u = _n("su3-u"), c = _n("su3-c");
+  if (!o) return;
+  if (t === null || t <= 0) { o.innerHTML = "Enter the monthly subscription total."; return; }
+  var waste = u === null ? 0 : u;
+  o.innerHTML = "<b>$" + nfmt(t * 12, 0) + "</b>/year across " + nfmt(n === null ? 0 : n, 0) + " services" +
+    (waste > 0 ? "<span class='jf-chip jf-chip-bad'><b>$" + nfmt(waste * 12, 0) + "/yr burning</b>on the ones never opened</span><span class='jf-chip'><b>" + nfmt(t ? waste / t * 100 : 0, 0) + "% of spend</b>is acknowledged waste</span>" : "<span class='jf-chip'><b>no declared waste</b>audit the statements to be sure</span>") +
+    (c !== null && c > 0 ? "<span class='jf-chip'><b>$" + nfmt((t / (n || c)) * c * 12, 0) + "/yr back</b>cancelling the " + nfmt(c, 0) + " flagged</span>" : "");
+}
+
+function an3() {
+  var o = $("an3-out"); var p = _n("an3-p"), r = _n("an3-r"), y = _n("an3-y");
+  if (!o) return;
+  if (p === null || p <= 0 || y === null || y <= 0) { o.innerHTML = "Enter the lump sum and the payout years."; return; }
+  var i = (r === null ? 0 : r) / 1200, n = Math.round(y * 12);
+  var pm = i === 0 ? p / n : p * i / (1 - Math.pow(1 + i, -n));
+  o.innerHTML = "<b>$" + nfmt(pm, 2) + "</b>/month for " + nfmt(y, 0) + " years \u2014 $" + nfmt(pm * n, 0) + " total paid out" +
+    "<span class='jf-chip'><b>$" + nfmt(pm * n - p, 0) + "</b>of that is interest doing the work</span>" +
+    "<span class='jf-chip'><b>" + nfmt(p / (pm * n) * 100, 1) + "%</b>every dollar back starts as principal</span>" +
+    (r !== null && r > 0 ? "<span class='jf-chip'><b>25-year test</b>same money pays $" + nfmt(p * (r / 1200) / (1 - Math.pow(1 + r / 1200, -300)), 2) + "/mo</span>" : "");
+}
+
+/* A: investing & trading part 2 */
+
+function bp3() {
+  var o = $("bp3-out"); var f = _n("bp3-f"), c = _n("bp3-c"), y = _n("bp3-y"), nn = _n("bp3-n");
+  if (!o) return;
+  if (f === null || f <= 0 || c === null || y === null || nn === null || nn <= 0) { o.innerHTML = "Enter the face value, coupon, market yield and years."; return; }
+  var yr = y / 100, cpn = f * c / 100, px = 0;
+  for (var t = 1; t <= Math.round(nn); t++) px += cpn / Math.pow(1 + yr, t);
+  px += f / Math.pow(1 + yr, Math.round(nn));
+  o.innerHTML = "<b>$" + nfmt(px, 2) + "</b>price on a $" + nfmt(f, 0) + " face \u2014 " + (px > f ? "a premium of " + nfmt((px / f - 1) * 100, 1) + "%" : px < f ? "a discount of " + nfmt((1 - px / f) * 100, 1) + "%" : "exactly par") +
+    "<span class='jf-chip'><b>$" + nfmt(cpn, 0) + "</b>coupon paid each year</span>" +
+    "<span class='jf-chip'><b>" + nfmt(nn, 0) + " years</b>of coupons discounted at " + nfmt(y, 2) + "%</span>" +
+    (px > f ? "<span class='jf-chip'><b>coupon beats yield</b>so buyers pay up today</span>" : "<span class='jf-chip'><b>yield beats coupon</b>so the market marks it down</span>");
+}
+
+function dy2() {
+  var o = $("dy2-out"); var d = _n("dy2-d"), pp = _n("dy2-p"), s = _n("dy2-s");
+  if (!o) return;
+  if (d === null || pp === null || pp <= 0) { o.innerHTML = "Enter the annual dividend and the share price."; return; }
+  var yl = d / pp * 100, sh = s === null ? 0 : s;
+  o.innerHTML = "<b>" + nfmt(yl, 2) + "%</b>yield \u2014 $" + nfmt(d, 2) + " a year on a $" + nfmt(pp, 2) + " share" +
+    (sh > 0 ? "<span class='jf-chip'><b>$" + nfmt(d * sh, 0) + "/yr</b>cash the position pays</span><span class='jf-chip'><b>$" + nfmt(d * sh / 4, 2) + "</b>per quarterly cheque</span>" : "") +
+    "<span class='jf-chip'><b>$" + nfmt(d / 12, 2) + "/sh/mo</b>the monthly income rate per share</span>";
+}
+
+function pr2() {
+  var o = $("pr2-out"); var e = _n("pr2-e"), d = _n("pr2-d");
+  if (!o) return;
+  if (e === null || e <= 0 || d === null || d < 0) { o.innerHTML = "Enter the earnings per share and the dividend per share."; return; }
+  var p = d / e * 100, ret = 100 - p;
+  o.innerHTML = "<b>" + nfmt(p, 1) + "%</b>payout ratio \u2014 $" + nfmt(d, 2) + " of every $" + nfmt(e, 2) + " earned" +
+    "<span class='jf-chip'><b>" + nfmt(ret, 1) + "% retained</b>for reinvestment and rainy days</span>" +
+    "<span class='jf-chip" + (p < 30 ? "'><b>room to grow</b" : p <= 80 ? "'><b>sustainable band</b" : " jf-chip-bad'><b>stretched \u2014 earnings dips threaten it</b") + ">the classic safety bands</span>";
+}
+
+function pe3() {
+  var o = $("pe3-out"); var pp = _n("pe3-p"), e = _n("pe3-e"), t = _n("pe3-t");
+  if (!o) return;
+  if (pp === null || pp <= 0 || e === null || e <= 0) { o.innerHTML = "Enter the share price and the earnings per share (both positive)."; return; }
+  var pe = pp / e, ey = e / pp * 100;
+  o.innerHTML = "<b>" + nfmt(pe, 1) + "\u00d7</b>P/E \u2014 the market pays $" + nfmt(pp, 2) + " per $" + nfmt(e, 2) + " of annual earnings" +
+    "<span class='jf-chip'><b>" + nfmt(ey, 1) + "%</b>earnings yield \u2014 the inverse, a bond-comparable</span>" +
+    (t !== null && t > 0 ? "<span class='jf-chip'><b>$" + nfmt(e * t, 2) + "</b>implied price at your " + nfmt(t, 0) + "\u00d7 target multiple</span>" : "") +
+    "<span class='jf-chip'><b>context decides</b>15\u00d7 is cheap for software, dear for steel</span>";
+}
+
+function mk2() {
+  var o = $("mk2-out"); var pp = _n("mk2-p"), s = _n("mk2-s");
+  if (!o) return;
+  if (pp === null || pp <= 0 || s === null || s <= 0) { o.innerHTML = "Enter the share price and shares outstanding in millions."; return; }
+  var cap = pp * s * 1e6;
+  var band = cap >= 2e11 ? "mega-cap" : cap >= 1e10 ? "large-cap" : cap >= 2e9 ? "mid-cap" : cap >= 3e8 ? "small-cap" : "micro-cap";
+  o.innerHTML = "<b>$" + nfmt(cap / 1e9, 2) + " billion</b>market capitalization \u2014 a " + band + " company" +
+    "<span class='jf-chip'><b>$" + nfmt(cap * 0.01 / 1e6, 0) + "M</b>the price of one percent of the company</span>" +
+    "<span class='jf-chip'><b>" + nfmt(s, 0) + "M shares</b>\u00d7 $" + nfmt(pp, 2) + " \u2014 nothing else to the arithmetic</span>";
+}
+
+function bt3() {
+  var o = $("bt3-out"); var c = _n("bt3-c"), v = _n("bt3-v"), m = _n("bt3-m");
+  if (!o) return;
+  if (c === null || v === null || v <= 0) { o.innerHTML = "Enter the covariance and the market variance (variance must be positive)."; return; }
+  var b = c / v, mv = m === null ? 1 : m;
+  o.innerHTML = "<b>" + nfmt(b, 2) + "</b>beta \u2014 " + (b >= 1.5 ? "an aggressive mover that amplifies the market" : b >= 0.8 ? "a market-paced holding" : b > 0 ? "a defensive absorber of market swings" : "no meaningful positive relationship") +
+    "<span class='jf-chip'><b>" + nfmt(mv * b, 2) + "%</b>expected move when the market does " + nfmt(mv, 1) + "%</span>" +
+    (b <= 0 ? "" : "<span class='jf-chip'><b>" + nfmt(100 / b, 0) + "%</b>stock weight that neutralizes a market bet</span>");
+}
+
+function ps3() {
+  var o = $("ps3-out"); var a = _n("ps3-a"), r = _n("ps3-r"), e = _n("ps3-e"), s = _n("ps3-s");
+  if (!o) return;
+  if (a === null || a <= 0 || r === null || r <= 0 || e === null || e <= 0 || s === null || s < 0) { o.innerHTML = "Enter account size, risk %, entry and stop prices."; return; }
+  if (e - s <= 0) { o.innerHTML = "The stop must sit below the entry \u2014 otherwise there is no defined risk."; return; }
+  var risk = a * r / 100, sh = Math.floor(risk / (e - s)), val = sh * e;
+  o.innerHTML = "<b>" + nfmt(sh, 0) + " shares</b>on $" + nfmt(risk, 0) + " of risk \u2014 $" + nfmt(e - s, 2) + " of stop distance each" +
+    "<span class='jf-chip'><b>$" + nfmt(val, 0) + "</b>position value at the entry</span>" +
+    "<span class='jf-chip'><b>" + nfmt(val / a * 100, 1) + "%</b>of the account deployed \u2014 risk stays " + nfmt(r, 1) + "%</span>";
+}
+
+function rr2() {
+  var o = $("rr2-out"); var e = _n("rr2-e"), s = _n("rr2-s"), t = _n("rr2-t");
+  if (!o) return;
+  if (e === null || s === null || t === null) { o.innerHTML = "Enter the entry, stop and target prices."; return; }
+  if (e - s <= 0 || t - e <= 0) { o.innerHTML = "For a long trade the stop sits below entry and the target above \u2014 flip them or use a short."; return; }
+  var risk = e - s, rw = t - e, ra = rw / risk, bw = 100 / (1 + ra);
+  o.innerHTML = "<b>1:" + nfmt(ra, 2) + "</b>risk-reward \u2014 risking $" + nfmt(risk, 2) + " to make $" + nfmt(rw, 2) +
+    "<span class='jf-chip'><b>" + nfmt(bw, 1) + "%</b>win rate needed just to break even</span>" +
+    (ra >= 2 ? "<span class='jf-chip'><b>payable math</b>" + nfmt(ra, 1) + ":1 pays through long losing stretches</span>" : "<span class='jf-chip jf-chip-bad'><b>thin margin</b>sub-2:1 needs a rare win rate to survive</span>");
+}
+
+function ke3() {
+  var o = $("ke3-out"); var p = _n("ke3-p"), b = _n("ke3-b"), a = _n("ke3-a");
+  if (!o) return;
+  if (p === null || p <= 0 || p >= 100 || b === null || b <= 0) { o.innerHTML = "Enter a win probability between 0 and 100 and a positive payout ratio."; return; }
+  var pp = p / 100, q = 1 - pp, f = (b * pp - q) / b, bank = a === null ? 0 : a;
+  o.innerHTML = "<b>" + (f > 0 ? nfmt(f * 100, 1) + "%" : "no edge") + "</b>full-Kelly stake" +
+    (f > 0 ? "<span class='jf-chip'><b>$" + nfmt(bank > 0 ? f * bank : 0, 0) + "</b>of the bankroll at full Kelly</span><span class='jf-chip'><b>$" + nfmt(bank > 0 ? f * bank / 2 : 0, 0) + "</b>the half-Kelly professionals actually use</span><span class='jf-chip'><b>" + nfmt(p, 0) + "% win</b>at " + nfmt(b, 2) + ":1 odds is the edge you claimed</span>" : "<span class='jf-chip jf-chip-bad'><b>negative edge</b>these odds do not pay for the risk \u2014 bet nothing</span>");
+}
+
+/* A: wellness & everyday value */
+
+function cv3() {
+  var o = $("cv3-out"); var w = _n("cv3-w"), h = _n("cv3-h"), d = _n("cv3-d");
+  if (!o) return;
+  if (w === null || w <= 0 || h === null || h <= 0 || d === null || d <= 0) { o.innerHTML = "Enter the hourly wage, daily commute hours and working days."; return; }
+  var hrs = h * d, val = hrs * w;
+  o.innerHTML = "<b>" + nfmt(hrs, 0) + " hours</b>a year in transit \u2014 $" + nfmt(val, 0) + " of earned time at $" + nfmt(w, 2) + "/h" +
+    "<span class='jf-chip'><b>$" + nfmt(h * w, 2) + "</b>what one round trip costs in time alone</span>" +
+    (d >= 230 ? "<span class='jf-chip'><b>one hybrid day back</b>restores about $" + nfmt(w * h * 46, 0) + " of time value a year</span>" :
+        "") +
+    "<span class='jf-chip'><b>" + nfmt(hrs / 24, 0) + " full days</b>of waking life the road takes annually</span>";
+}
+
+function cw2() {
+  var o = $("cw2-out"); var p = _n("cw2-p"), w = _n("cw2-w");
+  if (!o) return;
+  if (p === null || p <= 0 || w === null || w <= 0) { o.innerHTML = "Enter the item price and the expected wears."; return; }
+  var cpw = p / w;
+  var band = cpw < 1 ? "excellent ownership" : cpw < 3 ? "a fine buy" : cpw < 10 ? "asked to earn its keep" : "a decision to revisit";
+  o.innerHTML = "<b>$" + nfmt(cpw, 2) + "</b>cost per wear \u2014 " + band +
+    "<span class='jf-chip'><b>" + nfmt(w * 2 - w, 0) + " more wears</b>cut the number in half</span>" +
+    "<span class='jf-chip'><b>$" + nfmt(p / (w * 2), 2) + "</b>per wear at double the wears</span>";
+}
+
+function cd4() {
+  var o = $("cd4-out"); var t = _n("cd4-t"), i = _n("cd4-i");
+  if (!o) return;
+  if (t === null || t <= 0 || i === null || i <= 0) { o.innerHTML = "Enter the maintenance calories and the planned intake."; return; }
+  var def = t - i;
+  if (def <= 0) { o.innerHTML = "That intake meets or exceeds maintenance \u2014 this planner sizes deficits, and there is none here (+" + nfmt(-def, 0) + " kcal)."; return; }
+  var wk = def * 7 / 7700;
+  o.innerHTML = "<b>" + nfmt(def, 0) + " kcal</b>daily deficit \u2014 " + nfmt(wk, 2) + " kg a week of likely fat loss" +
+    "<span class='jf-chip'><b>" + nfmt(5 / wk, 0) + " weeks</b>to move five kilograms at this pace</span>" +
+    "<span class='jf-chip" + (def / t <= 0.25 ? "'><b>sustainable zone</b" : " jf-chip-bad'><b>past 25% of maintenance</b") + ">bigger gaps trade muscle and hunger for speed</span>";
+}
+
+function wg3() {
+  var o = $("wg3-out"); var w = _n("wg3-w"), m = _n("wg3-m");
+  if (!o) return;
+  if (w === null || w <= 0) { o.innerHTML = "Enter your body weight in kilograms."; return; }
+  var l = w * 0.033 + (m === null ? 0 : m / 30 * 0.4);
+  o.innerHTML = "<b>" + nfmt(l, 2) + " L</b>a day \u2014 about " + nfmt(Math.ceil(l / 0.5), 0) + " standard 500 ml bottles" +
+    "<span class='jf-chip'><b>" + nfmt(l * 1000 / 250, 0) + " glasses</b>at a 250 ml glass reckoning</span>" +
+    (m > 0 ? "<span class='jf-chip'><b>" + nfmt(m / 30 * 0.4, 1) + " L</b>of the total is the workout top-up</span>" : "") +
+    "<span class='jf-chip'><b>food provides ~1/5</b>of intake \u2014 the bottles can overcount a glass</span>";
+}
+
+function hb2() {
+  var o = $("hb2-out"); var w = _n("hb2-w"), m = _n("hb2-m");
+  if (!o) return;
+  if (w === null || w <= 0) { o.innerHTML = "Enter your body weight in kilograms."; return; }
+  var base = w * 0.033, top = m === null ? 0 : m / 30 * 0.4, tot = base + top;
+  o.innerHTML = "<b>" + nfmt(tot, 2) + " L</b>today's hydration target \u2014 " + nfmt(base, 2) + " baseline + " + nfmt(top, 2) + " top-up" +
+    "<span class='jf-chip'><b>" + nfmt(tot / 16 * 1000, 0) + " ml</b>per waking hour across a 16-hour day</span>" +
+    (top > 0 ? "<span class='jf-chip'><b>" + nfmt(tot / 0.75, 1) + " glasses</b>of 750 ml across the day</span>" : "") +
+    "<span class='jf-chip'><b>thirst lags loss</b>trained athletes drink to schedule, not thirst</span>";
+}
+
+function bx2() {
+  var o = $("bx2-out"); var b = _n("bx2-b"), w = _n("bx2-w"), r = _n("bx2-r");
+  if (!o) return;
+  if (b === null || b <= 0 || w === null || w <= 0 || r === null || r <= 0) { o.innerHTML = "Enter the bodyweight, the weight pressed and the reps."; return; }
+  var rm = w * (1 + Math.min(r, 12) / 30), ratio = rm / b;
+  var band = ratio >= 2 ? "advanced" : ratio >= 1.5 ? "intermediate" : ratio >= 1 ? "novice" : "beginner";
+  o.innerHTML = "<b>" + nfmt(rm, 0) + " kg</b>estimated one-rep max \u2014 " + nfmt(ratio, 2) + "\u00d7 your bodyweight, the " + band + " band" +
+    "<span class='jf-chip'><b>" + nfmt(b * 1.5, 0) + " kg</b>the intermediate bar · " + nfmt(b * 2, 0) + " kg the advanced bar</span>" +
+    "<span class='jf-chip'><b>Epley honest</b>to about 8 reps \u2014 past ten it flatters</span>";
+}
+
+function pu2() {
+  var o = $("pu2-out"); var n = _n("pu2-n"), a = _n("pu2-a");
+  if (!o) return;
+  if (n === null || n < 0) { o.innerHTML = "Enter your maximum consecutive pushups."; return; }
+  var ag = a === null ? 35 : a;
+  var band = (ag < 40 ? (n >= 45 ? "excellent" : n >= 35 ? "very good" : n >= 25 ? "good" : n >= 10 ? "below average" : "poor")
+                       : (n >= 39 ? "excellent" : n >= 30 ? "very good" : n >= 21 ? "good" : n >= 8 ? "below average" : "poor"));
+  o.innerHTML = "<b>" + nfmt(n, 0) + " pushups</b>\u2014 good for " + (ag < 40 ? "an under-40" : "a 40-plus") + " adult" +
+    "<span class='jf-chip'><b>+" + nfmt(Math.max(0, (ag < 40 ? (n < 35 ? 35 : n < 45 ? 45 : n + 9) : (n < 30 ? 30 : n < 39 ? 39 : n + 8)) - n), 0) + " reps</b>a six-week plan's honest target</span>" +
+    "<span class='jf-chip'><b>form counts</b>chest near the floor or the rep is theatre</span>";
+}
+
+function pt3() {
+  var o = $("pt3-out"); var s = _n("pt3-s");
+  if (!o) return;
+  if (s === null || s <= 0) { o.innerHTML = "Enter your plank hold time in seconds."; return; }
+  var band = s >= 120 ? "elite" : s >= 90 ? "strong" : s >= 60 ? "good" : s >= 30 ? "developing" : "shaky";
+  var nxt = s >= 120 ? null : s >= 90 ? 120 : s >= 60 ? 90 : s >= 30 ? 60 : 30;
+  o.innerHTML = "<b>" + nfmt(s, 0) + " seconds</b>\u2014 " + band + " on the durability bands" +
+    (nxt !== null ? "<span class='jf-chip'><b>+" + nfmt(nxt - s, 0) + " s</b>to reach the next band</span>" : "<span class='jf-chip'><b>earned out</b>load a harder variant instead of more minutes</span>") +
+    "<span class='jf-chip'><b>past 2 minutes</b>planks buy wrist pain \u2014 progress the variation</span>";
+}
+
+function gs2() {
+  var o = $("gs2-out"); var g = _n("gs2-g"), b = _n("gs2-b");
+  if (!o) return;
+  if (g === null || g <= 0 || b === null || b <= 0) { o.innerHTML = "Enter the grip reading and the bodyweight in kilograms."; return; }
+  var r = g / b;
+  o.innerHTML = "<b>" + nfmt(r, 2) + "\u00d7</b>relative grip \u2014 " + (r >= 0.7 ? "strong, the band longevity studies like" : r >= 0.5 ? "adequate territory" : "low \u2014 and the most trainable weakness on the list") +
+    "<span class='jf-chip'><b>" + nfmt(b * 0.7, 0) + " kg</b>the strong-band reading for your bodyweight</span>" +
+    "<span class='jf-chip'><b>hangs and carries</b>move grip within a month at two sessions weekly</span>";
+}
+
+function vo3() {
+  var o = $("vo3-out"); var d = _n("vo3-d"), a = _n("vo3-a");
+  if (!o) return;
+  if (d === null || d <= 0) { o.innerHTML = "Enter the distance covered in twelve minutes, in metres."; return; }
+  var v = (d - 504.9) / 44.73;
+  var ag = a === null ? 35 : a;
+  var good = ag < 30 ? 45 : ag < 40 ? 42 : ag < 50 ? 38 : 33;
+  o.innerHTML = "<b>" + nfmt(v, 1) + "</b>estimated VO2 max \u2014 " + (v >= good + 8 ? "well above" : v >= good ? "above" : v >= good - 6 ? "around" : "below") + " the " + nfmt(ag, 0) + "-year-old average of " + nfmt(good, 0) +
+    "<span class='jf-chip'><b>~" + nfmt(5000 * 720 / d / 60, 1) + " min</b>5K at exactly that twelve-minute pace</span>" +
+    "<span class='jf-chip'><b>3\u20135 points</b>a season is the honest improvement ceiling</span>" +
+    "<span class='jf-chip'><b>track + calm air</b>or slope and wind rewrite the score</span>";
+}
+
+function me2() {
+  var o = $("me2-out"); var k = _n("me2-k"), w = _n("me2-w"), h = _n("me2-h");
+  if (!o) return;
+  if (k === null || k <= 0 || w === null || w <= 0 || h === null || h <= 0) { o.innerHTML = "Enter the calories burned, the bodyweight and the duration in hours."; return; }
+  var m = k / (w * h);
+  o.innerHTML = "<b>" + nfmt(m, 2) + " METs</b>\u2014 " + (m >= 6 ? "vigorous work" : m >= 3 ? "moderate work" : "light work") +
+    "<span class='jf-chip'><b>" + nfmt(m * h * 60, 0) + " MET-minutes</b>this session banked of the 500\u20131,000 weekly floor</span>" +
+    (m < 3 ? "" : "<span class='jf-chip'><b>" + (m >= 6 ? "running pace, fast cycling" : "brisk walking, easy cycling") + "</b>sits at this level</span>");
+}
+
+function se2() {
+  var o = $("se2-out"); var s = _n("se2-s"), w = _n("se2-w"), st = _n("se2-str");
+  if (!o) return;
+  if (s === null || s <= 0 || w === null || w <= 0) { o.innerHTML = "Enter your daily steps and bodyweight."; return; }
+  var stride = st === null || st <= 0 ? 0.76 : st;
+  var km = s * stride / 1000, kcal = s * w * 0.00053, min = s * stride / 80;
+  o.innerHTML = "<b>" + nfmt(km, 2) + " km</b>walked \u2014 " + nfmt(min, 0) + " minutes and " + nfmt(kcal, 0) + " kcal at " + nfmt(w, 0) + " kg" +
+    "<span class='jf-chip" + (s >= 10000 ? "'><b>clears 10,000</b" : s >= 7500 ? "'><b>clears the 7,500 research sweet-spot</b" : s >= 7000 ? "'><b>meets the 7,000 floor</b" : " jf-chip-bad'><b>under the 7,000 floor</b") + ">the biggest mortality drop lands between 7,000 and 10,000" + (s >= 10000 ? " \u2014 and staying there compounds it" : "") + "</span>" +
+    "<span class='jf-chip'><b>" + nfmt(km * 7, 0) + " km</b>a week at this daily count</span>";
+}
+
+function ch4() {
+  var o = $("ch4-out"); var d = _n("ch4-d"), h = _n("ch4-h");
+  if (!o) return;
+  if (d === null || d <= 0 || h === null || h < 0) { o.innerHTML = "Enter the caffeine dose in mg and the hours since."; return; }
+  var rem = d * Math.pow(0.5, h / 5.7);
+  o.innerHTML = "<b>" + nfmt(rem, 1) + " mg</b>still circulating \u2014 about " + nfmt(rem / 95, 1) + " cups of coffee's worth" +
+    "<span class='jf-chip'><b>" + nfmt(h / 5.7 * 100, 0) + "%</b>of the way to fully cleared</span>" +
+    "<span class='jf-chip'><b>" + nfmt(h / 5.7, 1) + " half-lives</b>gone since the dose \u2014 each ~5.7 h halves it</span>" +
+    (rem >= 40 ? "<span class='jf-chip jf-chip-bad'><b>light left on</b>" + (rem >= 95 ? "a full dose" : "a real dose") + " active at this hour</span>" : "<span class='jf-chip'><b>under 40 mg</b>below the bedtime rule's worry line</span>");
+}
+
+function ir3() {
+  var o = $("ir3-out"); var s = _v("ir3-s"), i = _n("ir3-i");
+  if (!o) return;
+  if (i === null || i < 0) { o.innerHTML = "Enter your daily iron intake in milligrams."; return; }
+  var rda = s === "m" || s === "p" ? 8 : 18, plant = s === "v";
+  var eff = plant ? i / 1.8 : i, gap = rda - eff;
+  o.innerHTML = "<b>" + (gap <= 0 ? "RDA met" : nfmt(gap, 1) + " mg short") + "</b>after the " + (plant ? "1.8\u00d7 plant-source allowance" : "direct absorption") +
+    " \u2014 " + nfmt(eff, 1) + " mg effective of the " + nfmt(rda, 0) + " mg target" +
+    (plant ? "<span class='jf-chip'><b>vitamin C at the meal</b>roughly doubles plant absorption</span>" : "") +
+    (gap > 0 ? "<span class='jf-chip'><b>" + nfmt(gap / 9, 1) + " half-cup beans</b>or lentil servings would close it</span>" : "<span class='jf-chip'><b>banked</b>stay the course and recheck monthly</span>");
+}
+
+function sg3() {
+  var o = $("sg3-out"); var g = _n("sg3-g"), n = _n("sg3-n"), s = _v("sg3-s");
+  if (!o) return;
+  if (g === null || g < 0) { o.innerHTML = "Enter the sugar grams per serving."; return; }
+  var lim = parseFloat(s || "25"), serv = n === null || n <= 0 ? 1 : n;
+  var tot = g * serv, tsp = tot / 4.2, pct = tot / lim * 100;
+  o.innerHTML = "<b>" + nfmt(tsp, 1) + " tsp</b>of sugar \u2014 " + nfmt(tot, 0) + " g, " + nfmt(pct, 0) + "% of the " + nfmt(lim, 0) + " g day" +
+    "<span class='jf-chip" + (pct > 100 ? " jf-chip-bad'><b>over the day's limit</b" : "'><b>within the limit</b") + ">added-sugar guideline</span>" +
+    "<span class='jf-chip'><b>" + nfmt(tsp * 7, 1) + " tsp/week</b>if this item repeats daily</span>";
+}
+
+function fi2() {
+  var o = $("fi2-out"); var g = _n("fi2-g");
+  if (!o) return;
+  if (g === null || g < 0) { o.innerHTML = "Enter the fibre grams you have eaten today."; return; }
+  var gap = 30 - g;
+  o.innerHTML = "<b>" + (gap <= 0 ? "30 g target met" : nfmt(gap, 0) + " g to go") + "</b>of the daily 30 \u2014 today has " + nfmt(g, 0) + " g so far" +
+    (gap > 0 ? "<span class='jf-chip'><b>" + nfmt(gap / 3, 1) + " g</b>per remaining meal closes it evenly</span>" +
+    "<span class='jf-chip'><b>" + nfmt(gap / 4.4, 1) + " apples</b>or " + nfmt(gap / 9, 1) + " half-cups of beans</span>" : "<span class='jf-chip'><b>earned</b>the whole-list nutrient, done by dinner</span>") +
+    "<span class='jf-chip'><b>raise it slowly</b>doubling overnight announces itself loudly</span>";
+}
+
+/* A: kitchen part 1 */
+
+function eg2() {
+  var o = $("eg2-out"); var s = _v("eg2-s"), t = _v("eg2-t"), d = parseFloat(_v("eg2-d"));
+  if (!o) return;
+  var mins = d - (s === "m" ? 1 : s === "xl" ? -0.5 : 0) - (t === "r" ? 1 : 0);
+  var size = s === "m" ? "medium" : s === "xl" ? "extra-large" : "large";
+  o.innerHTML = "<b>" + nfmt(mins, mins % 1 ? 1 : 0) + " minutes</b>for a " + size + " egg " + (t === "r" ? "from room temperature" : "straight from the fridge") +
+    "<span class='jf-chip'><b>start the clock</b>only when the water returns to a full boil</span>" +
+    "<span class='jf-chip'><b>ice bath now</b>stops the grey ring at the centre in seconds</span>" +
+    "<span class='jf-chip'><b>+1 minute if cold tap</b>or +2 at high altitude cooking</span>";
+}
+
+function te2() {
+  var o = $("te2-out"); var t = _v("te2-t"), l = _v("te2-l");
+  if (!o) return;
+  var map = { g: [78, 2, "Green"], o: [88, 3, "Oolong"], b: [98, 3.5, "Black"], h: [100, 5, "Herbal"], w: [75, 2.5, "White"] };
+  var m = map[t] || map.g, loose = l === "l";
+  o.innerHTML = "<b>" + m[0] + "\u00b0C for " + nfmt(m[1], 1) + " min</b>" + m[2] + " tea at its proper temperature" +
+    "<span class='jf-chip'><b>" + (loose ? "3 resteeps" : "single steep") + "</b>" + (loose ? "the second infusion often out-tastes the first" : "bags are one-round fighters") + "</span>" +
+    "<span class='jf-chip'><b>over-steep cost</b>catechins pulled at higher heat read as pure bitterness</span>";
+}
+
+function ri2() {
+  var o = $("ri2-out"); var t = _v("ri2-t"), c = _n("ri2-c");
+  if (!o) return;
+  if (c === null || c <= 0) { o.innerHTML = "Enter the dry cups of rice."; return; }
+  var rat = t === "w" ? 1.5 : t === "j" ? 1.25 : t === "br" ? 2 : 1.5;
+  var water = c * rat, yieldC = c * (t === "br" ? 2.4 : 2.7);
+  o.innerHTML = "<b>" + nfmt(water, 2) + " cups</b>water for " + nfmt(c, 1) + " cups of " + (t === "br" ? "brown" : t === "j" ? "jasmine" : t === "b" ? "basmati" : "white long grain") + " rice (1:" + nfmt(rat, 2).replace(/\.?0+$/, "") + ")" +
+    "<span class='jf-chip'><b>" + nfmt(water * 250, 0) + " ml</b>the same measure in the jug</span>" +
+    "<span class='jf-chip'><b>~" + nfmt(yieldC, 1) + " cups</b>cooked yield \u2014 " + nfmt(yieldC / 0.75, 0) + " generous servings</span>" +
+    "<span class='jf-chip'><b>rest " + (t === "br" ? 15 : 10) + " min</b>off heat, lid closed \u2014 it finishes the simmer's job</span>";
+}
+
+function pa3() {
+  var o = $("pa3-out"); var n = _n("pa3-n"), a = parseFloat(_v("pa3-a"));
+  if (!o) return;
+  if (n === null || n <= 0) { o.innerHTML = "Enter the number of diners."; return; }
+  var dry = n * a, water = dry / 100, salt = water * 7;
+  o.innerHTML = "<b>" + nfmt(dry, 0) + " g</b>dry pasta for " + nfmt(n, 0) + " diners at " + nfmt(a, 0) + " g each" +
+    "<span class='jf-chip'><b>" + nfmt(water, 1) + " L</b>of boiling water \u2014 the pot that actually fits</span>" +
+    "<span class='jf-chip'><b>" + nfmt(salt, 0) + " g</b>of salt \u2014 7 g per litre, seasoning not cosmetics</span>" +
+    "<span class='jf-chip'><b>save a cup</b>of the salted water to bind the sauce</span>";
+}
+
+function oo2() {
+  var o = $("oo2-out"); var j = _n("oo2-j"), m = _v("oo2-m");
+  if (!o) return;
+  if (j === null || j <= 0) { o.innerHTML = "Enter the number of jars."; return; }
+  o.innerHTML = "<b>" + nfmt(j * 40, 0) + " g oats</b>and " + nfmt(j * 100, 0) + " ml milk for " + nfmt(j, 0) + " jars" +
+    "<span class='jf-chip'><b>" + nfmt(j * 40, 0) + " g yoghurt</b>+" + nfmt(j * 6, 0) + " g chia + a pinch of salt</span>" +
+    "<span class='jf-chip'><b>6+ hours</b>in the fridge before the texture arrives</span>" +
+    "<span class='jf-chip'><b>rolled oats only</b>steel-cut stay chalky, quick oats turn to paste</span>" +
+    (m === "o" || m === "a" ? "<span class='jf-chip'><b>" + (m === "o" ? "oat drink" : "almond") + "</b>" + (m === "o" ? "slightly sweeter finish" : "lighter body, add a spoon of yoghurt") + "</span>" : "");
+}
+
+function af2() {
+  var o = $("af2-out"); var t = _n("af2-t"), m = _n("af2-m");
+  if (!o) return;
+  if (t === null || t <= 0 || m === null || m <= 0) { o.innerHTML = "Enter the oven temperature and time."; return; }
+  o.innerHTML = "<b>" + nfmt(Math.round(t - 20), 0) + "\u00b0C for " + nfmt(Math.round(m * 0.8 * 2) / 2, 1) + " min</b>basket settings for the oven's " + nfmt(t, 0) + "\u00b0C / " + nfmt(m, 0) + " min" +
+    "<span class='jf-chip'><b>flip at " + nfmt(Math.round(m * 0.4), 0) + " min</b>the halfway mark, shake the basket too</span>" +
+    "<span class='jf-chip'><b>check from " + nfmt(Math.round(m * 0.6), 0) + " min</b>baskets run hot at small loads</span>" +
+    "<span class='jf-chip'><b>\u221220\u00b0C, \u221220%</b>is the whole conversion \u2014 everything else is judgement</span>";
+}
+
+function do2() {
+  var o = $("do2-out"); var t = _n("do2-t"), d = _n("do2-d");
+  if (!o) return;
+  if (t === null || t <= 0) { o.innerHTML = "Enter the oven time in minutes."; return; }
+  var lo, hi;
+  if (t <= 30) { lo = "4\u20136 h"; hi = "1.5\u20132 h"; }
+  else if (t <= 45) { lo = "6\u20138 h"; hi = "3\u20134 h"; }
+  else { lo = "8\u201310 h"; hi = "4\u20136 h"; }
+  o.innerHTML = "<b>low " + lo + " or high " + hi + "</b>for an oven recipe of " + nfmt(t, 0) + " min at " + nfmt(d === null ? 180 : d, 0) + "\u00b0C" +
+    "<span class='jf-chip'><b>cut liquid by 1/3</b>the sealed pot evaporates almost nothing</span>" +
+    "<span class='jf-chip'><b>dairy last 30 min</b>cream and milk split if they ride the whole way</span>";
+}
+
+function gb2() {
+  var o = $("gb2-out"); var t = _n("gb2-t"), d = parseFloat(_v("gb2-d"));
+  if (!o) return;
+  if (t === null || t <= 0) { o.innerHTML = "Enter the patty thickness in centimetres."; return; }
+  var extra = Math.max(0, t - 2), add = extra / 0.5 * 45, mid = 4.5 + add / 60;
+  o.innerHTML = "<b>" + nfmt(mid, 1) + " min</b>per side for a " + nfmt(t, 1) + " cm patty to " + nfmt(d, 0) + "\u00b0C internal" +
+    "<span class='jf-chip'><b>pull at " + nfmt(d, 0) + "\u00b0C</b>carry-over and a 5-minute rest finish it</span>" +
+    (extra > 0 ? "<span class='jf-chip'><b>+" + nfmt(add, 0) + " s/side</b>for the extra thickness beyond 2 cm</span>" : "") +
+    "<span class='jf-chip'><b>don't press it</b>the spatula squeezes out the juice you just protected</span>";
+}
+
+function da2() {
+  var o = $("da2-out"); var d = _n("da2-d"), s = parseFloat(_v("da2-s"));
+  if (!o) return;
+  if (d === null || d <= 0) { o.innerHTML = "Enter the dog's age in years."; return; }
+  var curve = d <= 1 ? 15 : d <= 2 ? 24 : 24 + Math.round(s) * (d - 2);
+  var lab = d > 0 ? 16 * Math.log(d) + 31 : 0;
+  var cls = s === 5 ? "small" : s === 6 ? "medium" : s === 7 ? "large" : "giant";
+  o.innerHTML = "<b>" + nfmt(curve, 0) + " human years</b>by the " + cls + "-breed size curve for a " + nfmt(d, 1) + "-year-old dog" +
+    "<span class='jf-chip'><b>" + nfmt(lab, 1) + "</b>the DNA-methylation figure labs quote</span>" +
+    (s >= 9 && d >= 6 ? "<span class='jf-chip jf-chip-bad'><b>senior now</b>giant breeds cross the line around six \u2014 screen early</span>" : "") +
+    "<span class='jf-chip'><b>7-to-1 is myth</b>wrong at both ends of a dog's life</span>";
+}
+
+function cc3() {
+  var o = $("cc3-out"); var w = _n("cc3-w"), s = parseFloat(_v("cc3-s")), d = _n("cc3-d");
+  if (!o) return;
+  if (w === null || w <= 0) { o.innerHTML = "Enter the cat's weight in kilograms."; return; }
+  var rer = 70 * Math.pow(w, 0.75), target = rer * (isNaN(s) ? 1.2 : s), grams = d && d > 0 ? target / d * 1000 : null;
+  o.innerHTML = "<b>" + nfmt(target, 0) + " kcal</b>a day for a " + nfmt(w, 1) + " kg cat (" + nfmt(rer, 0) + " at rest \u00d7 " + nfmt(isNaN(s) ? 1.2 : s, 1) + ")" +
+    (grams !== null ? "<span class='jf-chip'><b>" + nfmt(grams, 0) + " g</b>of a " + nfmt(d, 0) + " kcal/kg food, split over two meals</span>" : "<span class='jf-chip'><b>enter kcal/kg</b>to have the grams per day priced</span>") +
+    "<span class='jf-chip'><b>heavy cats lie</b>the 0.75 exponent means weight does not scale linearly</span>" +
+    "<span class='jf-chip'><b>wet food wins satiety</b>fewer calories per gram of volume</span>";
+}
+
+/* A: home, garden & DIY part 2 */
+
+function aq2() {
+  var o = $("aq2-out"); var g = _n("aq2-g"), r = _n("aq2-r"), t = _n("aq2-t");
+  if (!o) return;
+  if (g === null || g <= 0 || r === null || t === null || t <= r) { o.innerHTML = "Enter the tank gallons, room temperature and a warmer target."; return; }
+  var dt = t - r, watts = g * dt * 0.15, cold = r < 60;
+  var std = [25, 50, 75, 100, 150, 200, 300], buy = std.find(function (x) { return x >= watts * (cold ? 2 : 1); }) || 300;
+  o.innerHTML = "<b>" + nfmt(watts, 0) + " watts</b>raw requirement for " + nfmt(g, 0) + " gallons across a " + nfmt(dt, 0) + "\u00b0F rise" +
+    "<span class='jf-chip'><b>buy the " + nfmt(buy, 0) + "</b>" + (cold ? "room below 60\u00b0F doubles the size" : "steady beats fast \u2014 never undershoot, rarely overshoot") + "</span>" +
+    (g > 40 ? "<span class='jf-chip'><b>run two heaters</b>at opposite ends \u2014 even heat, single-failure safety</span>" : "") +
+    "<span class='jf-chip'><b>one degree over</b>stresses fish faster than one under</span>";
+}
+
+function pn2() {
+  var o = $("pn2-out"); var d = _n("pn2-d"), h = _n("pn2-h"), it = _n("pn2-i"), s = parseFloat(_v("pn2-s"));
+  if (!o) return;
+  if (d === null || d <= 0 || h === null || h <= 0) { o.innerHTML = "Enter the pot diameter and depth in centimetres."; return; }
+  var vol = Math.PI * Math.pow(d / 2, 2) * h / 1000, sess = vol * 0.2 * (isNaN(s) ? 1 : s), wk = sess * (7 / (it === null || it <= 0 ? 5 : it));
+  o.innerHTML = "<b>" + nfmt(sess * 1000, 0) + " ml</b>per session \u2014 about a fifth of the " + nfmt(vol, 1) + " L pot" +
+    "<span class='jf-chip'><b>" + nfmt(wk, 1) + " L</b>a week on the watering can</span>" +
+    "<span class='jf-chip'><b>" + nfmt(it === null ? 5 : it, 0) + "-day interval</b>" + (s === "0.6" || s === 0.6 || isNaN(s) === false && s < 1 ? "winter rhythm \u2014 halve most summer intervals" : "growing-season rhythm") + "</span>" +
+    "<span class='jf-chip'><b>knuckle test wins</b>the finger beats any calendar</span>";
+}
+
+function sd4() {
+  var o = $("sd4-out"); var f = _v("sd4-f"), c = parseFloat(_v("sd4-c"));
+  if (!o) return;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(f.trim())) { o.innerHTML = "Enter the last-frost date as YYYY-MM-DD."; return; }
+  var dt = pISO(f.trim());
+  if (isNaN(dt)) { o.innerHTML = "That frost date is not a real calendar date."; return; }
+  var wks = Math.round(isNaN(c) ? 6 : c);
+  dt.setDate(dt.getDate() - wks * 7);
+  var sow = dISO(dt);
+  dt.setDate(dt.getDate() + wks * 7 + 7);
+  var harden = dISO(dt);
+  o.innerHTML = "<b>sow by " + sow + "</b>\u2014 " + nfmt(wks, 0) + " weeks before your " + f.trim() + " last frost" +
+    "<span class='jf-chip'><b>" + nfmt(wks, 0) + " weeks under lights</b>plus one hardening-off week after the frost</span>" +
+    "<span class='jf-chip'><b>harden from ~" + harden + "</b>a week outdoors before planting out</span>" +
+    "<span class='jf-chip'><b>peppers want 8+</b>starting them beside the tomatoes wastes their head start</span>";
+}
+
+function cm3() {
+  var o = $("cm3-out"); var a = _n("cm3-a"), t = _n("cm3-t");
+  if (!o) return;
+  if (a === null || a <= 0 || t === null || t <= 0) { o.innerHTML = "Enter the slab area and the depth in centimetres."; return; }
+  var wet = a * t / 100, dry = wet * 1.54, cem = dry / 6 * 1440, bags = Math.ceil(cem / 25), sand = dry / 6 * 2, grav = dry / 6 * 3;
+  o.innerHTML = "<b>" + nfmt(bags, 0) + " bags</b>of 25-kg cement (" + nfmt(cem, 0) + " kg total) for " + nfmt(wet, 2) + " m\u00b3 of slab" +
+    "<span class='jf-chip'><b>" + nfmt(sand, 2) + " m\u00b3</b>sand \u00b7 " + nfmt(grav, 2) + " m\u00b3 gravel \u2014 the 1:2:3 field mix</span>" +
+    "<span class='jf-chip'><b>+10%</b>is what the pour drinks in ground suction and uneven formwork</span>";
+}
+
+function py2() {
+  var o = $("py2-out"); var l = _n("py2-l"), w = _n("py2-w"), n = _n("py2-n"), sl = _n("py2-sl"), sw = _n("py2-sw");
+  if (!o) return;
+  if (l === null || l <= 0 || w === null || w <= 0 || n === null || n <= 0 || sl === null || sl <= 0 || sw === null || sw <= 0) { o.innerHTML = "Enter the piece size, sheet size and pieces needed."; return; }
+  var per = Math.floor(sl / l) * Math.floor(sw / w);
+  if (per <= 0) { o.innerHTML = "Those pieces do not fit the sheet at all \u2014 check the dimensions."; return; }
+  var sheets = Math.ceil(n / per);
+  o.innerHTML = "<b>" + nfmt(sheets, 0) + " sheet" + (sheets === 1 ? "" : "s") + "</b>for " + nfmt(n, 0) + " pieces \u2014 " + nfmt(per, 0) + " pieces nest per sheet" +
+    "<span class='jf-chip'><b>" + nfmt(Math.floor(sl / l), 0) + " \u00d7 " + nfmt(Math.floor(sw / w), 0) + "</b>along \u00d7 across \u2014 the plain-grid nest</span>" +
+    "<span class='jf-chip'><b>" + nfmt(sheets * per - n, 0) + " spare</b>stock left over after the project</span>" +
+    "<span class='jf-chip'><b>grain first</b>veneered sheets do not forgive rotated pieces</span>";
+}
+
+function fp2() {
+  var o = $("fp2-out"); var l = _n("fp2-l"), sp = _n("fp2-s"), r = _n("fp2-r");
+  if (!o) return;
+  if (l === null || l <= 0 || sp === null || sp <= 0) { o.innerHTML = "Enter the fence length and the post spacing."; return; }
+  var posts = Math.floor(l / sp) + 1, rails = (posts - 1) * (r === null ? 2 : r) * sp, bags = posts;
+  o.innerHTML = "<b>" + nfmt(posts, 0) + " posts</b>for a " + nfmt(l, 0) + " m run at " + nfmt(sp, 1) + " m spacing" +
+    "<span class='jf-chip'><b>" + nfmt(rails, 0) + " rail-metres</b>across " + nfmt(r === null ? 2 : r, 0) + " rows</span>" +
+    "<span class='jf-chip'><b>" + nfmt(bags, 0) + " bags</b>of 20-kg post mix \u2014 one per hole</span>" +
+    (sp > 2 ? "<span class='jf-chip jf-chip-bad'><b>soft ground?</b>tighten to 1.8 m \u2014 posts cost less than one storm</span>" : "<span class='jf-chip'><b>corners and gates</b>carry triple load \u2014 concrete, never soil</span>");
+}
+
+function ga2() {
+  var o = $("ga2-out"); var t = _n("ga2-t"), w = _n("ga2-w"), d = _n("ga2-d"), a = _n("ga2-a");
+  if (!o) return;
+  if (t === null || t <= 0 || w === null || w <= 0 || d === null || d <= 0 || a === null || a <= 0) { o.innerHTML = "Enter the tile size, joint width, joint depth and the area."; return; }
+  var jm = 2 / (t / 1000), vol = jm * (w / 1000) * (d / 1000), kg = vol * 1600 * a * 1.1;
+  o.innerHTML = "<b>" + nfmt(kg, 2) + " kg</b>of grout for " + nfmt(a, 0) + " m\u00b2 with the 10% margin" +
+    "<span class='jf-chip'><b>" + nfmt(kg / a, 2) + " kg/m\u00b2</b>the per-metre coverage at these joints</span>" +
+    "<span class='jf-chip'><b>" + nfmt(jm, 1) + " m/m\u00b2</b>of joint line this tile size lays down</span>" +
+    (d > w ? "<span class='jf-chip'><b>depth outranks width</b>deep joints drink more than wide ones</span>" : "");
+}
+
+function rp3() {
+  var o = $("rp3-out"); var r = _n("rp3-r"), hw = _n("rp3-h");
+  if (!o) return;
+  if (r === null || r <= 0) { o.innerHTML = "Enter the rise per twelve of run."; return; }
+  var ang = Math.atan(r / 12) * 180 / Math.PI, mult = Math.sqrt(1 + Math.pow(r / 12, 2));
+  o.innerHTML = "<b>" + nfmt(r, 0) + "-in-12</b>\u2014 " + nfmt(ang, 2) + "\u00b0 at " + nfmt(r / 12 * 100, 0) + "% slope" +
+    "<span class='jf-chip'><b>" + nfmt(mult, 3) + "\u00d7</b>rafter multiplier \u2014 every horizontal metre is " + nfmt(mult, 3) + " metres of timber</span>" +
+    (hw !== null && hw > 0 ? "<span class='jf-chip'><b>" + nfmt(hw / 2 * r / 12, 2) + " m</b>ridge height on a " + nfmt(hw, 1) + " m building width</span>" : "<span class='jf-chip'><b>width optional</b>add the building width for ridge height</span>") +
+    (r < 3 ? "<span class='jf-chip jf-chip-bad'><b>under 3-in-12</b>shingles become a drainage liability here</span>" : "");
+}
+
+function st4() {
+  var o = $("st4-out"); var r = _n("st4-r"), m = _n("st4-m"), t = _n("st4-t");
+  if (!o) return;
+  if (r === null || r <= 0 || m === null || m <= 0) { o.innerHTML = "Enter the total rise and the maximum rise per step."; return; }
+  var steps = Math.ceil(r / m), ur = r / steps, tread = t === null || t <= 0 ? 28 : t;
+  var str = Math.sqrt(ur * ur + tread * tread) * (steps - 1) + 3;
+  o.innerHTML = "<b>" + nfmt(steps, 0) + " steps</b>of " + nfmt(ur, 1) + " cm rise \u2014 every one identical, which is the safety" +
+    "<span class='jf-chip'><b>" + nfmt(tread, 0) + " cm treads</b>pair with the " + nfmt(ur, 1) + " cm rise: (2\u00d7rise) + tread \u2248 " + nfmt(2 * ur + tread, 0) + " cm</span>" +
+    "<span class='jf-chip'><b>" + nfmt(str, 0) + " cm</b>stringer length to mark out</span>" +
+    "<span class='jf-chip'><b>headroom 2 m</b>measured above the nosing line, not the landing</span>";
+}
+
+/* M29 wiring: wrap all 70 new engines so every run feeds the shared M3 finisher */
+["ov3","hs3","ce3","gt2","bo2","gr2","nw2","ln3","ef3","sf2","sr3","cu2","au2","lv2","gp4","cd3","mr3","er2","sp4","th3","wh3","ho2","mc3","bb2","su3","an3","bp3","dy2","pr2","pe3","mk2","bt3","ps3","rr2","ke3","cv3","cw2","cd4","wg3","hb2","bx2","pu2","pt3","gs2","vo3","me2","se2","ch4","ir3","sg3","fi2","eg2","te2","ri2","pa3","oo2","af2","do2","gb2","da2","cc3","aq2","pn2","sd4","cm3","py2","fp2","ga2","rp3","st4"].forEach(function (fn) {
+  var orig = null;
+  try { orig = window[fn] || eval(fn); } catch (e) { orig = null; }
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
+/* ===================== END M29 SECTION ===================== */
