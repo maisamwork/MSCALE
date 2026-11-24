@@ -6973,4 +6973,190 @@ function hr2() {
   if (typeof orig !== "function") return;
   window[fn] = function () { orig(); m3After(); };
 });
+/* ---------- M11: batch 25 new tools (sh3, tv2, ck2, cq2, mr2, sp3, to2, sa3) ---------- */
+
+/* --- sh3: shoe size --- */
+function sh3() {
+  var o = $("sh3-out");
+  var cm = m7Num("sh3-c"), u = m7Num("sh3-u");
+  if (u !== null && u > 0) cm = (u + 22) * 2.54 / 3;
+  if (cm === null || cm <= 0) { o.innerHTML = "Enter a positive foot length in cm, or a US men's size."; return; }
+  var inches = cm / 2.54, uk = 3 * inches - 23, usM = uk + 1, usW = uk + 2, eu = uk + 33;
+  o.innerHTML = "<b>" + usM.toFixed(1) + " US (men's)</b>from a " + nfmt(cm, 1) + " cm foot" +
+    "<span class='jf-chip'><b>" + usW.toFixed(1) + "</b>US women's</span>" +
+    "<span class='jf-chip'><b>" + uk.toFixed(1) + "</b>UK</span>" +
+    "<span class='jf-chip'><b>" + eu.toFixed(1) + "</b>EU (approx)</span>" +
+    "<span class='jf-chip'><b>" + inches.toFixed(2) + " in</b>foot length in inches</span>" +
+    "<span class='jf-chip'><b>" + (cm * 10) + " mm</b>Mondopoint (ski boots)</span>";
+}
+
+/* --- tv2: TV viewing distance --- */
+function tv2() {
+  var o = $("tv2-out");
+  var d = m7Num("tv2-d"), res = String($("tv2-r").value || "4k"), me = m7Num("tv2-m");
+  if (d === null || d < 10) { o.innerHTML = "Enter a screen diagonal of at least 10 inches."; return; }
+  var F = { "4k": [1.0, 1.5], "8k": [0.8, 1.2], "1080": [1.5, 2.5], "720": [2.0, 3.0] };
+  var f = F[res] || F["4k"];
+  var name = res === "4k" ? "4K" : res === "8k" ? "8K" : res;
+  var mn = d * f[0] / 12, mx = d * f[1] / 12, thx = d * 1.37 / 12;
+  var widthIn = d * 16 / Math.sqrt(337);
+  var angleTxt = "";
+  var verdict = "";
+  if (me !== null && me > 0) {
+    var ang = 2 * Math.atan((widthIn / 12 / 2) / me) * 180 / Math.PI;
+    var ok = me >= mn && me <= mx;
+    verdict = "<span class='jf-chip" + (ok ? "" : " jf-chip-bad") + "'><b>" + (ok ? "perfect" : (me < mn ? "too close" : "too far")) + "</b>at " + nfmt(me, 1) + " ft for " + name + "</span>";
+    angleTxt = "<span class='jf-chip'><b>" + ang.toFixed(0) + "\u00b0</b>your current field of view</span>";
+  }
+  o.innerHTML = "<b>" + mn.toFixed(1) + "\u2013" + mx.toFixed(1) + " ft</b>comfortable distance for " + d + "\u2033 " + name +
+    "<span class='jf-chip'><b>" + thx.toFixed(1) + " ft</b>THX 40\u00b0 cinema recommendation</span>" +
+    "<span class='jf-chip'><b>" + nfmt(widthIn, 1) + " in</b>actual screen width</span>" +
+    angleTxt + verdict;
+}
+
+/* --- ck2: cooking measurement --- */
+function ck2() {
+  var o = $("ck2-out");
+  var dens = +String($("ck2-i").value || "125") / 240;
+  var v = m7Num("ck2-v");
+  var unit = String($("ck2-u").value || "cup");
+  var ML = { "cup": 240, "tbsp": 15, "tsp": 5, "ml": 1, "floz": 29.5735 };
+  if (v === null || v < 0) { o.innerHTML = "Enter a non-negative amount."; return; }
+  var ml = v * ML[unit];
+  var g = ml * dens;
+  o.innerHTML = "<b>" + nfmt(g, 1) + " g</b>(" + nfmt(g / 28.3495, 1) + " oz)" +
+    "<span class='jf-chip'><b>" + nfmt(ml, 1) + " ml</b>volume converted</span>" +
+    "<span class='jf-chip'><b>" + nfmt(ml / 240, 2) + "</b>cups</span>" +
+    "<span class='jf-chip'><b>" + nfmt(ml / 15, 1) + "</b>tablespoons</span>" +
+    "<span class='jf-chip'><b>" + nfmt(ml / 5, 1) + "</b>teaspoons</span>" +
+    "<span class='jf-chip'><b>" + nfmt(dens * 240, 0) + " g/cup</b>density used for this ingredient</span>";
+}
+
+/* --- cq2: commute cost --- */
+function cq2() {
+  var o = $("cq2-out");
+  var d = m7Num("cq2-d"), g = m7Num("cq2-g"), p = m7Num("cq2-p"), w = m7Num("cq2-w"), toll = m7Num("cq2-t"), pk = m7Num("cq2-k");
+  if (d === null || d <= 0 || g === null || g <= 0 || p === null || p < 0) { o.innerHTML = "Enter a positive distance and mpg, and a non-negative fuel price."; return; }
+  if (w === null || w < 1) w = 5;
+  if (toll === null || toll < 0) toll = 0;
+  if (pk === null || pk < 0) pk = 0;
+  var dayFuel = 2 * d / g * p, day = dayFuel + toll, week = day * w;
+  var month = week * 4.33 + pk, year = week * 52 + pk * 12;
+  o.innerHTML = "<b>" + m7Money(day) + "</b>per driving day" +
+    "<span class='jf-chip'><b>" + m7Money(dayFuel) + "</b>fuel alone (two trips, " + nfmt(2 * d, 0) + " miles \u00f7 " + g + " mpg)</span>" +
+    "<span class='jf-chip'><b>" + m7Money(week) + "</b>per week (" + w + " days)</span>" +
+    "<span class='jf-chip'><b>" + m7Money(month) + "</b>per month (incl. " + m7Money(pk) + " parking)</span>" +
+    "<span class='jf-chip jf-chip-bad'><b>" + m7Money(year) + "</b>per year \u2014 the real number</span>" +
+    "<span class='jf-chip'><b>" + m7Money(year / (w * 52)) + "</b>effective cost of every working day</span>";
+}
+
+/* --- mr2: mileage reimbursement --- */
+function mr2() {
+  var o = $("mr2-out");
+  var m = m7Num("mr2-m"), r = m7Num("mr2-r");
+  if (m === null || m < 0 || r === null || r < 0) { o.innerHTML = "Enter non-negative miles and a rate per mile."; return; }
+  var claim = m * r;
+  o.innerHTML = "<b>" + m7Money(claim) + "</b>for " + nfmt(m, 0) + " miles at " + m7Money(r) + " per mile" +
+    "<span class='jf-chip'><b>" + m7Money(claim * 12) + "</b>if this repeats all twelve months</span>" +
+    "<span class='jf-chip'><b>" + m7Money(m * 52 / 12 * r) + "</b>if these are weekly miles instead</span>" +
+    (r < 0.55 ? "<span class='jf-chip jf-chip-bad'><b>low</b>below recent IRS standard rates \u2014 check yours</span>" : "<span class='jf-chip'><b>in range</b>of recent IRS standard rates</span>");
+}
+
+/* --- sp3: study plan --- */
+function sp3() {
+  var o = $("sp3-out");
+  var subs = String($("sp3-in").value || "").split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+  var e = String($("sp3-e").value || "").trim(), slots = m7Num("sp3-s");
+  if (!subs.length) { o.innerHTML = "List at least one subject, one per line."; return; }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(e)) { o.innerHTML = "Pick an exam date (YYYY-MM-DD)."; return; }
+  var p = e.split("-"), exam = new Date(+p[0], +p[1] - 1, +p[2]);
+  var days = Math.ceil((exam - new Date()) / 86400000);
+  if (days < 1) { o.innerHTML = "The exam date has already passed \u2014 pick a future date."; return; }
+  if (slots === null || slots < 1) slots = 2;
+  var plan = [], n = subs.length, k = 0, dd, dd2, daySubs, s;
+  for (var i = 0; i < days; i++) {
+    dd = new Date(exam.getTime() - (days - 1 - i) * 86400000);
+    dd2 = dd.getFullYear() + "-" + String(dd.getMonth() + 1).padStart(2, "0") + "-" + String(dd.getDate()).padStart(2, "0");
+    daySubs = [];
+    for (s = 0; s < slots; s++) daySubs.push(subs[k++ % n]);
+    plan.push("Day " + (i + 1) + " (" + dd2 + "): " + daySubs.join(", "));
+  }
+  o.innerHTML = "<b>" + days + " days \u00d7 " + slots + " slots = " + (days * slots) + " sessions</b>before " + e + "<br>" +
+    plan.join("<br>");
+}
+
+/* --- to2: TOTP (RFC 6238) --- */
+function to2B32(s) {
+  s = String(s || "").replace(/[\s=.\-]/g, "").toUpperCase();
+  var A = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567", bits = 0, val = 0, out = [];
+  for (var i = 0; i < s.length; i++) {
+    var idx = A.indexOf(s[i]);
+    if (idx < 0) return null;
+    val = (val << 5) | idx;
+    bits += 5;
+    if (bits >= 8) { out.push((val >>> (bits - 8)) & 255); bits -= 8; }
+  }
+  return out;
+}
+async function to2() {
+  var o = $("to2-out");
+  var k = to2B32($("to2-k").value);
+  if (!k || !k.length) { o.innerHTML = "Paste a base32 secret \u2014 letters A\u2013Z and digits 2\u20137; spaces are stripped."; return; }
+  var d = +String($("to2-d").value || "6"), period = +String($("to2-p").value || "30");
+  var atS = String($("to2-at").value || "").trim();
+  var t0 = (atS !== "" && isFinite(+atS)) ? +atS : Math.floor(Date.now() / 1000);
+  var ctr = Math.floor(t0 / period);
+  var key = new Uint8Array(k);
+  var mac = await crypto.subtle.importKey("raw", key, { name: "HMAC", hash: "SHA-1" }, false, ["sign"]);
+  function enc(n) {
+    var a = new Uint8Array(8);
+    for (var i = 7; i >= 0; i--) { a[i] = n % 256; n = Math.floor(n / 256); }
+    return a;
+  }
+  async function codeFor(c) {
+    var sig = new Uint8Array(await crypto.subtle.sign("HMAC", mac, enc(c)));
+    var off = sig[sig.length - 1] & 0xf;
+    var bin = ((sig[off] & 0x7f) << 24) | (sig[off + 1] << 16) | (sig[off + 2] << 8) | sig[off + 3];
+    var num = bin % Math.pow(10, d) + "";
+    while (num.length < d) num = "0" + num;
+    return num;
+  }
+  var cur = await codeFor(ctr), nxt = await codeFor(ctr + 1);
+  var remaining = period - (t0 % period);
+  o.innerHTML = "<b>" + cur + "</b>valid right now" +
+    "<span class='jf-chip'><b>" + remaining + " s</b>until the next window</span>" +
+    "<span class='jf-chip'><b>" + nxt + "</b>next code</span>" +
+    "<span class='jf-chip'><b>" + ctr + "</b>time counter (unix \u00f7 " + period + ")</span>" +
+    "<span class='jf-chip'><b>" + k.length + " bytes</b>decoded from base32</span>";
+}
+
+/* --- sa3: salary to hourly --- */
+function sa3() {
+  var o = $("sa3-out");
+  var a = m7Num("sa3-a"), h = m7Num("sa3-h"), w = m7Num("sa3-w"), r = m7Num("sa3-r");
+  if (h === null || h <= 0 || w === null || w <= 0) { o.innerHTML = "Enter positive hours per week and weeks per year."; return; }
+  if (r !== null && r > 0) a = r * h * w;
+  if (a === null || a < 0) { o.innerHTML = "Enter an annual salary, or an hourly rate to reverse-convert."; return; }
+  var hourly = a / (h * w);
+  o.innerHTML = "<b>" + m7Money(hourly) + "</b>per hour" +
+    "<span class='jf-chip'><b>" + m7Money(hourly * h) + "</b>per day (" + h + " h)</span>" +
+    "<span class='jf-chip'><b>" + m7Money(a / w) + "</b>per week</span>" +
+    "<span class='jf-chip'><b>" + m7Money(a / 12) + "</b>per month</span>" +
+    "<span class='jf-chip'><b>" + m7Money(a) + "</b>annual total</span>" +
+    "<span class='jf-chip'><b>" + nfmt(h * w, 0) + " h</b>paid hours in the year</span>";
+}
+
+/* wire the batch-25 engines into the shared M3 finisher */
+["sh3", "tv2", "ck2", "cq2", "mr2", "sp3", "sa3"].forEach(function (fn) {
+  var orig = null;
+  try { orig = window[fn] || eval(fn); } catch (e) { orig = null; }
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
+["to2"].forEach(function (fn) {
+  var orig = null;
+  try { orig = window[fn] || eval(fn); } catch (e) { orig = null; }
+  if (typeof orig !== "function") return;
+  window[fn] = function () { return orig().then(function () { m3After(); }); };
+});
 
