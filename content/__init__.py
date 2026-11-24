@@ -71,3 +71,11 @@ BLOG_META = _BMETA
 LENGTH_RANGES = _LR
 blog_enriched_blocks = _eb
 blog_geo_checks = _gc
+
+from .mega14 import MEGA14 as _MEGA14, CONTENT14 as _CONTENT14
+CONTENT.update(_CONTENT14)
+MEGA.update(_MEGA14)
+
+from .mega15 import MEGA15 as _MEGA15, CONTENT15 as _CONTENT15
+CONTENT.update(_CONTENT15)
+MEGA.update(_MEGA15)
