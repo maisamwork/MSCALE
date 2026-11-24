@@ -7369,3 +7369,184 @@ function sd2() {
   if (typeof orig !== "function") return;
   window[fn] = function () { orig(); m3After(); };
 });
+
+
+/* --- M13: batch-27 engines (sr2 rw2 bu2 de2 bw2 nf2 ld2 wa3) --- */
+
+/* --- sr2: Sharpe ratio --- */
+function sr2() {
+  var o = $("sr2-out");
+  var r = m7Num("sr2-r"), f = m7Num("sr2-f"), s = m7Num("sr2-s");
+  if (r === null || f === null || s === null || s <= 0) { o.innerHTML = "Enter the return, the risk-free rate and a positive volatility."; return; }
+  var sh = (r - f) / s;
+  var verdict = sh >= 2 ? "excellent" : sh >= 1 ? "very good" : sh >= 0.5 ? "decent" : sh >= 0 ? "weak" : "worse than holding cash";
+  o.innerHTML = "<b>" + sh.toFixed(2) + "</b>Sharpe ratio at " + s + "% volatility" +
+    "<span class='jf-chip'><b>" + (r - f).toFixed(2) + "%</b>excess return over the risk-free rate</span>" +
+    "<span class='jf-chip" + (sh < 0.5 ? " jf-chip-bad" : "") + "'><b>" + verdict + "</b>on the standard 0.5\u20132+ scale</span>" +
+    (sh >= 0 ? "<span class='jf-chip'><b>" + nfmt((r - f) / s * 100, 1) + "%</b>risk premium per 100 units of volatility</span>" : "") ;
+}
+
+/* --- rw2: runway --- */
+function rw2() {
+  var o = $("rw2-out");
+  var c = m7Num("rw2-c"), b = m7Num("rw2-b"), a = m7Num("rw2-a");
+  if (c === null || c <= 0 || b === null || b <= 0) { o.innerHTML = "Enter positive cash on hand and monthly burn."; return; }
+  if (a === null || a < 0) a = 0;
+  var base = c / b, months = c / (b * (1 - a / 100));
+  var outDate = dISO(new Date(Date.now() + base * 30.44 * 86400000));
+  var verdict = base < 3 ? "critical" : base < 6 ? "tight" : base < 12 ? "healthy" : "strong";
+  o.innerHTML = "<b>" + nfmt(base, 1) + " months</b>of runway (" + nfmt(c, 0) + " at " + nfmt(b, 0) + " a month)" +
+    "<span class='jf-chip" + (base < 6 ? " jf-chip-bad" : "") + "'><b>" + verdict + "</b>runway health</span>" +
+    (a > 0 ? "<span class='jf-chip'><b>" + nfmt(months, 1) + " months</b>if the burn drops " + nfmt(a, 0) + "% \u2014 +" + nfmt(months - base, 1) + " bought</span>"
+           : "<span class='jf-chip'><b>current</b>no burn cut tested \u2014 screen 10% to see what it buys</span>") +
+    "<span class='jf-chip'><b>" + m7Money(b * 12 / 52) + "</b>burned every week</span>" +
+    "<span class='jf-chip'><b>" + outDate + "</b>projected out-of-cash date</span>";
+}
+
+/* --- bu2: body surface area --- */
+function bu2() {
+  var o = $("bu2-out");
+  var h = m7Num("bu2-h"), w = m7Num("bu2-w");
+  if (h === null || h <= 0 || w === null || w <= 0) { o.innerHTML = "Enter a positive height and weight."; return; }
+  var dub = 0.007184 * Math.pow(h, 0.725) * Math.pow(w, 0.425);
+  var mos = Math.sqrt(h * w / 3600);
+  o.innerHTML = "<b>" + dub.toFixed(2) + " m\u00b2</b>body surface area (Du Bois)" +
+    "<span class='jf-chip'><b>" + mos.toFixed(2) + " m\u00b2</b>Mosteller cross-check</span>" +
+    "<span class='jf-chip'><b>" + nfmt(dub * 1500, 0) + " ml</b>the \u00d71,500 rule-of-thumb daily fluid</span>" +
+    "<span class='jf-chip'><b>" + nfmt(w / Math.pow(h / 100, 2), 1) + "</b>BMI from the same two numbers</span>" +
+    "<span class='jf-chip'><b>" + (dub / 1.73).toFixed(2) + "\u00d7</b>against the 1.73 m\u00b2 reference adult</span>";
+}
+
+/* --- de2: dew point (Magnus) --- */
+function de2() {
+  var o = $("de2-out");
+  var t = m7Num("de2-t"), r = m7Num("de2-r");
+  var u = String($("de2-u").value || "c");
+  if (t === null || r === null || r < 0 || r > 100) { o.innerHTML = "Enter the air temperature and a humidity between 0 and 100%."; return; }
+  var tc = u === "f" ? (t - 32) / 1.8 : t;
+  var al = Math.log(r / 100) + 17.625 * tc / (243.04 + tc);
+  var td = 243.04 * al / (17.625 - al);
+  var band = td < 10 ? ["dry", false] : td < 16 ? ["comfortable", false] : td < 21 ? ["muggy", true] : ["oppressive", true];
+  o.innerHTML = "<b>" + td.toFixed(1) + "\u00b0C</b>dew point" +
+    "<span class='jf-chip" + (band[1] ? " jf-chip-bad" : "") + "'><b>" + band[0] + "</b>comfort band</span>" +
+    "<span class='jf-chip'><b>" + (td * 9 / 5 + 32).toFixed(1) + "\u00b0F</b>same dew point in Fahrenheit</span>" +
+    "<span class='jf-chip'><b>" + nfmt(tc - td, 1) + "\u00b0C</b>gap before condensation forms</span>" +
+    (u === "f" ? "<span class='jf-chip'><b>" + nfmt(tc, 1) + "\u00b0C</b>your air temperature converted</span>" : "");
+}
+
+/* --- bw2: bitwise operations --- */
+function bw2Parse(id, base) {
+  var s = String($(id).value || "").trim().replace(/^0x/i, "").replace(/^0b/i, "");
+  if (s === "") return NaN;
+  var n = parseInt(s, base);
+  return isNaN(n) ? NaN : n | 0;
+}
+function bw2() {
+  var o = $("bw2-out");
+  var base = +String($("bw2-s").value || "10");
+  var a = bw2Parse("bw2-a", base), b = bw2Parse("bw2-b", base);
+  if (isNaN(a) || isNaN(b)) { o.innerHTML = "Enter two valid values in the chosen base."; return; }
+  var op = String($("bw2-o").value || "and");
+  var v, nm;
+  if (op === "and") { v = a & b; nm = "A AND B"; }
+  else if (op === "or") { v = a | b; nm = "A OR B"; }
+  else if (op === "xor") { v = a ^ b; nm = "A XOR B"; }
+  else if (op === "nand") { v = ~(a & b); nm = "A NAND B"; }
+  else if (op === "nor") { v = ~(a | b); nm = "A NOR B"; }
+  else if (op === "xnor") { v = ~(a ^ b); nm = "A XNOR B"; }
+  else if (op === "add") { v = a + b; nm = "A + B"; }
+  else if (op === "sub") { v = a - b; nm = "A \u2212 B"; }
+  else if (op === "shl") { v = a << b; nm = "A << B"; }
+  else if (op === "shr") { v = a >> b; nm = "A >> B (signed)"; }
+  else { v = a >>> b; nm = "A >>> B (unsigned)"; }
+  var bin = (v >>> 0).toString(2);
+  while (bin.length % 8) bin = "0" + bin;
+  o.innerHTML = "<b>" + (v >>> 0) + "</b>" + nm + ", shown on 32 bits" +
+    "<span class='jf-chip'><b>" + (bin.match(/.{8}/g) || [bin]).join(" ") + "</b>binary</span>" +
+    "<span class='jf-chip'><b>0x" + (v >>> 0).toString(16).toUpperCase() + "</b>hexadecimal</span>" +
+    (v < 0 ? "<span class='jf-chip jf-chip-bad'><b>negative</b>displayed as its 32-bit two-complement pattern</span>" : "");
+}
+
+/* --- nf2: note frequency (equal temperament) --- */
+var NF2_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+function nf2() {
+  var o = $("nf2-out");
+  var mode = String($("nf2-m").value || "hz");
+  if (mode === "hz") {
+    var f = m7Num("nf2-h");
+    if (f === null || f <= 0) { o.innerHTML = "Enter a positive frequency in hertz."; return; }
+    var midi = Math.round(12 * Math.log2(f / 440)) + 69;
+    var cents = 1200 * Math.log2(f / (440 * Math.pow(2, (midi - 69) / 12)));
+    var nm = NF2_NAMES[((midi % 12) + 12) % 12] + (Math.floor(midi / 12) - 1);
+    o.innerHTML = "<b>" + nm + (Math.abs(cents) >= 0.05 ? (cents > 0 ? " +" : " ") + cents.toFixed(1) + " \u00a2" : " in tune") + "</b>nearest note in equal temperament" +
+      "<span class='jf-chip'><b>" + nfmt(440 * Math.pow(2, (midi - 69) / 12), 2) + " Hz</b>exact pitch of " + nm + "</span>" +
+      "<span class='jf-chip'><b>MIDI " + midi + "</b>note number</span>" +
+      "<span class='jf-chip'><b>" + (1000 / f).toFixed(2) + " ms</b>period of the wave</span>" +
+      "<span class='jf-chip'><b>" + (343 / f).toFixed(2) + " m</b>wavelength at 343 m/s</span>";
+  } else {
+    var nIdx = +String($("nf2-n").value || "9"), oct = +String($("nf2-o").value || "4");
+    var midi2 = (oct + 1) * 12 + nIdx;
+    var hz = 440 * Math.pow(2, (midi2 - 69) / 12);
+    o.innerHTML = "<b>" + hz.toFixed(2) + " Hz</b>equal-temperament frequency of " + NF2_NAMES[nIdx] + oct +
+      "<span class='jf-chip'><b>MIDI " + midi2 + "</b>note number</span>" +
+      "<span class='jf-chip'><b>" + (1000 / hz).toFixed(2) + " ms</b>period of the wave</span>" +
+      "<span class='jf-chip'><b>" + (343 / hz).toFixed(2) + " m</b>wavelength at 343 m/s</span>" +
+      "<span class='jf-chip'><b>" + nfmt(2 * hz, 2) + " Hz</b>the same note one octave up</span>";
+  }
+}
+
+/* --- ld2: Levenshtein distance --- */
+function ld2() {
+  var o = $("ld2-out");
+  var a = String($("ld2-a").value || ""), b = String($("ld2-b").value || "");
+  if (!a.length || !b.length) { o.innerHTML = "Enter both strings (case and punctuation count)."; return; }
+  var n = a.length, m = b.length;
+  var dp = [], j, i;
+  for (j = 0; j <= m; j++) dp.push(j);
+  for (i = 1; i <= n; i++) {
+    var prev = dp[0];
+    dp[0] = i;
+    for (j = 1; j <= m; j++) {
+      var cur = dp[j];
+      dp[j] = Math.min(dp[j] + 1, dp[j - 1] + 1, prev + (a.charCodeAt(i - 1) === b.charCodeAt(j - 1) ? 0 : 1));
+      prev = cur;
+    }
+  }
+  var d = dp[m], longer = Math.max(n, m);
+  if (d === 0) { o.innerHTML = "<b>0</b>\u2014 identical strings, nothing to decide<br><span class='jf-chip'><b>100%</b>similarity</span>"; return; }
+  var verdict = d / longer < 0.2 ? "almost certainly a typo" : d / longer < 0.4 ? "near match \u2014 screen your dictionary first" : "distant \u2014 screen whether these words share a root at all";
+  o.innerHTML = "<b>" + d + "</b>edits from \u201c" + escHtml(a) + "\u201d to \u201c" + escHtml(b) + "\u201d (insertions, deletions, substitutions)" +
+    "<span class='jf-chip'><b>" + nfmt(100 * (1 - d / longer), 1) + "%</b>similarity on the " + longer + "-character yardstick</span>" +
+    "<span class='jf-chip" + (d / longer >= 0.4 ? " jf-chip-bad" : "") + "'><b>" + verdict + "</b>verdict</span>" +
+    "<span class='jf-chip'><b>" + n + " \u00d7 " + m + "</b>DP table cells the algorithm walked</span>";
+}
+
+/* --- wa3: coffee ratio --- */
+function wa3() {
+  var o = $("wa3-out");
+  var w = m7Num("wa3-w"), d = m7Num("wa3-d"), r = m7Num("wa3-r");
+  if (r === null || r < 1) { o.innerHTML = "Enter a water-per-part ratio of at least 1 (16 = 1:16)."; return; }
+  var grind = r < 16 ? "finer" : r < 18 ? "medium" : "coarser";
+  if (w !== null && w > 0) {
+    o.innerHTML = "<b>" + nfmt(w / r, 1) + " g</b>of coffee for " + nfmt(w, 0) + " g of water (1:" + nfmt(r, 0) + ")" +
+      "<span class='jf-chip'><b>" + nfmt(w / 240, 2) + "</b>240 ml cups in this brew</span>" +
+      "<span class='jf-chip'><b>" + grind + "</b>grind the ratio assumes</span>" +
+      "<span class='jf-chip'><b>" + nfmt(w / r * 2, 1) + " g</b>for a double-strength 1:" + nfmt(r / 2, 0) + " cup</span>";
+    return;
+  }
+  if (d !== null && d > 0) {
+    o.innerHTML = "<b>" + nfmt(d * r, 0) + " g</b>of water for " + nfmt(d, 1) + " g of coffee (1:" + nfmt(r, 0) + ")" +
+      "<span class='jf-chip'><b>" + nfmt(d * r / 240, 2) + "</b>240 ml cups in this brew</span>" +
+      "<span class='jf-chip'><b>" + grind + "</b>grind the ratio assumes</span>";
+    return;
+  }
+  o.innerHTML = "Enter a water amount or a coffee dose \u2014 the calculator scales whichever you know.";
+}
+
+/* wire the batch-27 engines into the shared M3 finisher */
+["sr2", "rw2", "bu2", "de2", "bw2", "nf2", "ld2", "wa3"].forEach(function (fn) {
+  var orig = null;
+  try { orig = window[fn] || eval(fn); } catch (e) { orig = null; }
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
