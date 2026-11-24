@@ -58,6 +58,10 @@ from .mega11 import MEGA11 as _MEGA11, CONTENT11 as _CONTENT11
 CONTENT.update(_CONTENT11)
 MEGA.update(_MEGA11)
 
+from .mega12 import MEGA12 as _MEGA12, CONTENT12 as _CONTENT12
+CONTENT.update(_CONTENT12)
+MEGA.update(_MEGA12)
+
 from .blog_meta import BLOG_META as _BMETA, LENGTH_RANGES as _LR, enriched_blocks as _eb, geo_checks as _gc
 BLOG_META = _BMETA
 LENGTH_RANGES = _LR

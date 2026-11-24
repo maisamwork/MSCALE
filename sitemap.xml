@@ -19,6 +19,7 @@
 <url><loc>https://maisamwork.github.io/MSCALE/tools/add-prefix-suffix.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/age-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/alternate-case.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>https://maisamwork.github.io/MSCALE/tools/anagram-checker.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/angle-converter.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/aspect-ratio.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/average.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
@@ -35,6 +36,7 @@
 <url><loc>https://maisamwork.github.io/MSCALE/tools/business-days-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/caesar-cipher.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/caffeine-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>https://maisamwork.github.io/MSCALE/tools/cagr-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/calorie-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/calories-burned-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/case-converter.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
@@ -64,11 +66,13 @@
 <url><loc>https://maisamwork.github.io/MSCALE/tools/date-difference-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/day-of-week-finder.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/days-to-hours.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>https://maisamwork.github.io/MSCALE/tools/debt-payoff-planner.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/depreciation-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/dice-roller.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/dilution-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/discount-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/electricity-cost-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>https://maisamwork.github.io/MSCALE/tools/ev-charging-cost-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/extract-emails.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/extract-numbers.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/extract-urls.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
@@ -92,6 +96,7 @@
 <url><loc>https://maisamwork.github.io/MSCALE/tools/gst-vat-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/hash-generator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/heart-rate-zones-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>https://maisamwork.github.io/MSCALE/tools/heat-index-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/hex-to-hsl.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/hex-to-rgb.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/hms-to-seconds.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
@@ -205,6 +210,7 @@
 <url><loc>https://maisamwork.github.io/MSCALE/tools/shoe-size-converter.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/simple-interest.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/sleep-cycle-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>https://maisamwork.github.io/MSCALE/tools/sleep-debt-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/slope-grade-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/slug-generator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/speed-distance-time-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
@@ -222,6 +228,7 @@
 <url><loc>https://maisamwork.github.io/MSCALE/tools/subnet-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/swap-case.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/take-home-pay-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>https://maisamwork.github.io/MSCALE/tools/tap-tempo.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/tb-to-gb.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/text-diff-checker.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/text-repeater.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
@@ -247,6 +254,7 @@
 <url><loc>https://maisamwork.github.io/MSCALE/tools/water-intake-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/week-number-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/weeks-to-days.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
+<url><loc>https://maisamwork.github.io/MSCALE/tools/wind-chill-calculator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/word-counter.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/word-frequency-counter.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>
 <url><loc>https://maisamwork.github.io/MSCALE/tools/xml-sitemap-generator.html</loc><lastmod>2026-11-24</lastmod><changefreq>weekly</changefreq></url>

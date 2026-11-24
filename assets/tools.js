@@ -7160,3 +7160,212 @@ function sa3() {
   window[fn] = function () { return orig().then(function () { m3After(); }); };
 });
 
+
+
+/* --- M12: batch-26 engines (ca2 ev2 wi2 hi2 dp2 na2 tp3 sd2) --- */
+
+/* --- ca2: CAGR --- */
+function ca2() {
+  var o = $("ca2-out");
+  var b = m7Num("ca2-b"), e = m7Num("ca2-e"), y = m7Num("ca2-y");
+  if (b === null || b <= 0 || e === null || e < 0 || y === null || y <= 0) { o.innerHTML = "Enter a positive start value, an end value and a positive number of years."; return; }
+  var r = Math.pow(e / b, 1 / y) - 1;
+  var dbl = r > 0 ? (Math.log(2) / Math.log(1 + r)).toFixed(1) + " years \u2014 the rule of 72 checks this as " + nfmt(72 / (r * 100), 1) : "\u2014";
+  o.innerHTML = "<b>" + (r * 100).toFixed(2) + "%</b>compound annual growth over " + nfmt(y, 0) + " years" +
+    "<span class='jf-chip" + (r <= 0 ? " jf-chip-bad" : "") + "'><b>" + nfmt(e / b, 2) + "+\u00d7</b>total growth multiple</span>" +
+    (e > b ? "<span class='jf-chip'><b>" + nfmt(e - b, 0) + "</b>money gained</span>"
+           : "<span class='jf-chip jf-chip-bad'><b>" + nfmt(b - e, 0) + "</b>money lost</span>") +
+    "<span class='jf-chip'><b>" + dbl + "</b>years to double at this rate</span>" +
+    (r > 0 ? "<span class='jf-chip'><b>" + nfmt(e * Math.pow(1 + r, y), 0) + "</b>if the same rate holds another " + nfmt(y, 0) + " years</span>" : "");
+}
+
+/* --- ev2: EV charging cost --- */
+function ev2() {
+  var o = $("ev2-out");
+  var b = m7Num("ev2-b"), c = m7Num("ev2-c"), t = m7Num("ev2-t"), p = m7Num("ev2-p"), e = m7Num("ev2-e");
+  if (b === null || b <= 0 || c === null || t === null || p === null || p < 0 || e === null || e <= 0) { o.innerHTML = "Enter battery kWh, both charge percentages, a non-negative price and positive efficiency."; return; }
+  c = Math.min(100, Math.max(0, c)); t = Math.min(100, Math.max(0, t));
+  if (t <= c) { o.innerHTML = "The target charge must be above the current charge."; return; }
+  var kwh = b * (t - c) / 100, cost = kwh * p, miles = kwh * e;
+  o.innerHTML = "<b>" + m7Money(cost) + "</b>for this charge (" + nfmt(kwh, 1) + " kWh delivered)" +
+    "<span class='jf-chip'><b>" + nfmt(miles, 0) + " mi</b>of range added</span>" +
+    "<span class='jf-chip'><b>" + m7Money(100 / e * p) + "</b>per 100 miles \u2014 compare with petrol</span>" +
+    "<span class='jf-chip'><b>" + nfmt(e / p, 1) + "</b>miles per dollar</span>" +
+    "<span class='jf-chip'><b>" + m7Money(b * p) + "</b>a full 0\u2013100% charge</span>" +
+    "<span class='jf-chip'><b>" + nfmt(t - c, 0) + "%</b>of the battery moved</span>";
+}
+
+/* --- wi2: wind chill (NWS formula) --- */
+function wi2() {
+  var o = $("wi2-out");
+  var t = m7Num("wi2-t"), v = m7Num("wi2-v");
+  if (t === null || v === null || v < 0) { o.innerHTML = "Enter an air temperature and a non-negative wind speed."; return; }
+  var wc = t;
+  var valid = t <= 50 && v >= 3;
+  if (valid) { var f = Math.pow(v, 0.16); wc = 35.74 + 0.6215 * t - 35.75 * f + 0.4275 * t * f; }
+  var risk = wc <= -48 ? "in 5 minutes" : wc <= -32 ? "in 10 minutes" : wc <= -19 ? "in 30 minutes" : "low at this reading";
+  var bad = wc <= -19;
+  o.innerHTML = "<b>" + wc.toFixed(1) + "\u00b0F</b>feels like in the wind" +
+    "<span class='jf-chip'><b>" + nfmt((wc - 32) / 1.8, 1) + "\u00b0C</b>same feel in Celsius</span>" +
+    (valid ? "<span class='jf-chip" + (bad ? " jf-chip-bad" : "") + "'><b>" + risk + "</b>frostbite risk on exposed skin</span>"
+           : "<span class='jf-chip jf-chip-bad'><b>no chill</b>wind chill is undefined above 50\u00b0F or below 3 mph \u2014 showing the air temperature</span>") +
+    "<span class='jf-chip'><b>" + nfmt((t - 32) / 1.8, 1) + "\u00b0C</b>actual air temperature</span>" +
+    "<span class='jf-chip'><b>" + nfmt(t - wc, 1) + "\u00b0F</b>taken off you by the wind</span>";
+}
+
+/* --- hi2: heat index (NWS equation) --- */
+function hi2() {
+  var o = $("hi2-out");
+  var t = m7Num("hi2-t"), r = m7Num("hi2-r");
+  if (t === null || r === null || r < 0 || r > 100) { o.innerHTML = "Enter a temperature and a humidity between 0 and 100%."; return; }
+  var hi = t;
+  var valid = t >= 80 && r >= 40;
+  if (valid) {
+    hi = -42.379 + 2.04901523 * t + 10.14333127 * r - 0.22475541 * t * r
+       - 0.00683783 * t * t - 0.05481717 * r * r + 0.00122874 * t * t * r
+       + 0.00085282 * t * r * r - 0.00000199 * t * t * r * r;
+  }
+  var band = hi >= 125 ? ["extreme danger", true] : hi >= 103 ? ["danger", true] : hi >= 90 ? ["extreme caution", true] : hi >= 80 ? ["caution", false] : ["no heat stress", false];
+  o.innerHTML = "<b>" + hi.toFixed(1) + "\u00b0F</b>heat index \u2014 what your body actually fights" +
+    "<span class='jf-chip" + (band[1] ? " jf-chip-bad" : "") + "'><b>" + band[0] + "</b>official risk band</span>" +
+    "<span class='jf-chip'><b>" + nfmt((hi - 32) / 1.8, 1) + "\u00b0C</b>same heat in Celsius</span>" +
+    "<span class='jf-chip'><b>" + nfmt(hi - t, 1) + "\u00b0F</b>added by humidity</span>" +
+    (valid ? "" : "<span class='jf-chip jf-chip-bad'><b>out of range</b>the official equation applies from 80\u00b0F and 40% humidity \u2014 showing the air temperature</span>");
+}
+
+/* --- dp2: debt payoff planner (snowball vs avalanche, month simulation) --- */
+function dp2Sort(lines, strat) {
+  var a = lines.slice();
+  if (strat === "snowball") a.sort(function (x, y) { return x.bal - y.bal || y.apr - x.apr; });
+  else a.sort(function (x, y) { return y.apr - x.apr || x.bal - y.bal; });
+  return a;
+}
+function dp2Run(lines, strat, extra) {
+  var ds = dp2Sort(lines, strat), interest = 0, closed = [], n = 0, m, k;
+  for (m = 0; m < 600; m++) {
+    var budget = extra;
+    for (k = 0; k < ds.length; k++) if (ds[k].bal > 0) {
+      var acc = ds[k].bal * ds[k].apr / 12; ds[k].bal += acc; interest += acc;
+    }
+    for (k = 0; k < ds.length; k++) if (ds[k].bal > 0) {
+      var pay = Math.min(ds[k].min, ds[k].bal);
+      ds[k].bal -= pay; budget += ds[k].min - pay;
+    }
+    for (k = 0; k < ds.length && budget > 0.004; k++) if (ds[k].bal > 0) {
+      var x = Math.min(budget, ds[k].bal); ds[k].bal -= x; budget -= x;
+    }
+    n = m + 1;
+    var anyOpen = false;
+    for (k = 0; k < ds.length; k++) {
+      if (ds[k].bal <= 0.005 && !closed[k]) { ds[k].bal = 0; closed[k] = n; }
+      if (ds[k].bal > 0) anyOpen = true;
+    }
+    if (!anyOpen) break;
+  }
+  var order = ds.map(function (d, k2) { return closed[k2] ? d.name + " closed in month " + closed[k2] : d.name + " not cleared"; }).join(", ");
+  return { months: n, interest: interest, order: order, stalled: ds.some(function (d) { return d.bal > 0; }) };
+}
+function dp2Parse() {
+  var raw = String($("dp2-l").value || "").split(/[\n;]+/), lines = [];
+  for (var i = 0; i < raw.length; i++) {
+    var s = raw[i].trim(); if (!s) continue;
+    var parts = s.replace(/\u2212/g, "-").split(/[\s,;\t]+/).map(parseFloat);
+    if (parts.length < 3 || !isFinite(parts[0]) || !isFinite(parts[1]) || !isFinite(parts[2]) || parts[0] < 0 || parts[2] <= 0) continue;
+    lines.push({ name: "debt " + (lines.length + 1), bal: parts[0], apr: parts[1] > 1 ? parts[1] / 100 : parts[1], min: parts[2] });
+  }
+  return lines;
+}
+function dp2() {
+  var o = $("dp2-out");
+  var lines = dp2Parse();
+  var strat = String($("dp2-s").value || "avalanche");
+  var x = m7Num("dp2-x"); if (x === null || x < 0) x = 0;
+  if (!lines.length) { o.innerHTML = "List at least one debt as: balance, APR, minimum payment."; return; }
+  var run = dp2Run(lines.map(function (d) { return { name: d.name, bal: d.bal, apr: d.apr, min: d.min }; }), strat, x);
+  var other = strat === "snowball" ? "avalanche" : "snowball";
+  var run2 = dp2Run(lines.map(function (d) { return { name: d.name, bal: d.bal, apr: d.apr, min: d.min }; }), other, x);
+  if (run.stalled) {
+    o.innerHTML = "<b>Stalled</b>the payments never cover the interest \u2014 raise the extra or the minimums before anything clears.";
+    return;
+  }
+  var save = run.interest - run2.interest;
+  o.innerHTML = "<b>" + run.months + " months</b>to debt-free (" + strat + ", " + m7Money(x) + " extra)" +
+    "<span class='jf-chip jf-chip-bad'><b>" + m7Money(run.interest) + "</b>total interest paid</span>" +
+    "<span class='jf-chip'><b>" + escHtml(run.order) + "</b>payoff order</span>" +
+    "<span class='jf-chip'><b>" + run2.months + " months / " + m7Money(run2.interest) + "</b>if you switched to " + other + "</span>" +
+    (Math.abs(save) >= 0.5 ? "<span class='jf-chip'><b>" + m7Money(Math.abs(save)) + "</b>" + (save > 0 ? "interest " + other + " saves you" : "interest you save over " + other) + "</span>" : "<span class='jf-chip'><b>tie</b>both orderings cost the same here</span>");
+}
+
+/* --- na2: anagram checker --- */
+function na2Clean(s) {
+  return String(s || "").toLowerCase().replace(/[^a-z0-9]/g, "").split("").sort().join("");
+}
+function na2() {
+  var o = $("na2-out");
+  var a = String($("na2-a").value || ""), b = String($("na2-b").value || "");
+  var ca = na2Clean(a), cb = na2Clean(b);
+  if (!ca || !cb) { o.innerHTML = "Enter two words or phrases, ignoring spaces and punctuation."; return; }
+  if (ca === cb) {
+    o.innerHTML = "<b>True anagram</b>" + escHtml(a.trim()) + " and " + escHtml(b.trim()) + " share every letter" +
+      "<span class='jf-chip'><b>" + ca.length + "</b>letters on each side</span>" +
+      "<span class='jf-chip'><b>" + escHtml(ca) + "</b>shared letters, sorted</span>";
+    return;
+  }
+  var map = {}, i, ch, countsB = {}, diffA = [], diffB = [], common = 0;
+  for (i = 0; i < ca.length; i++) map[ca[i]] = (map[ca[i]] || 0) + 1;
+  for (i = 0; i < cb.length; i++) countsB[cb[i]] = (countsB[cb[i]] || 0) + 1;
+  for (ch in map) if (countsB[ch]) common += Math.min(map[ch], countsB[ch]);
+  for (ch in map) if (map[ch] - (countsB[ch] || 0) > 0) diffA.push(ch + "\u00d7" + (map[ch] - (countsB[ch] || 0)));
+  for (ch in countsB) if ((countsB[ch] || 0) - (map[ch] || 0) > 0) diffB.push(ch + "\u00d7" + (countsB[ch] - (map[ch] || 0)));
+  var pct = Math.round(200 * common / (ca.length + cb.length));
+  o.innerHTML = "<b>Not an anagram</b>\u2014 " + pct + "% of the letters match" +
+    (diffA.length ? "<span class='jf-chip jf-chip-bad'><b>" + escHtml(diffA.join(" ")) + "</b>in " + escHtml(a.trim()) + " but missing from the other</span>" : "") +
+    (diffB.length ? "<span class='jf-chip jf-chip-bad'><b>" + escHtml(diffB.join(" ")) + "</b>in " + escHtml(b.trim()) + " but missing from the other</span>" : "") +
+    "<span class='jf-chip'><b>" + escHtml(ca) + "</b>first side, sorted</span>" +
+    "<span class='jf-chip'><b>" + escHtml(cb) + "</b>second side, sorted</span>";
+}
+
+/* --- tp3: tap tempo --- */
+var TP3_T = window.TP3_T = window.TP3_T || [];
+function tp3Tap() { TP3_T.push(Date.now()); while (TP3_T.length > 8) TP3_T.shift(); tp3Calc(); }
+function tp3Reset() { TP3_T.length = 0; $("tp3-out").innerHTML = ""; }
+function tp3Calc() {
+  var o = $("tp3-out");
+  if (TP3_T.length < 2) { if (TP3_T.length === 1) o.innerHTML = "Keep tapping \u2014 1 tap so far."; return; }
+  var i, sum = 0, mn = Infinity, mx = -Infinity;
+  for (i = 1; i < TP3_T.length; i++) { var d = TP3_T[i] - TP3_T[i - 1]; sum += d; if (d < mn) mn = d; if (d > mx) mx = d; }
+  var avg = sum / (TP3_T.length - 1), bpm = 60000 / avg;
+  o.innerHTML = "<b>" + bpm.toFixed(1) + " BPM</b>from the last " + TP3_T.length + " taps" +
+    "<span class='jf-chip'><b>" + nfmt(60000 / bpm, 0) + " ms</b>per beat</span>" +
+    "<span class='jf-chip'><b>" + nfmt(avg, 0) + " ms</b>average gap between taps</span>" +
+    "<span class='jf-chip'><b>" + nfmt(mx - mn, 0) + " ms</b>tap spread \u2014 over 40 ms means tap tighter</span>";
+}
+
+/* --- sd2: sleep debt --- */
+function sd2() {
+  var o = $("sd2-out");
+  var need = m7Num("sd2-n");
+  if (need === null || need <= 0 || need > 14) { o.innerHTML = "Enter a per-night sleep need between 1 and 14 hours."; return; }
+  var parts = String($("sd2-h").value || "").split(/[,;\s]+/).filter(Boolean).map(parseFloat).filter(isFinite).slice(0, 7);
+  if (!parts.length) { o.innerHTML = "Enter the hours you slept, separated by commas."; return; }
+  var n = parts.length, sum = 0, mn = parts[0], mx = parts[0], i;
+  for (i = 0; i < n; i++) { sum += parts[i]; if (parts[i] < mn) mn = parts[i]; if (parts[i] > mx) mx = parts[i]; }
+  var debt = Math.max(0, n * need - sum);
+  var recover = debt / 1.5;
+  o.innerHTML = (debt > 0 ? "<b>" + nfmt(debt, 1) + " h in debt</b>across " + n + " nights vs a " + need + " h need"
+                          : "<b>No sleep debt</b>across " + n + " nights \u2014 you banked " + nfmt(sum - n * need, 1) + " h spare") +
+    "<span class='jf-chip'><b>" + nfmt(sum / n, 1) + " h</b>average per night</span>" +
+    "<span class='jf-chip'><b>" + nfmt(mn, 1) + " h</b>worst night</span>" +
+    "<span class='jf-chip'><b>" + nfmt(mx, 1) + " h</b>best night</span>" +
+    (debt > 0 ? "<span class='jf-chip jf-chip-bad'><b>" + nfmt(recover, 1) + " nights</b>to repay at +1.5 h extra per catch-up night</span>"
+              : "<span class='jf-chip'><b>earned</b>a sleep surplus \u2014 protect the routine</span>") +
+    "<span class='jf-chip'><b>" + nfmt(sum, 1) + " h</b>slept in total</span>";
+}
+
+/* wire the batch-26 engines into the shared M3 finisher */
+["ca2", "ev2", "wi2", "hi2", "dp2", "na2", "tp3Calc", "sd2"].forEach(function (fn) {
+  var orig = null;
+  try { orig = window[fn] || eval(fn); } catch (e) { orig = null; }
+  if (typeof orig !== "function") return;
+  window[fn] = function () { orig(); m3After(); };
+});
